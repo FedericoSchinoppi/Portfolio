@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FSR - Portfolio</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="mobile.css">
+</head>
+<body>
+
+  <!-- INTRO SPLASH -->
+  <div class="intro-screen" id="intro-screen">
+    <button class="intro-enter" id="intro-enter" aria-label="Enter site">
+      <img src="img/svg/fs-white.svg" alt="" id="intro-logo">
+      <span class="intro-logo-placeholder" id="intro-logo-placeholder">Image — replace with yours<br>(fs-white.svg)</span>
+    </button>
+    <span class="intro-enter-label">click to enter</span>
+    <span class="intro-footer-text" id="intro-footer-text"></span>
+  </div>
+
+  <!-- HEADER GLOBALE -->
+  <header class="site-header">
+    <span class="logo-placeholder" id="header-logo-placeholder" data-nav="home">LOGO</span>
+    <img src="img/svg/fs-blu.svg" alt="Logo" id="header-logo" style="display:none;" data-nav="home">
+  </header>
+
+  <!-- FOOTER GLOBALE -->
+  <footer class="site-footer">
+    <span id="footer-text"></span>
+    <div class="footer-contacts" id="footer-contacts"></div>
+  </footer>
+
+  <!-- LIGHTBOX — apertura immagine a schermo intero (visualizzazione grid) -->
+  <div class="lightbox" id="lightbox">
+    <img src="" alt="" id="lightbox-img">
+    <video id="lightbox-video" autoplay loop muted playsinline></video>
+    <span class="lightbox-caption" id="lightbox-caption"></span>
+    <div class="lightbox-dots" id="lightbox-dots"></div>
+  </div>
+
+  <!-- ============================================================
+       HOME
+       ============================================================ -->
+  <section id="view-home" class="view active" data-view="home">
+    <div class="home-main">
+      <div class="home-name">
+        <span class="home-name-line">Federico Schinoppi Rossi</span>
+        <span class="eyebrow home-role">Communication Designer</span>
+      </div>
+    </div>
+
+    <button class="tab tab-projects" data-nav="projects" aria-label="Go to Projects page">
+      <span>Projects</span>
+      <span class="tab-arrow"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></span>
+    </button>
+    <button class="tab tab-about" data-nav="about" aria-label="Go to About page">
+      <span>About me</span>
+      <span class="tab-arrow"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></span>
+    </button>
+  </section>
+
+  <!-- ============================================================
+       ABOUT
+       ============================================================ -->
+  <section id="view-about" class="view" data-view="about">
+    <div class="about-layout">
+      <div class="about-left">
+        <div class="title-row">
+          <button class="back-btn-inline" data-nav="home" aria-label="Back to home"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg></button>
+          <h1 class="about-name-big clickable-title" id="about-name" data-nav="home"></h1>
+        </div>
+        <div class="about-body">
+          <span class="eyebrow about-tagline" id="about-tagline"></span>
+          <p class="about-bio" id="about-bio"></p>
+          <div class="about-skills">
+            <span class="eyebrow" style="margin-bottom:12px;">Skills</span>
+            <ul id="about-skills-list"></ul>
+          </div>
+        </div>
+        <div class="about-spacer"></div>
+        <span class="eyebrow about-contacts-label" style="padding:0 var(--edge); margin-bottom:4px;">Contacts</span>
+        <div class="about-contacts" id="about-contacts"></div>
+      </div>
+      <div class="about-photo" id="about-photo">
+        <div class="about-photo-placeholder">Photo — replace with your image</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PROJECTS (elenco)
+       ============================================================ -->
+  <section id="view-projects" class="view" data-view="projects">
+    <div class="title-row title-row-centered">
+      <button class="back-btn-inline" data-nav="home" aria-label="Back to home"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg></button>
+      <h1 class="clickable-title" data-nav="home">Projects</h1>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="projects-list-wrap">
+      <div class="projects-list" id="projects-list"></div>
+      <div class="project-dots" id="project-dots"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PROJECT DETAIL
+       ============================================================ -->
+  <section id="view-detail" class="view" data-view="detail">
+    <div class="title-row title-row-centered">
+      <button class="back-btn-inline" data-nav="projects" aria-label="Back to projects"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg></button>
+      <h1 class="detail-title-big clickable-title" id="detail-title" data-nav="projects"></h1>
+    </div>
+    <div class="filters" id="detail-view-toggle"></div>
+    <div class="detail-gallery-wrap">
+      <div class="detail-gallery scroll-view" id="detail-gallery"></div>
+      <div class="detail-gallery-dots" id="detail-gallery-dots"></div>
+    </div>
+  </section>
+
+<script>
+
+  /* ============================================================
+     CONFIG
+     ============================================================ */
+  const CONFIG = {
+    name: "Federico Schinoppi Rossi",
+    tagline: "THE METHOD IN CREATIVITY",
+    bio: "Being a designer means knowing how to design. Every project requires method, organization, research, and perseverance, but above all, passion and creativity. In every project I bring my relational, rational, and creative skills into play, always with a touch of lightheartedness.",
+    skills: ["Brand Design", "Social Media Management", "Digital Strategy"],
+    email: "schinoppirossi.federico@gmail.com",
+    phone: "+39 338 1291772",
+    instagramHandle: "@_schinooo",
+    instagramUrl: "https://instagram.com/_schinooo", // TODO: verifica che l'URL sia corretto
+    cvPath: "download/Curriculum Vitae - Federico Schinoppi Rossi.pdf",
+    portfolioPath: "download/Portfolio - Federico Schinoppi Rossi.png",
+    photoPath: "img/about.jpg"
+  };
+
+  /* ============================================================
+     PROGETTI
+     ============================================================ */
+  const PROJECTS = [
+    {
+      id: "kappa-futur-festival",
+      name: "Kappa Futur Festival",
+      categories: ["Brand Identity"],
+      tags: ["Interaction Design", "Brand Design", "UX/UI", "Event Design"],
+      year: "2026",
+      client: "Politecnico of Milan",
+      team: ["Pietro Alborghetti", "Giulia Cavaliere", "Silvia Colli", "Stella Zanardi"],
+      blurb: "A collective and connected ritual",
+      description: "A group project reimagining the 2028 edition of Kappa Futur Festival through a complex interactive system. The goal was to enrich the attendee experience and connect participants with one another, turning the festival into a collective, connected journey.",
+      cover: "img/pj/01-kff/00-cop-kff.jpg",
+      images: [
+        { src: "img/pj/01-kff/01 - affissioni tribù.jpg", caption: "Pre-festival street posters" },
+        { src: "img/pj/01-kff/02 - gate.jpg", caption: "Venue entrance gate" },
+        { src: "img/pj/01-kff/03 - app.jpg", caption: "Mobile app interface" },
+        { src: "img/pj/01-kff/04-app.mp4", caption: "Mobile app — video walkthrough" },
+        { src: "img/pj/01-kff/05 - map.jpg", caption: "Real-time map on LED wall" },
+        { src: "img/pj/01-kff/06 - totem inattivo.jpg", caption: "Interactive totem" },
+        { src: "img/pj/01-kff/07 - collaboration diagram.jpg", caption: "Collaboration diagram" },
+        { src: "img/pj/01-kff/08 - prototipo.jpg", caption: "Prototype demo on laptop" },
+        { src: "img/pj/01-kff/09 - prototipo.jpg", caption: "Prototype demo on mobile" },
+        { src: "img/pj/01-kff/10- video demo.mp4", caption: "Video demo" }
+      ]
+    },
+    {
+      id: "cleo",
+      name: "CLEO",
+      categories: ["Brand Identity"],
+      tags: ["Brand Design", "Editorial Design", "Brand Experience", "Content Strategy"],
+      year: "2024",
+      client: "Politecnico of Milan",
+      team: ["Chiara Agnelli", "Chiara Campironi", "Giulia d'Ercole", "Vittorio Paulato"],
+      blurb: "Cleopatra reimagined in jewelry",
+      description: "A tribute to Cleopatra's hidden facets and mythological presence, translated into a luxury jewelry brand. The identity was built from a deep study of her character, then extended into a full brand experience.",
+      cover: "img/pj/02-cleo/00-cop-cleo.jpg",
+      images: [
+        { src: "img/pj/02-cleo/01-logo animation.mp4", caption: "Logo animation" },
+        { src: "img/pj/02-cleo/02-versione colori.png", caption: "Logo color variations" },
+        { src: "img/pj/02-cleo/03-logo generativo.jpg", caption: "Generative logo pattern" },
+        { src: "img/pj/02-cleo/04-affissioni.jpg", caption: "Campaign launch posters" },
+        { src: "img/pj/02-cleo/05-instagram.jpg", caption: "Instagram profile feed" },
+        { src: "img/pj/02-cleo/06-brochure gioiello.jpg", caption: "Jewelry brochure" },
+        { src: "img/pj/02-cleo/07-collezione magazine.jpg", caption: "New collection launch in a magazine" },
+        { src: "img/pj/02-cleo/08-contatti magazine.jpg", caption: "Contact page inside the magazine" },
+        { src: "img/pj/02-cleo/09-copertina brandbook.jpg", caption: "Brandbook cover" },
+        { src: "img/pj/02-cleo/10-brandbook.jpg", caption: "Brand mark explained in the brandbook" }
+      ]
+    },
+    {
+      id: "la-manega",
+      name: "La Manèga",
+      categories: ["Brand Identity"],
+      tags: ["Brand Design", "Web Design", "Brand Experience", "Content Strategy"],
+      year: "2025",
+      client: "Politecnico of Milan",
+      team: ["Chiara Campironi", "Nicole Di Gregorio", "Martina Pastorelli", "Vittorio Paulato", "Federico Pucci"],
+      blurb: "Authentic heritage, refined presence",
+      description: "A visual refresh for La Manèga, a winery at the heart of Franciacorta. The brand identity was redesigned to meet the owners' needs, giving the company's image a more authentic, refined presence.",
+      cover: "img/pj/03-manega/00-cop-manega.jpg",
+      images: [
+        { src: "img/pj/03-manega/01-logo e marchio.jpg", caption: "Logo" },
+        { src: "img/pj/03-manega/02-versione colori.png", caption: "Logo and mark applications" },
+        { src: "img/pj/03-manega/03-texture.jpg", caption: "Logo on a textured surface" },
+        { src: "img/pj/03-manega/04-business card.jpg", caption: "Business card" },
+        { src: "img/pj/03-manega/05-sito web about.jpg", caption: "Website — experience section" },
+        { src: "img/pj/03-manega/06-sito web bottiglia.jpg", caption: "Website — products section" },
+        { src: "img/pj/03-manega/07-brochure.jpg", caption: "Brochure" },
+        { src: "img/pj/03-manega/08-bottiglie di vino.jpg", caption: "Wine bottles" },
+        { src: "img/pj/03-manega/09-pack singolo.jpg", caption: "Single-bottle packaging" },
+        { src: "img/pj/03-manega/10-pack regalo.jpg", caption: "Gift packaging" }
+      ]
+    },
+    {
+      id: "sinfonie-materiali",
+      name: "Sinfonie Materiali",
+      categories: ["Content Strategy"],
+      tags: ["Accessibility Design", "Content Strategy", "Web Design", "Editorial Design"],
+      year: "2026",
+      client: "Politecnico of Milan",
+      team: ["Chiara Balestra", "Teresa Barbieri", "Sofiia Dutchina", "Samantha Fabbri"],
+      blurb: "Art made accessible",
+      description: "A collaboration with the Museo Tattile Statale Omero to make Roberto Papini's artworks accessible to blind, low-vision, and deaf audiences. The project translated the artist's work into tactile experiences, a tactile book, and video content, supported by a descriptive website with audio guides.",
+      cover: "img/pj/04-sinfonie/00-cop-sinfonie.jpg",
+      images: [
+        { src: "img/pj/04-sinfonie/01-sito.jpg", caption: "Browsing the project's dedicated website" },
+        { src: "img/pj/04-sinfonie/02-sito.jpg", caption: "Website — intro section" },
+        { src: "img/pj/04-sinfonie/03-sito.jpg", caption: "Website — artworks section" },
+        { src: "img/pj/04-sinfonie/04-pannello.jpg", caption: "Panel explaining the project and the tactile experience" },
+        { src: "img/pj/04-sinfonie/05-audioguida.jpg", caption: "Scanning the QR code for the mobile audio guide" },
+        { src: "img/pj/04-sinfonie/06-audioguida mobile.jpg", caption: "Mobile audio guide" },
+        { src: "img/pj/04-sinfonie/07-audioguida mobile.mp4", caption: "Mobile audio guide — video" },
+        { src: "img/pj/04-sinfonie/08-book intro.jpg", caption: "Tactile book — intro pages" },
+        { src: "img/pj/04-sinfonie/09-book opere.jpg", caption: "An artwork explained in the tactile book" },
+        { src: "img/pj/04-sinfonie/10-esperienza tattile.jpg", caption: "Tactile boxes that make up the experience" }
+      ]
+    },
+    {
+      id: "asd-oratorio-sale",
+      name: "ASD Oratorio Sale",
+      categories: ["Content Strategy"],
+      tags: ["Social Media Management", "Content Strategy", "Digital Strategy"],
+      year: "From 2024",
+      client: "ASD Oratorio Sale Gussago",
+      team: ["Personal Work"],
+      blurb: "Six teams, one voice",
+      description: "Social media management and communication for a historic football club in the Brescia football scene, overseeing six different teams under a single society at the same time.",
+      cover: "img/pj/05-sale/00-cop-sale.jpg",
+      images: [
+        { src: "img/pj/05-sale/01-lancio stagione.jpg", caption: "Season launch post" },
+        { src: "img/pj/05-sale/02-profilo.jpg", caption: "Instagram profile" },
+        { src: "img/pj/05-sale/03-feed.jpg", caption: "Instagram feed" },
+        { src: "img/pj/05-sale/04-team.jpg", caption: "Stories for a single team" },
+        { src: "img/pj/05-sale/05-risultati weekend.jpg", caption: "Weekly post with the weekend's match results" },
+        { src: "img/pj/05-sale/06-mvp.jpg", caption: "Stories celebrating each team's MVP" },
+        { src: "img/pj/05-sale/07-torneo open.jpg", caption: "Stories for the Open tournament" },
+        { src: "img/pj/05-sale/08-stand gastronomico.jpg", caption: "Story promoting the food stand" },
+        { src: "img/pj/05-sale/09-torneo top junior.jpg", caption: "Stories for the Top Junior tournament" },
+        { src: "img/pj/05-sale/10-maglia celebrativa.jpg", caption: "Commemorative jersey reveal post" }
+      ]
+    },
+    {
+      id: "blesh",
+      name: "Blesh",
+      categories: ["Brand Identity", "Content Strategy"],
+      tags: ["Market Analysis", "Brand Design", "Content Strategy"],
+      year: "2023",
+      client: "Politecnico of Milan",
+      team: ["Valentina Bestetti", "Chiara Campironi", "Allegra Costato", "Anna Chiara Marsili", "Vittorio Paulato", "Beatrice Nati", "Pietro Zanotto"],
+      blurb: "One drink, new connections",
+      description: "A new non-alcoholic drink built to spark the evening among friends at a bar. Market analysis guided the brand's positioning, followed by the visual identity and promotional strategy.",
+      cover: "img/pj/06-blesh/00-cop-blesh.jpg",
+      images: [
+        { src: "img/pj/06-blesh/01-moodboard.jpg", caption: "Moodboard" },
+        { src: "img/pj/06-blesh/02-logo.png", caption: "Logo" },
+        { src: "img/pj/06-blesh/03-lattina.jpg", caption: "Can design" },
+        { src: "img/pj/06-blesh/04-piano editoriale.jpg", caption: "Editorial content plan" },
+        { src: "img/pj/06-blesh/05-instagram.jpg", caption: "Instagram post capturing the brand's mood" },
+        { src: "img/pj/06-blesh/06-instagram.jpg", caption: "Instagram post capturing the brand's style" },
+        { src: "img/pj/06-blesh/07-instagram.jpg", caption: "Instagram post featuring the three can designs" },
+        { src: "img/pj/06-blesh/08-affissioni.jpg", caption: "Product launch poster" },
+        { src: "img/pj/06-blesh/09-affissioni.jpg", caption: "Product launch poster — alternate version" },
+        { src: "img/pj/06-blesh/10-spot.jpg", caption: "Illustration for the ad spot" }
+      ]
+    },
+    {
+      id: "oratorio-gussago",
+      name: "Oratorio Gussago",
+      categories: ["Brand Identity"],
+      tags: ["Brand Design", "Web Design", "Social Media Management", "Content Strategy"],
+      year: "2024",
+      client: "Parrocchia Santa Maria Assunta",
+      team: ["Michele Greotti"],
+      blurb: "New identity, same community",
+      description: "A personal project, developed with a friend, giving new visual form to the Gussago oratory. The identity was rebuilt to reflect the community's spirit, alongside redesigned and consistent communication channels.",
+      cover: "img/pj/07-oratorio/00-cop-oraz.png",
+      images: [
+        { src: "img/pj/07-oratorio/01-logo e marchio.png", caption: "Logo and brand mark" },
+        { src: "img/pj/07-oratorio/02-logo e marchio.png", caption: "Logo and brand mark — alternate version" },
+        { src: "img/pj/07-oratorio/03-marchio.png", caption: "Brand mark" },
+        { src: "img/pj/07-oratorio/04-instagram home.jpg", caption: "Instagram profile" },
+        { src: "img/pj/07-oratorio/05-lancio instagram.jpg", caption: "Launch brand reel" },
+        { src: "img/pj/07-oratorio/06-home page sito.jpg", caption: "Website homepage" },
+        { src: "img/pj/07-oratorio/07-galleria sito.jpg", caption: "Website gallery section" },
+        { src: "img/pj/07-oratorio/08-tshirt.jpg", caption: "T-shirt" },
+        { src: "img/pj/07-oratorio/09-tshirt.jpg", caption: "T-shirt — alternate version" },
+        { src: "img/pj/07-oratorio/10-muro.jpg", caption: "Logo painted on the oratory bar's wall" }
+      ]
+    },
+    {
+      id: "confartigianato",
+      name: "Confartigianato",
+      categories: ["Content Strategy"],
+      tags: ["Digital Strategy", "Market Analysis", "Brand Strategy", "Content Strategy"],
+      year: "2025",
+      client: "Politecnico of Milan",
+      team: ["Viola Ambrosini", "Francesca Bianchi", "Giorgia Fontana", "Renata Romagnuolo", "Matteo Roscigno"],
+      blurb: "Closing the gap with Gen Z",
+      description: "A repositioning project aimed at bringing Confartigianato closer to Gen Z. Starting from market and competitor analysis, the brand proposition was restructured and the content strategy rebuilt to speak to a younger audience.",
+      cover: "img/pj/08-confartigianato/00-cop-confartigianato.jpg",
+      images: [
+        { src: "img/pj/08-confartigianato/01-analisi competitors.jpg", caption: "Competitor analysis" },
+        { src: "img/pj/08-confartigianato/02-differenziale competitivo.jpg", caption: "Competitive differentiation" },
+        { src: "img/pj/08-confartigianato/03-posizionamento.jpg", caption: "Positioning map" },
+        { src: "img/pj/08-confartigianato/04-funnel.jpg", caption: "Marketing funnel" },
+        { src: "img/pj/08-confartigianato/05-valori.jpg", caption: "Brand values" },
+        { src: "img/pj/08-confartigianato/06-moodboard.jpg", caption: "Moodboard" },
+        { src: "img/pj/08-confartigianato/07-media mix.jpg", caption: "Media mix" },
+        { src: "img/pj/08-confartigianato/08-concept .jpg", caption: "New service launch campaign application" },
+        { src: "img/pj/08-confartigianato/09-instagram.jpg", caption: "Campaign application on Instagram" },
+        { src: "img/pj/08-confartigianato/10-piano editoriale.jpg", caption: "Editorial content plan" }
+      ]
+    }
+  ];
+
+  /* ============================================================
+     UTILS
+     ============================================================ */
+  function encodePath(path){
+    return path.split("/").map(encodeURIComponent).join("/");
+  }
+
+  const VIDEO_EXT = /\.(mp4|webm|mov)$/i;
+  function isVideo(src){
+    return VIDEO_EXT.test(src || "");
+  }
+
+  /* click su un pallino: dissolvenza invece di uno scorrimento visibile —
+     il contenuto sfuma a 0, lo scroll salta di scatto alla nuova posizione
+     mentre è invisibile, poi risfuma a 1. L'assegnazione a scrollTop va
+     comunque fatta con scroll-behavior:auto forzato: #projects-list ha
+     scroll-behavior:smooth in CSS, e un'assegnazione diretta lì lancerebbe
+     una sua animazione nativa che non avrebbe il tempo di finire nella
+     finestra (invisibile) in cui deve scattare */
+  function dissolveScrollTo(el, { top, left }, fadeDuration = 200){
+    const prevTransition = el.style.transition;
+    const prevScrollBehavior = el.style.scrollBehavior;
+    el.style.transition = `opacity ${fadeDuration}ms ease`;
+    el.style.opacity = "0";
+    setTimeout(()=>{
+      el.style.scrollBehavior = "auto";
+      if(top !== undefined) el.scrollTop = top;
+      if(left !== undefined) el.scrollLeft = left;
+      el.style.scrollBehavior = prevScrollBehavior;
+      requestAnimationFrame(()=>{
+        el.style.opacity = "1";
+        setTimeout(()=>{ el.style.transition = prevTransition; }, fadeDuration);
+      });
+    }, fadeDuration);
+  }
+
+  /* ============================================================
+     INTRO SPLASH
+     ============================================================ */
+  const introScreen = document.getElementById("intro-screen");
+  const introEnter = document.getElementById("intro-enter");
+  const introLogo = document.getElementById("intro-logo");
+  const introPlaceholder = document.getElementById("intro-logo-placeholder");
+
+  function revealIntroLogo(){
+    introLogo.style.display = "block";
+    introPlaceholder.style.display = "none";
+  }
+  function hideIntroLogo(){
+    introLogo.style.display = "none";
+    introPlaceholder.style.display = "block";
+  }
+  introLogo.addEventListener("load", revealIntroLogo);
+  introLogo.addEventListener("error", hideIntroLogo);
+  if(introLogo.complete){
+    introLogo.naturalWidth > 0 ? revealIntroLogo() : hideIntroLogo();
+  }
+
+  introScreen.addEventListener("click", ()=>{
+    introScreen.classList.add("fade-out");
+    setTimeout(()=>{ introScreen.style.display = "none"; }, 600);
+  });
+
+  /* ============================================================
+     NAVIGAZIONE
+     ============================================================ */
+  let activeFilter = "all";
+
+  function showView(name, keepProjectsState = false){
+    const current = document.querySelector(".view.active");
+    const next = document.querySelector(`.view[data-view="${name}"]`);
+    if(!next || next === current) return;
+
+    next.classList.add("active");
+
+    if(name === "projects" && !keepProjectsState){
+      /* si riparte dal primo progetto nel filtro "all" solo quando si entra
+         in Projects dal menu/tab; tornando indietro da un progetto (back-btn
+         o titolo) si resta invece sul filtro e sulla scheda di provenienza */
+      activeFilter = "all";
+      renderFilters();
+      renderProjectsList();
+      document.getElementById("projects-list").scrollTo({top:0, left:0, behavior:"instant"});
+    }
+
+    void next.offsetWidth;
+    next.classList.add("visible");
+
+    if(current){
+      current.classList.remove("visible");
+      current.addEventListener("transitionend", function cleanup(e){
+        if(e.propertyName !== "opacity") return;
+        current.removeEventListener("transitionend", cleanup);
+        /* le view sono riusate per ogni progetto (un solo #view-detail):
+           se nel frattempo current è stata riattivata (es. utente tornato
+           qui prima che questa dissolvenza in uscita finisse), "visible"
+           è già stata rimessa — in quel caso NON va tolta "active",
+           altrimenti la view resterebbe display:none pur essendo quella
+           corrente (clientWidth/Height a 0, griglia rotta) */
+        if(!current.classList.contains("visible")){
+          current.classList.remove("active");
+        }
+      });
+    }
+  }
+
+  function navigate(name, pushState = true, keepProjectsState = false){
+    showView(name, keepProjectsState);
+    if(pushState){
+      const hash = name === "home" ? "" : "#" + name;
+      history.pushState({view:name}, "", hash || location.pathname);
+    }
+  }
+
+  document.querySelectorAll("[data-nav]").forEach(el=>{
+    el.addEventListener("click", () => {
+      /* back-btn e titolo dentro la vista Detail tornano a Projects
+         mantenendo filtro e scroll; ogni altro trigger (tab, logo, ecc.)
+         riparte invece dal primo progetto in "all" */
+      const fromDetail = el.dataset.nav === "projects" && !!el.closest('.view[data-view="detail"]');
+      navigate(el.dataset.nav, true, fromDetail);
+    });
+  });
+
+  window.addEventListener("popstate", (e)=>{
+    const name = (e.state && e.state.view) || "home";
+    showView(name);
+  });
+
+  /* ============================================================
+     LOGO HEADER
+     ============================================================ */
+  const headerLogo = document.getElementById("header-logo");
+  const headerLogoPlaceholder = document.getElementById("header-logo-placeholder");
+  function revealHeaderLogo(){
+    headerLogo.style.display = "block";
+    headerLogoPlaceholder.style.display = "none";
+  }
+  function hideHeaderLogo(){
+    headerLogo.style.display = "none";
+    headerLogoPlaceholder.style.display = "inline-block";
+  }
+  headerLogo.addEventListener("load", revealHeaderLogo);
+  headerLogo.addEventListener("error", hideHeaderLogo);
+  if(headerLogo.complete){
+    headerLogo.naturalWidth > 0 ? revealHeaderLogo() : hideHeaderLogo();
+  }
+
+  /* ============================================================
+     FOTO ABOUT
+     ============================================================ */
+  const aboutPhoto = document.getElementById("about-photo");
+  (function loadAboutPhoto(){
+    const img = new Image();
+    img.alt = "Foto di " + CONFIG.name;
+    img.onload = () => { aboutPhoto.innerHTML = ""; aboutPhoto.appendChild(img); };
+    img.onerror = () => {};
+    img.src = CONFIG.photoPath;
+  })();
+
+  /* ============================================================
+     RENDER: FOOTER
+     ============================================================ */
+  function renderFooter(){
+    /* i separatori sono span con margine CSS, non spazi nel testo: il
+       browser collassa qualunque sequenza di spazi in uno solo, quindi
+       scrivere più spazi nella stringa non avrebbe alcun effetto visivo */
+    const sep = `<span class="footer-sep">|</span>`;
+    const footerLine = `${CONFIG.name}${sep}Portfolio${sep}2026`;
+    document.getElementById("footer-text").innerHTML = footerLine;
+    document.getElementById("intro-footer-text").innerHTML = footerLine;
+
+    document.getElementById("footer-contacts").innerHTML = `
+      <a class="footer-contact-link" href="mailto:${CONFIG.email}">${CONFIG.email}</a>
+      <a class="footer-contact-link" href="tel:${CONFIG.phone.replace(/\s+/g,'')}">${CONFIG.phone}</a>
+      <a class="footer-contact-link" href="${CONFIG.instagramUrl}" target="_blank" rel="noopener">${CONFIG.instagramHandle}</a>
+    `;
+  }
+
+  /* ============================================================
+     RENDER: ABOUT
+     ============================================================ */
+  function renderAbout(){
+    document.getElementById("about-name").textContent = CONFIG.name;
+    document.getElementById("about-tagline").textContent = CONFIG.tagline;
+    document.getElementById("about-bio").textContent = CONFIG.bio;
+
+    document.getElementById("about-skills-list").innerHTML =
+      CONFIG.skills.map(s => `<li>${s}</li>`).join("");
+
+    document.getElementById("about-contacts").innerHTML = `
+      <div class="contact-list">
+        <a class="contact-link" href="mailto:${CONFIG.email}">${CONFIG.email}</a>
+        <a class="contact-link" href="tel:${CONFIG.phone.replace(/\s+/g,'')}">${CONFIG.phone}</a>
+        <a class="contact-link" href="${CONFIG.instagramUrl}" target="_blank" rel="noopener">${CONFIG.instagramHandle}</a>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn-download" href="${encodePath(CONFIG.cvPath)}" target="_blank" rel="noopener">Download CV<svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg></a>
+        <a class="btn btn-download" href="${encodePath(CONFIG.portfolioPath)}" target="_blank" rel="noopener">Download Portfolio<svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg></a>
+      </div>
+    `;
+  }
+
+  /* ============================================================
+     RENDER: FILTRI + LISTA PROGETTI
+     ============================================================ */
+  function renderFilters(){
+    const categories = ["all", "Brand Identity", "Content Strategy"];
+    const container = document.getElementById("filters");
+    container.innerHTML = categories.map(cat => {
+      const label = cat === "all" ? "All" : cat;
+      return `<button class="filter-btn ${cat === activeFilter ? 'active' : ''}" data-filter="${cat}">${label}</button>`;
+    }).join("");
+
+    container.querySelectorAll(".filter-btn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        activeFilter = btn.dataset.filter;
+        renderFilters();
+        renderProjectsList();
+        const list = document.getElementById("projects-list");
+        /* scrollTo(..., "instant") invece di scrollTop/scrollLeft = 0: subito
+           dopo aver ricostruito la lista, l'assegnazione diretta a scrollTop
+           viene ignorata da Chrome perché scroll-behavior:smooth la tratta
+           come un'animazione che qui non parte mai (bug del browser) */
+        list.scrollTo({top:0, left:0, behavior:"instant"});
+      });
+    });
+  }
+
+  function renderProjectsList(){
+    const list = PROJECTS.filter(p => activeFilter === "all" || p.categories.includes(activeFilter));
+    const container = document.getElementById("projects-list");
+
+    document.getElementById("project-dots").innerHTML =
+      list.map((p, i) => `<span class="project-dot${i === 0 ? " active" : ""}"></span>`).join("");
+
+    container.innerHTML = list.map(p => {
+      const moreFields = [
+        ["Year", p.year],
+        ["Client", p.client],
+        ["Team", p.team.join(", ")]
+      ].filter(([,value]) => value);
+      return `
+      <div class="project-row" data-project="${p.id}">
+        <div class="project-row-text">
+          <div class="project-row-main">
+            <span class="project-row-title">${p.name}</span>
+            <p class="project-row-blurb">${p.blurb}</p>
+            <p class="project-row-more-desc">${p.description}</p>
+            <ul class="project-row-tags">${p.tags.map(t => `<li>${t}</li>`).join("")}</ul>
+            <div class="project-row-more">
+              <button class="project-row-more-toggle">
+                <span class="more-info-label"><span class="more-info-prefix">More </span>Info</span>
+                <svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg>
+              </button>
+              <ul class="project-row-more-list">
+                <li class="more-desc-row"><span class="more-value">${p.description}</span></li>
+                <li class="more-tags-row"><span class="more-label">Tags</span><span class="more-value">${p.tags.join(", ")}</span></li>
+                ${moreFields.map(([label, value]) => `<li><span class="more-label">${label}</span><span class="more-value">${value}</span></li>`).join("")}
+              </ul>
+            </div>
+          </div>
+          <button class="btn btn-forward project-row-view-btn" data-project="${p.id}">View Project<svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></button>
+        </div>
+        <div class="project-row-image" data-project="${p.id}">Image — replace with yours<br>(${p.name})</div>
+      </div>
+    `;
+    }).join("");
+
+    list.forEach(p=>{
+      if(p.cover){
+        const img = container.querySelector(`[data-project="${p.id}"] .project-row-image`);
+        img.innerHTML = `<img src="${encodePath(p.cover)}" alt="${p.name}" loading="lazy" decoding="async">`;
+      }
+    });
+
+    container.querySelectorAll(".project-row-view-btn").forEach(btn=>{
+      btn.addEventListener("click", ()=> openProject(btn.dataset.project));
+    });
+
+    container.querySelectorAll(".project-row-image").forEach(img=>{
+      img.addEventListener("click", ()=> openProject(img.dataset.project));
+    });
+
+    container.querySelectorAll(".project-row-more-toggle").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const list = btn.parentElement.querySelector(".project-row-more-list");
+        const opening = !list.classList.contains("open");
+        /* altezza esatta misurata invece di un max-height fisso arbitrario:
+           l'animazione percorre sempre la distanza reale, quindi la velocità
+           percepita resta costante indipendentemente dalla lunghezza del testo */
+        list.style.maxHeight = opening ? list.scrollHeight + "px" : "0px";
+        list.classList.toggle("open", opening);
+        btn.classList.toggle("open", opening);
+        setCoverImageHidden(btn.closest(".project-row"), opening);
+        setViewBtnHidden(btn.closest(".project-row"), opening);
+      });
+    });
+
+    /* pallini cliccabili: portano direttamente alla scheda corrispondente.
+       Target calcolato con getBoundingClientRect (non offsetTop/Left, che
+       dipendono dal più vicino antenato "position"-ato: da quando la lista
+       vive dentro .projects-list-wrap, quello non è più necessariamente
+       #projects-list stesso) */
+    const rows = container.querySelectorAll(".project-row");
+    document.querySelectorAll("#project-dots .project-dot").forEach((dot, i)=>{
+      dot.addEventListener("click", ()=>{
+        const row = rows[i];
+        if(!row) return;
+        const isMobile = window.matchMedia("(max-width:800px)").matches;
+        const containerRect = container.getBoundingClientRect();
+        const rowRect = row.getBoundingClientRect();
+        dissolveScrollTo(container, isMobile
+          ? { left: container.scrollLeft + (rowRect.left - containerRect.left) }
+          : { top: container.scrollTop + (rowRect.top - containerRect.top) });
+      });
+    });
+  }
+
+  /* Su mobile "View Project" sparisce mentre Info è aperto per lasciare
+     spazio al contenuto, e riappare quando Info si richiude: stessa
+     tecnica di setCoverImageHidden (altezza + opacità animate), ma qui
+     l'altezza naturale del bottone è misurabile con scrollHeight in ogni
+     momento (non dipende dalla larghezza della riga come la cover). */
+  function setViewBtnHidden(row, hidden){
+    if(!window.matchMedia("(max-width:800px)").matches) return;
+    const btn = row.querySelector(".project-row-view-btn");
+    if(!btn) return;
+    if(hidden){
+      /* altezza naturale catturata ORA (bottone ancora nel suo stato pieno,
+         con padding intatto) e salvata per il riutilizzo alla riapertura:
+         misurarla di nuovo a quel punto darebbe un valore sbagliato, perché
+         nello stato compresso anche il padding è animato a 0 */
+      const startHeight = btn.getBoundingClientRect().height;
+      btn.dataset.naturalHeight = startHeight;
+      btn.style.maxHeight = startHeight + "px";
+      btn.style.opacity = "1";
+      void btn.offsetHeight;
+      requestAnimationFrame(()=>{
+        btn.style.maxHeight = "0px";
+        btn.style.opacity = "0";
+        btn.classList.add("collapsed");
+      });
+    } else {
+      const naturalHeight = btn.dataset.naturalHeight || btn.scrollHeight;
+      btn.classList.remove("collapsed");
+      requestAnimationFrame(()=>{
+        btn.style.maxHeight = naturalHeight + "px";
+        btn.style.opacity = "1";
+      });
+    }
+  }
+
+  /* Su mobile la cover sparisce quando Info è aperto per lasciare spazio al
+     contenuto: invece di un display:none istantaneo, la anima (altezza +
+     opacità) in sincrono con l'apertura/chiusura di Info. Su desktop non
+     fa nulla: lì la cover resta sempre visibile a lato. */
+  function setCoverImageHidden(row, hidden){
+    if(!window.matchMedia("(max-width:800px)").matches) return;
+    const image = row.querySelector(".project-row-image");
+    if(!image) return;
+    if(hidden){
+      const startHeight = image.getBoundingClientRect().height;
+      image.style.display = "";
+      image.style.maxHeight = startHeight + "px";
+      image.style.opacity = "1";
+      void image.offsetHeight; /* forza il reflow: il browser registra il valore di partenza prima del cambio successivo */
+      requestAnimationFrame(()=>{
+        image.style.maxHeight = "0px";
+        image.style.opacity = "0";
+      });
+      image.addEventListener("transitionend", function onEnd(e){
+        if(e.propertyName !== "max-height") return;
+        image.removeEventListener("transitionend", onEnd);
+        if(image.style.maxHeight === "0px") image.style.display = "none";
+      });
+    } else {
+      /* larghezza nota (il project-row è sempre visibile) → altezza naturale
+         della cover, deve combaciare con --cover-ratio (1080/900) in mobile.css */
+      const naturalHeight = row.clientWidth * 900 / 1080;
+      image.style.display = "";
+      image.style.maxHeight = "0px";
+      image.style.opacity = "0";
+      void image.offsetHeight;
+      requestAnimationFrame(()=>{
+        image.style.maxHeight = naturalHeight + "px";
+        image.style.opacity = "1";
+      });
+    }
+  }
+
+  /* barrette: evidenziano quella corrispondente al progetto corrente.
+     Mobile scorre in orizzontale, desktop in verticale (vedi CSS) */
+  document.getElementById("projects-list").addEventListener("scroll", ()=>{
+    const list = document.getElementById("projects-list");
+    const dots = document.querySelectorAll("#project-dots .project-dot");
+    if(!dots.length) return;
+    const isMobile = window.matchMedia("(max-width:800px)").matches;
+    const idx = isMobile
+      ? (list.clientWidth ? Math.round(list.scrollLeft / list.clientWidth) : 0)
+      : (list.clientHeight ? Math.round(list.scrollTop / list.clientHeight) : 0);
+    dots.forEach((d,i)=> d.classList.toggle("active", i === idx));
+  });
+
+  /* frecce tastiera: scorrono tra i progetti, solo desktop (mobile usa lo
+     swipe/scroll touch nativo) e solo quando il lightbox è chiuso */
+  window.addEventListener("keydown", (e)=>{
+    if(window.matchMedia("(max-width:800px)").matches) return;
+    if(lightbox.classList.contains("active")) return;
+    if(!document.querySelector('.view[data-view="projects"]').classList.contains("active")) return;
+    const deltaMap = { ArrowDown:1, ArrowRight:1, ArrowUp:-1, ArrowLeft:-1 };
+    const delta = deltaMap[e.key];
+    if(delta === undefined) return;
+    e.preventDefault();
+    const list = document.getElementById("projects-list");
+    list.scrollBy({ top: delta * list.clientHeight, behavior:"smooth" });
+  });
+
+  /* ============================================================
+     RENDER: DETTAGLIO PROGETTO
+     ============================================================ */
+  let galleryViewMode = "scroll"; // "scroll" | "grid"
+
+  function renderGalleryToggle(){
+    const container = document.getElementById("detail-view-toggle");
+    container.innerHTML = `
+      <button class="filter-btn ${galleryViewMode === "scroll" ? "active" : ""}" data-mode="scroll">Scroll</button>
+      <button class="filter-btn ${galleryViewMode === "grid" ? "active" : ""}" data-mode="grid">Grid</button>
+    `;
+    container.querySelectorAll("[data-mode]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        galleryViewMode = btn.dataset.mode;
+        renderGalleryToggle();
+        applyGalleryViewMode();
+      });
+    });
+  }
+
+  function applyGalleryViewMode(){
+    const gallery = document.getElementById("detail-gallery");
+    gallery.classList.toggle("grid-view", galleryViewMode === "grid");
+    gallery.classList.toggle("scroll-view", galleryViewMode === "scroll");
+    gallery.scrollLeft = 0;
+    gallery.scrollTop = 0;
+    layoutGridView();
+    updateDetailDots();
+  }
+
+  /* pallini orizzontali della galleria di dettaglio (solo desktop, Scroll
+     view): al posto di indicare una foto precisa (le anteprime non sono a
+     tutta larghezza, non c'è uno scroll-snap per singola foto), segnano la
+     posizione proporzionale dello scorrimento, come una barra di
+     avanzamento */
+  function renderDetailDots(count){
+    document.getElementById("detail-gallery-dots").innerHTML =
+      Array.from({length:count}, (_,i)=> `<span class="detail-dot${i===0?" active":""}"></span>`).join("");
+    document.querySelectorAll("#detail-gallery-dots .detail-dot").forEach((dot, i)=>{
+      dot.addEventListener("click", ()=>{
+        const gallery = document.getElementById("detail-gallery");
+        const maxScroll = gallery.scrollWidth - gallery.clientWidth;
+        dissolveScrollTo(gallery, { left: count > 1 ? (i / (count - 1)) * maxScroll : 0 });
+      });
+    });
+  }
+  function updateDetailDots(){
+    const gallery = document.getElementById("detail-gallery");
+    const dots = document.querySelectorAll("#detail-gallery-dots .detail-dot");
+    if(!dots.length) return;
+    const maxScroll = gallery.scrollWidth - gallery.clientWidth;
+    const idx = maxScroll > 0 ? Math.round((gallery.scrollLeft / maxScroll) * (dots.length - 1)) : 0;
+    dots.forEach((d,i)=> d.classList.toggle("active", i === idx));
+  }
+  document.getElementById("detail-gallery").addEventListener("scroll", updateDetailDots);
+
+  /* Distribuisce N immagini su 3 righe, il più possibile equilibrate:
+     l'eventuale immagine in più va alla riga centrale, le eventuali due in
+     più vanno alle righe esterne (simmetrico). Per N=10 dà [3,4,3]. */
+  function threeRowCounts(n){
+    const base = Math.floor(n / 3);
+    const rem = n - base * 3;
+    if(rem === 0) return [base, base, base];
+    if(rem === 1) return [base, base + 1, base];
+    return [base + 1, base, base + 1];
+  }
+
+  /* Grid statica, senza scorrimento, su 3 righe: stessa dimensione per
+     tutte le foto (proporzioni reali 16:9), calcolata per riempire tutto
+     lo spazio disponibile tra il menu e il footer. Le righe più corte
+     restano centrate invece di stirarsi. */
+  function layoutGridView(){
+    const gallery = document.getElementById("detail-gallery");
+    if(!gallery.classList.contains("grid-view")) return;
+    const rows = [...gallery.querySelectorAll(".gallery-row")].filter(r => r.querySelectorAll(".gallery-item-wrap").length);
+    if(!rows.length) return;
+    const gap = 6;
+    const Wc = gallery.clientWidth;
+    const Hc = gallery.clientHeight;
+    const counts = rows.map(r => r.querySelectorAll(".gallery-item-wrap").length);
+    const maxCount = Math.max(...counts);
+
+    const widthCap = (Wc - (maxCount - 1) * gap) / maxCount;
+    const heightCap = ((Hc - (rows.length - 1) * gap) / rows.length) * 16 / 9;
+    const tileW = Math.max(0, Math.min(widthCap, heightCap));
+
+    gallery.style.setProperty("--tile-w", tileW + "px");
+  }
+  window.addEventListener("resize", ()=>{
+    clearTimeout(window.__gridResizeTimer);
+    window.__gridResizeTimer = setTimeout(layoutGridView, 120);
+  });
+
+  /* ============================================================
+     LIGHTBOX
+     ============================================================ */
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img");
+  const lightboxVideo = document.getElementById("lightbox-video");
+  const lightboxCaption = document.getElementById("lightbox-caption");
+  const lightboxDots = document.getElementById("lightbox-dots");
+
+  /* elenco ordinato delle foto/video della galleria aperta, per poter
+     scorrere avanti/indietro con le frecce della tastiera una volta aperto
+     il lightbox (ricostruito a ogni openProject, vedi sotto) */
+  let lightboxItems = [];
+  let lightboxIndex = -1;
+
+  /* barrette di paginazione: solo mobile (vedi mobile.css), stessa idea di
+     .project-dots nella lista progetti ma con classi proprie (colori e
+     dimensioni diversi, vedi mobile.css) */
+  function renderLightboxDots(){
+    lightboxDots.innerHTML = lightboxItems.map((_, i) =>
+      `<span class="lightbox-dot${i === lightboxIndex ? " active" : ""}"></span>`
+    ).join("");
+    lightboxDots.querySelectorAll(".lightbox-dot").forEach((dot, i)=>{
+      dot.addEventListener("click", (e)=>{
+        /* senza stopPropagation il click risalirebbe fino a .lightbox e
+           chiuderebbe il lightbox invece di limitarsi a cambiare foto */
+        e.stopPropagation();
+        openLightbox(i);
+      });
+    });
+  }
+
+  function openLightbox(index){
+    const item = lightboxItems[index];
+    if(!item) return;
+    lightboxIndex = index;
+    const { src, caption } = item;
+    if(isVideo(src)){
+      lightboxImg.style.display = "none";
+      lightboxImg.src = "";
+      lightboxVideo.style.display = "block";
+      lightboxVideo.src = encodePath(src);
+      lightboxVideo.play();
+    } else {
+      lightboxVideo.style.display = "none";
+      lightboxVideo.pause();
+      lightboxVideo.src = "";
+      lightboxImg.style.display = "block";
+      lightboxImg.src = encodePath(src);
+      lightboxImg.alt = caption;
+    }
+    lightboxCaption.textContent = caption;
+    renderLightboxDots();
+    lightbox.classList.add("active");
+  }
+  function closeLightbox(){
+    lightbox.classList.remove("active");
+    lightboxImg.src = "";
+    lightboxVideo.pause();
+    lightboxVideo.src = "";
+  }
+  function stepLightbox(delta){
+    if(!lightboxItems.length) return;
+    const next = (lightboxIndex + delta + lightboxItems.length) % lightboxItems.length;
+    openLightbox(next);
+  }
+  window.addEventListener("keydown", (e)=>{
+    if(!lightbox.classList.contains("active")) return;
+    if(e.key === "Escape") closeLightbox();
+    else if(e.key === "ArrowRight") stepLightbox(1);
+    else if(e.key === "ArrowLeft") stepLightbox(-1);
+  });
+
+  /* swipe col dito (mobile): scorre tra le foto invece di chiudere il
+     lightbox, che resta chiudibile con un tap semplice (senza spostamento) */
+  const SWIPE_THRESHOLD = 40; // px
+  let touchStartX = 0, touchStartY = 0, wasSwipe = false;
+
+  lightbox.addEventListener("touchstart", (e)=>{
+    if(e.touches.length !== 1) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    wasSwipe = false;
+  }, { passive:true });
+
+  lightbox.addEventListener("touchmove", (e)=>{
+    /* evita che lo swipe venga interpretato anche come scroll/gesture di
+       navigazione del browser sotto al lightbox (che è comunque a schermo
+       intero e non ha nulla da scorrere) */
+    e.preventDefault();
+  }, { passive:false });
+
+  lightbox.addEventListener("touchend", (e)=>{
+    if(e.changedTouches.length !== 1) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if(Math.abs(dx) > SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy)){
+      wasSwipe = true;
+      stepLightbox(dx < 0 ? 1 : -1);
+    }
+  });
+
+  lightbox.addEventListener("click", ()=>{
+    /* un tap genera comunque un evento "click": se era invece uno swipe
+       (rilevato in touchend) non va chiuso il lightbox */
+    if(wasSwipe){ wasSwipe = false; return; }
+    closeLightbox();
+  });
+
+  function openProject(id){
+    const project = PROJECTS.find(p => p.id === id);
+    if(!project) return;
+
+    galleryViewMode = "scroll"; /* ogni progetto riparte dalla vista Scroll, indipendentemente da cosa si era scelto prima */
+
+    document.getElementById("detail-title").textContent = project.name;
+
+    const gallery = document.getElementById("detail-gallery");
+    const images = project.images && project.images.length ? project.images : [null, null, null, null];
+    const itemsHtml = images.map((image, i) => {
+      if(image){
+        const caption = image.caption || "";
+        const media = isVideo(image.src)
+          ? `<video src="${encodePath(image.src)}" autoplay loop muted playsinline preload="metadata"></video>`
+          : `<img src="${encodePath(image.src)}" alt="${project.name} — ${caption || ("image " + (i+1))}" loading="lazy" decoding="async">`;
+        return `
+          <div class="gallery-item-wrap">
+            <div class="gallery-item" data-src="${image.src}" data-caption="${caption}">
+              ${media}
+            </div>
+          </div>`;
+      }
+      return `
+        <div class="gallery-item-wrap">
+          <div class="gallery-item">Image ${i+1} — replace with yours<br>(${project.name})</div>
+        </div>`;
+    });
+    /* in Grid view le immagini si dispongono su 3 righe (vedi threeRowCounts);
+       in Scroll view i gruppi-riga diventano trasparenti (display:contents)
+       e l'ordine resta quello originale, invariato. */
+    const rowCounts = threeRowCounts(itemsHtml.length);
+    let cursor = 0;
+    gallery.innerHTML = rowCounts.map(count => {
+      const rowHtml = itemsHtml.slice(cursor, cursor + count).join("");
+      cursor += count;
+      return `<div class="gallery-row">${rowHtml}</div>`;
+    }).join("");
+
+    const lightboxTriggers = gallery.querySelectorAll(".gallery-item[data-src]");
+    lightboxItems = [...lightboxTriggers].map(item => ({ src: item.dataset.src, caption: item.dataset.caption }));
+    lightboxTriggers.forEach((item, i)=>{
+      item.addEventListener("click", ()=> openLightbox(i));
+    });
+
+    renderDetailDots(itemsHtml.length);
+    renderGalleryToggle();
+    applyGalleryViewMode();
+
+    gallery.onwheel = (e) => {
+      if(galleryViewMode !== "scroll") return;
+      if(window.matchMedia("(max-width:800px)").matches) return;
+      if(e.deltaY !== 0){
+        e.preventDefault();
+        gallery.scrollLeft += e.deltaY;
+      }
+    };
+
+    navigate("detail");
+    /* il reset va rifatto DOPO navigate(): prima di questo punto #view-detail
+       è ancora display:none, e scrollLeft/scrollTop su un elemento nascosto
+       non hanno alcun effetto (la vecchia posizione di scroll resterebbe) */
+    gallery.scrollTo({top:0, left:0, behavior:"instant"});
+    /* su iOS lo scroll momentum del touch può restare "in volo" e sovrascrivere
+       questo reset un istante dopo: un secondo reset al frame successivo lo
+       annulla comunque */
+    requestAnimationFrame(()=>{ gallery.scrollTop = 0; gallery.scrollLeft = 0; });
+  }
+
+  /* niente salvataggio/copia delle foto: blocca il menu contestuale (tasto
+     destro/tocco prolungato) e il trascinamento fuori dalla pagina su
+     qualsiasi immagine o video, ovunque nel sito */
+  document.addEventListener("contextmenu", (e)=>{
+    if(e.target.tagName === "IMG" || e.target.tagName === "VIDEO") e.preventDefault();
+  });
+  document.addEventListener("dragstart", (e)=>{
+    if(e.target.tagName === "IMG" || e.target.tagName === "VIDEO") e.preventDefault();
+  });
+
+  /* ============================================================
+     INIT
+     ============================================================ */
+  renderFooter();
+  renderAbout();
+  renderFilters();
+  renderProjectsList();
+
+  document.querySelector(".view.active").classList.add("visible");
+  if(location.hash){
+    history.replaceState({view:"home"}, "", location.pathname);
+  }
+
+</script>
+</body>
+</html>

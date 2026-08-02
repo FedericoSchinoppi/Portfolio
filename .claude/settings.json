@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(cp \"/private/tmp/claude-501/-Users-schino-Desktop-S97-WEBPORT/9a698f41-f1ec-4441-9848-c79e5433048f/scratchpad/newproj.js\" \"/private/tmp/claude-501/-Users-schino-Desktop-S97-WEBPORT/2518460e-8655-4819-a388-afe24fb34632/scratchpad/newproj.js\")",
+      "Bash(sed -i '' \"s#9a698f41-f1ec-4441-9848-c79e5433048f#2518460e-8655-4819-a388-afe24fb34632#g\" newproj.js)",
+      "Bash(node revert_check.js)",
+      "Bash(node download_test.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8934/favicon.ico)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8934/img/fs-blu.svg)",
+      "Bash(node sinfonie_check.js)",
+      "Bash(node verify3.js)",
+      "Bash(sed -i '' 's/await new Promise\\(r => setTimeout\\(r, 500\\)\\);/await new Promise\\(r => setTimeout\\(r, 1200\\)\\);/g' verify3.js)",
+      "Bash(curl -sI \"http://localhost:8934/img/pj/kff/00-cop-kff.png\")",
+      "Bash(cp index.html /tmp/index.html.bak)",
+      "Bash(sed -i '' -e 's#img/pj/kff/#img/pj/01-kff/#g' -e 's#img/pj/cleo/#img/pj/02-cleo/#g' -e 's#img/pj/manega/#img/pj/03-manega/#g' -e 's#img/pj/sinfonie/#img/pj/04-sinfonie/#g' -e 's#img/pj/sale/#img/pj/05-sale/#g' -e 's#img/pj/blesh/#img/pj/06-blesh/#g' -e 's#img/pj/oratorio/#img/pj/07-oratorio/#g' -e 's#img/pj/confartigianato/#img/pj/08-confartigianato/#g' index.html)",
+      "Bash(node img_debug.js)",
+      "Bash(pkill -f \"http.server 8934\" 2>/dev/null; rm -f /tmp/index.html.bak; echo done)",
+      "Bash(node verify4.js)",
+      "Bash(node verify5.js)",
+      "Bash(node desktop_more_check.js)",
+      "Bash(node full_mobile_test.js)",
+      "Bash(node about_debug2.js)",
+      "Bash(node video_test.js)",
+      "Bash(node grid_test.js)"
+    ],
+    "additionalDirectories": [
+      "/private/tmp"
+    ]
+  }
+}

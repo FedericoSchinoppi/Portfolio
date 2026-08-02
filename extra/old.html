@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FSR - Portfolio</title>
+<style>
+
+  /* ============================================================
+     NEUE HAAS DISPLAY — font caricati localmente da /font
+     ============================================================ */
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayXXThin.ttf') format('truetype'); font-weight:100; font-style:normal; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayXXThinItalic.ttf') format('truetype'); font-weight:100; font-style:italic; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayXThin.ttf') format('truetype'); font-weight:200; font-style:normal; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayXThinItalic.ttf') format('truetype'); font-weight:200; font-style:italic; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayThin.ttf') format('truetype'); font-weight:300; font-style:normal; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayThinItalic.ttf') format('truetype'); font-weight:300; font-style:italic; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayLight.ttf') format('truetype'); font-weight:350; font-style:normal; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayLightItalic.ttf') format('truetype'); font-weight:350; font-style:italic; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayRoman.ttf') format('truetype'); font-weight:400; font-style:normal; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayRomanItalic.ttf') format('truetype'); font-weight:400; font-style:italic; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayMediu.ttf') format('truetype'); font-weight:500; font-style:normal; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayMediumItalic.ttf') format('truetype'); font-weight:500; font-style:italic; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayBold.ttf') format('truetype'); font-weight:700; font-style:normal; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayBoldItalic.ttf') format('truetype'); font-weight:700; font-style:italic; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayBlack.ttf') format('truetype'); font-weight:900; font-style:normal; }
+  @font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayBlackItalic.ttf') format('truetype'); font-weight:900; font-style:italic; }
+
+  :root{
+    --bg:#f9fdfe;
+    --text:#0a0a0a;
+    --text-secondary:#6e6e6e;
+    --accent:#191bdf;
+    --accent-light:#9898f1;
+    --accent-tint:rgba(25,27,223,0.06);
+    --surface:#e4e9f4;
+
+    --header-size:72px;
+    --footer-size:44px;
+    --edge:40px;
+    --arrow-size:1.6rem;
+
+    --font-body:'Neue Haas Grotesk', 'Helvetica Neue', Arial, sans-serif;
+
+    --cursor-brand:url("img/cursore.svg") 7 7, auto;
+    --cursor-close:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 -960 960 960'%3E%3Cpath fill='white' d='m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z'/%3E%3C/svg%3E") 10 10, pointer;
+    --cursor-intro:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 10 10'%3E%3Ccircle fill='%23f9fdfe' cx='5' cy='5' r='5'/%3E%3C/svg%3E") 7 7, auto;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;padding:0;}
+  body{
+    font-family:var(--font-body);
+    color:var(--text);
+    background:var(--bg);
+    overflow:hidden;
+    cursor:var(--cursor-brand);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  button{font-family:inherit;background:none;border:none;text-align:left;}
+  a{color:inherit;text-decoration:none;}
+  ul{margin:0;padding:0;list-style:none;}
+  h1,p{margin:0;}
+
+  button, a{cursor:var(--cursor-brand);}
+  .clickable-title{cursor:var(--cursor-brand); user-select:none;}
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+
+  .eyebrow{
+    display:block;
+    font-size:0.75rem;
+    font-weight:600;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--text-secondary);
+  }
+
+  /* ============================================================
+     INTRO SPLASH — schermata iniziale, si chiude solo al click
+     ============================================================ */
+  .intro-screen{
+    position:fixed; inset:0; z-index:100;
+    background:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    transition:opacity 0.6s ease;
+    cursor:var(--cursor-intro);
+  }
+  .intro-screen *{cursor:var(--cursor-intro);}
+  .intro-screen.fade-out{opacity:0; pointer-events:none;}
+
+  .intro-enter{
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  #intro-logo{
+    width:min(220px,55vw); height:auto; display:none;
+    animation:intro-pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes intro-pulse{
+    0%,100%{ transform:scale(1); opacity:1; }
+    50%{ transform:scale(1.08); opacity:0.82; }
+  }
+
+  .intro-logo-placeholder{
+    width:min(320px,75vw);
+    aspect-ratio:1/1;
+    display:flex; align-items:center; justify-content:center;
+    border:1px dashed #ffffff;
+    color:#ffffff;
+    font-family:var(--font-body);
+    font-size:0.82rem; text-align:center; letter-spacing:0.02em;
+    padding:20px;
+    animation:intro-pulse 2.6s ease-in-out infinite;
+  }
+
+  .intro-enter-label{
+    position:absolute; left:0; right:0; bottom:48px;
+    text-align:center;
+    color:#ffffff;
+    font-size:0.75rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase;
+    opacity:0.85;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    #intro-logo, .intro-logo-placeholder{ animation:none; }
+  }
+
+  /* ============================================================
+     HEADER GLOBALE
+     ============================================================ */
+  .site-header{
+    position:fixed; top:0; left:0; right:0; height:var(--header-size);
+    border-bottom:1px solid var(--accent);
+    background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    z-index:30;
+  }
+  .site-header img{height:15px;width:auto;display:block;}
+  .site-header .logo-placeholder{
+    font-family:var(--font-body);
+    font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--text-secondary);
+    border:1px dashed var(--accent);
+    padding:6px 16px;
+  }
+
+  /* ============================================================
+     FOOTER GLOBALE
+     ============================================================ */
+  .site-footer{
+    position:fixed; bottom:0; left:0; right:0; height:var(--footer-size);
+    border-top:1px solid var(--accent);
+    background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    z-index:30;
+  }
+  .site-footer span{
+    font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--text-secondary);
+    text-align:center;
+  }
+
+  /* ============================================================
+     VIEW SWITCHING
+     ============================================================ */
+  .view{
+    display:none;
+    position:fixed;
+    top:var(--header-size); left:0; right:0; bottom:var(--footer-size);
+    overflow:hidden;
+    opacity:0;
+    transform:translateY(16px) scale(0.99);
+    transition:opacity .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1);
+    pointer-events:none;
+  }
+  .view.active{display:block;}
+  .view.active.visible{opacity:1; transform:translateY(0) scale(1); pointer-events:auto;}
+
+  @media (prefers-reduced-motion:reduce){
+    .view{transition:none;}
+  }
+
+  /* ============================================================
+     HOME
+     ============================================================ */
+  #view-home.active{display:grid; grid-template-rows:1fr 1fr 1fr;}
+
+  .home-main{
+    min-height:0;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    padding:var(--edge);
+  }
+  .home-name-line{
+    display:block;
+    white-space:nowrap;
+    font-weight:500;
+    font-size:clamp(0.9rem,4vw,1.7rem);
+    line-height:1.15;
+    letter-spacing:-0.01em;
+    text-transform:uppercase;
+    color:var(--text);
+  }
+  .home-role{margin-top:10px;}
+
+  .tab{
+    width:100%; min-height:0;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 var(--edge);
+    border-top:1px solid var(--accent);
+    color:var(--text);
+    transition:color .15s ease, background-color .15s ease;
+  }
+  .tab span{
+    font-weight:600;
+    font-size:0.9rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+  }
+  .tab:hover{color:var(--accent); background:var(--accent-tint);}
+  .tab-arrow{font-size:var(--arrow-size); line-height:1; display:flex; align-items:center; transition:transform .15s ease;}
+  .tab:hover .tab-arrow{transform:scale(1.15);}
+
+  .icon-svg{width:1em; height:1em; display:block; fill:currentColor;}
+
+  /* ============================================================
+     TITLE ROW — condivisa tra About / Projects / Detail
+     ============================================================ */
+  .title-row{
+    display:flex; align-items:center; gap:20px;
+    padding:var(--edge);
+  }
+  .back-btn-inline{
+    font-size:calc(var(--arrow-size) * 0.7);
+    line-height:1;
+    padding:6px 0;
+    display:flex; align-items:center;
+    color:var(--accent);
+    transition:color .15s ease, transform .15s ease;
+  }
+  .back-btn-inline:hover{color:var(--accent); transform:scale(1.15);}
+  .title-row h1{
+    font-weight:400;
+    font-size:clamp(1.7rem,3.6vw,2.5rem);
+    text-transform:uppercase;
+    letter-spacing:-0.01em;
+  }
+
+  /* variante centrata, usata da Projects */
+  .title-row-centered{
+    position:relative;
+    justify-content:center;
+  }
+  .title-row-centered .back-btn-inline{position:absolute; left:var(--edge);}
+  .title-row-centered h1{text-align:center;}
+
+  /* ============================================================
+     ABOUT
+     ============================================================ */
+  #view-about.active{display:flex;}
+  .about-layout{flex:1; display:flex; min-height:0; width:100%;}
+  .about-left{flex:1; min-width:0; display:flex; flex-direction:column; height:100%;}
+  .about-name-big{font-size:clamp(2.2rem,6vw,4.2rem);}
+  .about-body{padding:0 var(--edge); flex:0 0 auto;}
+  .about-tagline{font-size:0.9rem; margin-bottom:14px;}
+  .about-bio{font-size:1rem; line-height:1.65; max-width:520px; margin-bottom:24px;}
+  .about-skills{margin-top:40px;}
+  .about-skills ul, .project-row-tags{display:flex; flex-wrap:wrap;}
+  .about-skills li, .project-row-tags li{
+    font-size:0.78rem; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--text);
+    margin-right:14px; padding-right:14px;
+    border-right:1px solid var(--text);
+  }
+  .about-skills li:last-child, .project-row-tags li:last-child{margin-right:0; padding-right:0; border-right:none;}
+  .about-spacer{flex:1;}
+  .about-contacts{display:flex; flex-direction:column; align-items:flex-start; padding:8px var(--edge) var(--edge); flex:0 0 auto;}
+  .contact-list{display:flex; flex-direction:column; gap:10px; margin-bottom:20px;}
+  .contact-link{
+    font-size:0.9rem; font-weight:600; letter-spacing:0.05em; text-transform:none;
+    color:var(--text);
+    transition:color .15s ease;
+  }
+  .contact-link:hover{color:var(--accent);}
+  .btn-row{display:flex; flex-wrap:wrap; gap:24px;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    border:none; background:none; padding:0;
+    font-size:0.78rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
+    color:var(--accent);
+    transform-origin:left center;
+    transition:transform .15s ease;
+  }
+  .btn .icon-svg{transition:transform .15s ease;}
+  .btn:hover{transform:scale(1.06);}
+  .btn-forward .icon-svg{width:0.85em; height:0.85em;}
+  .btn-forward:hover .icon-svg{transform:translateX(4px);}
+  .btn-download .icon-svg{width:0.8em; height:0.47em;}
+  .btn-download:hover .icon-svg{transform:translateY(1.5px);}
+
+  .about-photo{width:50%; flex-shrink:0; height:100%; background:var(--surface);}
+  .about-photo img{width:100%; height:100%; object-fit:cover; display:block;}
+  .about-photo-placeholder{
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-secondary);
+    font-size:0.82rem; text-align:center; padding:24px;
+  }
+
+  @media (max-width:800px){
+    .about-layout{
+      display:grid;
+      grid-template-columns:1fr;
+      grid-template-rows:auto auto auto auto auto auto;
+      grid-template-areas:
+        "title"
+        "body"
+        "photo"
+        "downloads"
+        "contactlabel"
+        "contacts";
+      overflow-y:auto;
+    }
+    .about-left{display:contents;}
+    .about-layout .title-row{grid-area:title;}
+    .about-layout .about-body{grid-area:body;}
+    .about-layout .about-contacts-label{grid-area:contactlabel;}
+    .about-layout .about-photo{grid-area:photo;}
+
+    .about-photo{width:100%; height:260px; margin:24px 0;}
+    .about-spacer{display:none;}
+    #view-about .title-row{position:relative; justify-content:center;}
+    #view-about .back-btn-inline{position:absolute; left:var(--edge);}
+    #view-about .title-row h1{text-align:center;}
+
+    .about-skills ul{flex-direction:column; gap:8px;}
+    .about-skills li{margin-right:0; padding-right:0; border-right:none;}
+
+    .about-contacts{display:contents;}
+    .about-layout .btn-row{grid-area:downloads; padding:0 var(--edge); margin-bottom:32px;}
+    .about-layout .contact-list{grid-area:contacts; padding:0 var(--edge) var(--edge);}
+
+    .btn-row{flex-direction:row; flex-wrap:wrap; gap:24px;}
+    .contact-list{
+      flex-direction:row; flex-wrap:nowrap;
+      justify-content:center;
+      margin-bottom:0; gap:0;
+      overflow-x:auto;
+    }
+    .contact-link{
+      font-size:0.66rem; letter-spacing:0.02em;
+      white-space:nowrap;
+      margin-right:8px; padding-right:8px;
+      border-right:1px solid var(--text-secondary);
+    }
+    .contact-list a:last-child{margin-right:0; padding-right:0; border-right:none;}
+  }
+
+  /* ============================================================
+     PROJECTS — lista
+     ============================================================ */
+  #view-projects.active{display:flex; flex-direction:column;}
+  #view-projects .title-row, #view-detail .title-row{padding-top:18px; padding-bottom:8px;}
+  .filters{display:flex; flex-wrap:wrap; justify-content:center; gap:28px; padding:0 var(--edge) 20px; border-bottom:1px solid var(--accent);}
+  .filter-btn{
+    position:relative;
+    padding:10px 2px 0;
+    font-size:0.75rem; font-weight:450; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--text-secondary);
+    transition:color .15s ease;
+  }
+  .filter-btn::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0;
+    height:2px;
+    background:var(--accent);
+    opacity:0;
+    transition:opacity .15s ease;
+  }
+  .filter-btn:hover{color:var(--accent);}
+  .filter-btn.active{color:var(--text);}
+  .filter-btn.active::before{opacity:1;}
+
+  .projects-list{flex:1; overflow-y:auto; scroll-snap-type:y mandatory; scroll-behavior:smooth;}
+
+  /* scrollbar minimal, condivisa tra lista progetti e galleria di dettaglio */
+  .projects-list, .detail-gallery{
+    scrollbar-width:thin;
+  }
+  .projects-list{scrollbar-color:var(--surface) transparent;}
+  .detail-gallery{scrollbar-color:rgba(110,110,110,0.45) transparent;}
+  .projects-list::-webkit-scrollbar, .detail-gallery::-webkit-scrollbar{width:3px; height:3px;}
+  .projects-list::-webkit-scrollbar-track, .detail-gallery::-webkit-scrollbar-track{background:transparent;}
+  .projects-list::-webkit-scrollbar-thumb{background:var(--surface); border-radius:2px;}
+  .detail-gallery::-webkit-scrollbar-thumb{background:rgba(110,110,110,0.45); border-radius:2px;}
+
+  .project-row{
+    display:flex; align-items:stretch; gap:32px;
+    width:100%; height:100%;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+  }
+
+  .project-row-text{
+    flex:1; min-width:0; align-self:stretch;
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding:56px 0 56px var(--edge);
+  }
+  .project-row-main{display:flex; flex-direction:column; gap:14px;}
+  .project-row-more{margin-top:2px;}
+  .project-row-more-toggle{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:0;
+    font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--text-secondary);
+    transition:color .15s ease;
+  }
+  .project-row-more-toggle:hover{color:var(--text);}
+  .project-row-more-toggle .icon-svg{width:0.85em; height:0.5em; transition:transform .2s ease;}
+  .project-row-more-toggle.open .icon-svg{transform:rotate(180deg);}
+  .project-row-more-list{
+    text-align:left;
+    display:flex; flex-direction:column; gap:10px;
+    max-height:0; overflow:hidden; opacity:0;
+    transition:max-height .35s ease, opacity .25s ease, margin-top .35s ease;
+  }
+  .project-row-more-list.open{max-height:280px; opacity:1; margin-top:14px;}
+  .project-row-more-list li{display:flex; flex-direction:column; gap:2px;}
+  .more-label{font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-secondary);}
+  .more-value{font-size:0.85rem; color:var(--text);}
+  .project-row-title{
+    font-weight:400;
+    font-size:clamp(1.7rem,4.2vw,3.1rem);
+    line-height:1;
+    margin-top:-0.12em;
+    text-transform:uppercase; letter-spacing:-0.01em;
+  }
+  .project-row-more-desc{
+    font-size:1rem; color:var(--text); line-height:1.65;
+    max-width:440px;
+  }
+  .project-row-view-btn{align-self:flex-start;}
+
+  .project-row-image{
+    width:50%; flex-shrink:0; align-self:stretch;
+    border:1px dashed var(--accent);
+    background:var(--surface);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-secondary);
+    font-size:0.8rem; text-align:center; padding:16px;
+  }
+  .project-row-image:has(img){border:none; padding:0; background:none;}
+  .project-row-image img{width:100%; height:100%; object-fit:cover; display:block;}
+
+  @media (max-width:800px){
+    .site-footer{display:none;}
+    body:has(#view-home.active) .site-footer,
+    body:has(#view-about.active) .site-footer{display:flex;}
+    #view-projects, #view-detail{bottom:0;}
+
+    #view-projects .title-row, #view-detail .title-row{padding-bottom:22px; border-bottom:1px solid var(--accent);}
+
+    .filters{display:none;}
+
+    .projects-list{
+      display:flex; flex-direction:row;
+      overflow-x:auto; overflow-y:hidden;
+      scroll-snap-type:x mandatory;
+    }
+    .project-row{
+      flex:0 0 100%; width:100%; height:100%;
+      flex-direction:column; flex-wrap:nowrap;
+      overflow:hidden;
+      scroll-snap-align:start; scroll-snap-stop:always;
+      gap:16px;
+      padding:16px var(--edge) 20px;
+    }
+    .project-row-image{width:100%; flex:1 1 auto; min-height:70px; align-self:auto;}
+    .project-row-text{padding:0; flex:0 0 auto; gap:16px;}
+    .project-row-main{gap:10px;}
+    .project-row-view-btn{
+      margin-top:0; padding-top:14px;
+      border-top:1px solid var(--surface);
+      align-self:stretch;
+    }
+    .project-row-more-list.open{max-height:400px;}
+  }
+
+  /* ============================================================
+     PROJECT DETAIL
+     ============================================================ */
+  #view-detail.active{display:flex; flex-direction:column;}
+  .detail-title-big{font-size:clamp(2.6rem,7vw,5.5rem);}
+
+  .detail-gallery{
+    flex:1;
+    gap:20px;
+    padding:0 var(--edge) 0;
+  }
+
+  .detail-gallery.scroll-view{display:flex; overflow-x:auto; overflow-y:hidden;}
+  .detail-gallery.scroll-view .gallery-item-wrap{
+    flex:0 0 auto; height:100%; aspect-ratio:16/9;
+  }
+  .detail-gallery.scroll-view .gallery-item{width:100%; height:100%;}
+
+  .detail-gallery.grid-view{
+    display:grid;
+    grid-template-columns:repeat(12,minmax(0,1fr));
+    grid-template-rows:repeat(6,minmax(0,1fr));
+    grid-auto-rows:minmax(0,1fr);
+    grid-auto-flow:dense;
+    gap:6px;
+    height:100%;
+    overflow:hidden;
+  }
+  .detail-gallery.grid-view .gallery-item-wrap{display:contents;}
+  .detail-gallery.grid-view .gallery-item{
+    width:100%; height:100%; min-width:0; min-height:0;
+  }
+  .gallery-item[data-src]{cursor:var(--cursor-brand);}
+
+  .gallery-item{
+    border:1px dashed var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-secondary);
+    font-size:0.85rem; text-align:center; padding:20px;
+    background:var(--surface);
+  }
+  .gallery-item:has(img){border:none; padding:0; background:none;}
+  .gallery-item img{width:100%; height:100%; object-fit:cover; display:block;}
+
+  /* ============================================================
+     LIGHTBOX — apertura immagine a schermo intero (visualizzazione grid)
+     ============================================================ */
+  .lightbox{
+    position:fixed; inset:0; z-index:90;
+    background:rgba(10,10,10,0.92);
+    display:none; align-items:center; justify-content:center;
+    flex-direction:column; gap:16px;
+    padding:var(--edge);
+    cursor:var(--cursor-close);
+  }
+  .lightbox.active{display:flex;}
+  .lightbox img{max-width:100%; max-height:85vh; object-fit:contain; box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+  .lightbox-caption{
+    color:#ffffff; font-size:0.8rem; font-weight:600;
+    letter-spacing:0.06em; text-transform:uppercase;
+  }
+
+  @media (max-width:640px){
+    :root{ --edge:20px; --header-size:56px; --footer-size:36px; --arrow-size:1.3rem; }
+
+    .site-header img{height:22px;}
+    .site-header .logo-placeholder{font-size:0.6rem; padding:5px 12px;}
+    .site-footer span{font-size:0.62rem;}
+
+    .tab span{font-size:0.78rem;}
+
+    .title-row{gap:14px;}
+    .title-row h1{font-size:clamp(1.4rem,6vw,2rem);}
+
+    .about-name-big{font-size:clamp(1.8rem,8vw,3rem);}
+    .about-bio{font-size:0.92rem;}
+    .contact-link{font-size:0.6rem; margin-right:6px; padding-right:6px;}
+
+    .project-row{padding:12px var(--edge) 16px; gap:14px;}
+    .project-row-text{gap:14px;}
+    .project-row-main{gap:8px;}
+    .project-row-title{font-size:clamp(1.4rem,6.5vw,2.1rem);}
+    .project-row-more-desc{font-size:0.9rem;}
+
+    .detail-title-big{font-size:clamp(1.8rem,8vw,3.2rem);}
+
+    .detail-gallery.scroll-view{
+      flex-direction:column;
+      overflow-x:hidden; overflow-y:auto;
+      padding-bottom:20px;
+    }
+    .detail-gallery.scroll-view .gallery-item-wrap{
+      width:100%; height:auto; flex-shrink:0;
+      aspect-ratio:4/5;
+    }
+
+    .detail-gallery.grid-view{grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:repeat(6,minmax(0,1fr));}
+    .detail-gallery.grid-view .gallery-item{grid-column:span 1 !important; grid-row:span 2 !important;}
+    .detail-gallery.grid-view .gallery-item-wrap:first-child .gallery-item{grid-column:span 2 !important; grid-row:span 2 !important;}
+
+    .intro-logo-placeholder{font-size:0.75rem;}
+  }
+
+</style>
+</head>
+<body>
+
+  <!-- INTRO SPLASH -->
+  <div class="intro-screen" id="intro-screen">
+    <button class="intro-enter" id="intro-enter" aria-label="Enter site">
+      <img src="img/fs-white.svg" alt="" id="intro-logo">
+      <span class="intro-logo-placeholder" id="intro-logo-placeholder">Image — replace with yours<br>(fs-white.svg)</span>
+    </button>
+    <span class="intro-enter-label">click to enter</span>
+  </div>
+
+  <!-- HEADER GLOBALE -->
+  <header class="site-header">
+    <span class="logo-placeholder" id="header-logo-placeholder" data-nav="home">LOGO</span>
+    <img src="img/fs-blu.svg" alt="Logo" id="header-logo" style="display:none;" data-nav="home">
+  </header>
+
+  <!-- FOOTER GLOBALE -->
+  <footer class="site-footer">
+    <span id="footer-text"></span>
+  </footer>
+
+  <!-- LIGHTBOX — apertura immagine a schermo intero (visualizzazione grid) -->
+  <div class="lightbox" id="lightbox">
+    <img src="" alt="" id="lightbox-img">
+    <span class="lightbox-caption" id="lightbox-caption"></span>
+  </div>
+
+  <!-- ============================================================
+       HOME
+       ============================================================ -->
+  <section id="view-home" class="view active" data-view="home">
+    <div class="home-main">
+      <div class="home-name">
+        <span class="home-name-line">Federico Schinoppi Rossi</span>
+        <span class="eyebrow home-role">Communication Designer</span>
+      </div>
+    </div>
+
+    <button class="tab tab-projects" data-nav="projects" aria-label="Go to Projects page">
+      <span>Projects</span>
+      <span class="tab-arrow"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></span>
+    </button>
+    <button class="tab tab-about" data-nav="about" aria-label="Go to About page">
+      <span>About me</span>
+      <span class="tab-arrow"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></span>
+    </button>
+  </section>
+
+  <!-- ============================================================
+       ABOUT
+       ============================================================ -->
+  <section id="view-about" class="view" data-view="about">
+    <div class="about-layout">
+      <div class="about-left">
+        <div class="title-row">
+          <button class="back-btn-inline" data-nav="home" aria-label="Back to home"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg></button>
+          <h1 class="about-name-big clickable-title" id="about-name" data-nav="home"></h1>
+        </div>
+        <div class="about-body">
+          <span class="eyebrow about-tagline" id="about-tagline"></span>
+          <p class="about-bio" id="about-bio"></p>
+          <div class="about-skills">
+            <span class="eyebrow" style="margin-bottom:12px;">Skills</span>
+            <ul id="about-skills-list"></ul>
+          </div>
+        </div>
+        <div class="about-spacer"></div>
+        <span class="eyebrow about-contacts-label" style="padding:0 var(--edge); margin-bottom:4px;">Contacts</span>
+        <div class="about-contacts" id="about-contacts"></div>
+      </div>
+      <div class="about-photo" id="about-photo">
+        <div class="about-photo-placeholder">Photo — replace with your image</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PROJECTS (elenco)
+       ============================================================ -->
+  <section id="view-projects" class="view" data-view="projects">
+    <div class="title-row title-row-centered">
+      <button class="back-btn-inline" data-nav="home" aria-label="Back to home"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg></button>
+      <h1 class="clickable-title" data-nav="home">Projects</h1>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="projects-list" id="projects-list"></div>
+  </section>
+
+  <!-- ============================================================
+       PROJECT DETAIL
+       ============================================================ -->
+  <section id="view-detail" class="view" data-view="detail">
+    <div class="title-row title-row-centered">
+      <button class="back-btn-inline" data-nav="projects" aria-label="Back to projects"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg></button>
+      <h1 class="detail-title-big clickable-title" id="detail-title" data-nav="projects"></h1>
+    </div>
+    <div class="filters" id="detail-view-toggle"></div>
+    <div class="detail-gallery scroll-view" id="detail-gallery"></div>
+  </section>
+
+<script>
+
+  /* ============================================================
+     CONFIG
+     ============================================================ */
+  const CONFIG = {
+    name: "Federico Schinoppi Rossi",
+    tagline: "THE METHOD IN CREATIVITY",
+    bio: "Being a designer means knowing how to design. Every project requires method, organization, research, and perseverance, but above all, passion and creativity. In every project I bring my relational, rational, and creative skills into play, always with a touch of lightheartedness.",
+    skills: ["Brand Design", "Social Media Management", "Digital Strategy"],
+    email: "schino.fede03@gmail.com",
+    phone: "+39 338 1291772",
+    instagramHandle: "@_schinooo",
+    instagramUrl: "https://instagram.com/_schinooo", // TODO: verifica che l'URL sia corretto
+    cvPath: "download/Curriculum Vitae - Federico Schinoppi Rossi.pdf",
+    portfolioPath: "download/Portfolio - Federico Schinoppi Rossi.png",
+    photoPath: "img/about.png"
+  };
+
+  /* ============================================================
+     PROGETTI
+     ============================================================ */
+  const PROJECTS = [
+    {
+      id: "kappa-futur-festival",
+      name: "Kappa Futur Festival",
+      categories: ["Brand Identity"],
+      tags: ["Interaction Design", "Brand Design", "UX/UI", "Event Design"],
+      year: "2026",
+      client: "Politecnico of Milan",
+      team: ["Pietro Alborghetti", "Giulia Cavaliere", "Silvia Colli", "Stella Zanardi"],
+      blurb: "Primal Sound.",
+      description: "A group project reimagining the 2028 edition of Kappa Futur Festival through a complex interactive system. The goal was to enrich the attendee experience and connect participants with one another, turning the festival into a collective, connected journey.",
+      cover: "img/pj/01-kff/00-cop-kff.png",
+      images: [
+        { src: "img/pj/01-kff/01 - affissioni tribù.png", caption: "Affissioni" },
+        { src: "img/pj/01-kff/02 - gate.png", caption: "Gate" },
+        { src: "img/pj/01-kff/04 - app.png", caption: "App" },
+        { src: "img/pj/01-kff/05 - map.png", caption: "Mappa" },
+        { src: "img/pj/01-kff/06 - totem inattivo.png", caption: "Totem Inattivo" },
+        { src: "img/pj/01-kff/07 - totem attivo.png", caption: "Totem Attivo" },
+        { src: "img/pj/01-kff/09 - visual torri ritual.png", caption: "Torri Ritual" }
+      ]
+    },
+    {
+      id: "cleo",
+      name: "CLEO",
+      categories: ["Brand Identity"],
+      tags: ["Brand Design", "Editorial Design", "Brand Experience", "Content Strategy"],
+      year: "2024",
+      client: "Politecnico of Milan",
+      team: ["Chiara Agnelli", "Chiara Campironi", "Giulia d'Ercole", "Vittorio Paulato"],
+      blurb: "La geometria del lusso.",
+      description: "A tribute to Cleopatra's hidden facets and mythological presence, translated into a luxury jewelry brand. The identity was built from a deep study of her character, then extended into a full brand experience.",
+      cover: "img/pj/02-cleo/00-cop-cleo.png",
+      images: [
+        { src: "img/pj/02-cleo/03-CLEO-img copy.jpg", caption: "Brand Cards" },
+        { src: "img/pj/02-cleo/04-CLEO-img copy.jpg", caption: "App Mobile" },
+        { src: "img/pj/02-cleo/07-CLEO-img copy.jpg", caption: "Vetrina" },
+        { src: "img/pj/02-cleo/09-CLEO-img copy.jpg", caption: "Diagramma" },
+        { src: "img/pj/02-cleo/10-CLEO-img copy.jpg", caption: "Pattern" },
+        { src: "img/pj/02-cleo/rivista.doppiapag.png", caption: "Editorial" },
+        { src: "img/pj/02-cleo/rivista.doppiapag.2.png", caption: "Dettaglio" },
+        { src: "img/pj/02-cleo/03 Portrait Softcover Book Mockup copia.jpg", caption: "Softcover Mockup" },
+        { src: "img/pj/02-cleo/Open-Booklet-A4-Magazine-Free-psd-Mockup.png", caption: "Book Aperto" }
+      ]
+    },
+    {
+      id: "la-manega",
+      name: "La Manèga",
+      categories: ["Brand Identity"],
+      tags: ["Brand Design", "Web Design", "Brand Experience", "Content Strategy"],
+      year: "2025",
+      client: "Politecnico of Milan",
+      team: ["Chiara Campironi", "Nicole Di Gregorio", "Martina Pastorelli", "Vittorio Paulato", "Federico Pucci"],
+      blurb: "Un assaggio di casa.",
+      description: "A visual refresh for La Manèga, a winery at the heart of Franciacorta. The brand identity was redesigned to meet the owners' needs, giving the company's image a more authentic, refined presence.",
+      cover: "img/pj/03-manega/00-cop-manega.png",
+      images: [
+        { src: "img/pj/03-manega/logo scuro.png", caption: "Logo Scuro" },
+        { src: "img/pj/03-manega/logochiaro.png", caption: "Logo Chiaro" },
+        { src: "img/pj/03-manega/Frame 3.png", caption: "Frame" },
+        { src: "img/pj/03-manega/Group 244.png", caption: "Composizione" },
+        { src: "img/pj/03-manega/BOX DEF 1.png", caption: "Packaging" },
+        { src: "img/pj/03-manega/pack23.png", caption: "Pack" },
+        { src: "img/pj/03-manega/bottiglia 1.png", caption: "Bottiglia" },
+        { src: "img/pj/03-manega/Macbook_Air_Mockup_1.png", caption: "Sito Web" }
+      ]
+    },
+    {
+      id: "sinfonie-materiali",
+      name: "Sinfonie Materiali",
+      categories: ["Content Strategy"],
+      tags: ["Accessibility Design", "Content Strategy", "Web Design", "Editorial Design"],
+      year: "2026",
+      client: "Politecnico of Milan",
+      team: ["Chiara Balestra", "Teresa Barbieri", "Sofiia Dutchina", "Samantha Fabbri"],
+      blurb: "Coming soon.",
+      description: "A collaboration with the Museo Tattile Statale Omero to make Roberto Papini's artworks accessible to blind, low-vision, and deaf audiences. The project translated the artist's work into tactile experiences, a tactile book, and video content, supported by a descriptive website with audio guides.",
+      cover: "img/pj/04-sinfonie/00-cop-sinfonie.png",
+      images: []
+    },
+    {
+      id: "asd-oratorio-sale",
+      name: "ASD Oratorio Sale",
+      categories: ["Content Strategy"],
+      tags: ["Social Media Management", "Content Strategy", "Digital Strategy"],
+      year: "From 2024",
+      client: "ASD Oratorio Sale Gussago",
+      team: ["Personal Work"],
+      blurb: "Coming soon.",
+      description: "Social media management and communication for a historic football club in the Brescia football scene, overseeing six different teams under a single society at the same time.",
+      cover: "img/pj/05-sale/00-cop-sale.png",
+      images: []
+    },
+    {
+      id: "blesh",
+      name: "Blesh",
+      categories: ["Brand Identity", "Content Strategy"],
+      tags: ["Market Analysis", "Brand Design", "Content Strategy"],
+      year: "2023",
+      client: "Politecnico of Milan",
+      team: ["Valentina Bestetti", "Chiara Campironi", "Allegra Costato", "Anna Chiara Marsili", "Vittorio Paulato", "Beatrice Nati", "Pietro Zanotto"],
+      blurb: "La svolta della serata.",
+      description: "A new non-alcoholic drink built to spark the evening among friends at a bar. Market analysis guided the brand's positioning, followed by the visual identity and promotional strategy.",
+      cover: "img/pj/06-blesh/00-cop-blesh.png",
+      images: [
+        { src: "img/pj/06-blesh/logo.jpg", caption: "Logo" },
+        { src: "img/pj/06-blesh/29110031_m021t0167_a_can_12jun22s.png", caption: "Packaging" },
+        { src: "img/pj/06-blesh/lattineinsta.jpg", caption: "Can Variants" },
+        { src: "img/pj/06-blesh/Screenshot 2025-04-26 alle 18.06.02 copia.jpg", caption: "Billboard" },
+        { src: "img/pj/06-blesh/ProgettoFinale-Bestetti copia.jpg", caption: "Subway Ad" },
+        { src: "img/pj/06-blesh/colorinsta.jpg", caption: "Pattern" },
+        { src: "img/pj/06-blesh/festainsta.jpg", caption: "Social Content" },
+        { src: "img/pj/06-blesh/instastoria.jpg", caption: "Content Strategy" },
+        { src: "img/pj/06-blesh/mediamix.jpg", caption: "Media Plan" }
+      ]
+    },
+    {
+      id: "oratorio-gussago",
+      name: "Oratorio Gussago",
+      categories: ["Brand Identity"],
+      tags: ["Brand Design", "Web Design", "Social Media Management", "Content Strategy"],
+      year: "2024",
+      client: "Parrocchia Santa Maria Assunta",
+      team: ["Michele Greotti"],
+      blurb: "Una nuova linfa vitale.",
+      description: "A personal project, developed with a friend, giving new visual form to the Gussago oratory. The identity was rebuilt to reflect the community's spirit, alongside redesigned and consistent communication channels.",
+      cover: "img/pj/07-oratorio/00-cop-oraz.png",
+      images: [
+        { src: "img/pj/07-oratorio/Artboard 29.png", caption: "Logo" },
+        { src: "img/pj/07-oratorio/Artboard 30.png", caption: "Varianti" },
+        { src: "img/pj/07-oratorio/Artboard 34.png", caption: "Applicazioni" },
+        { src: "img/pj/07-oratorio/Artboard 35.png", caption: "Materiali" },
+        { src: "img/pj/07-oratorio/debresa.png", caption: "Illustrazione" },
+        { src: "img/pj/07-oratorio/insta.png", caption: "Instagram" },
+        { src: "img/pj/07-oratorio/insta2.png", caption: "Post Social" },
+        { src: "img/pj/07-oratorio/sito.homepage.png", caption: "Homepage" },
+        { src: "img/pj/07-oratorio/sito.galleria.png", caption: "Galleria" },
+        { src: "img/pj/07-oratorio/Macbook_Air_Mockup_2.png", caption: "Sito Web" }
+      ]
+    },
+    {
+      id: "confartigianato",
+      name: "Confartigianato",
+      categories: ["Content Strategy"],
+      tags: ["Digital Strategy", "Market Analysis", "Brand Strategy", "Content Strategy"],
+      year: "2025",
+      client: "Politecnico of Milan",
+      team: ["Viola Ambrosini", "Francesca Bianchi", "Giorgia Fontana", "Renata Romagnuolo", "Matteo Roscigno"],
+      blurb: "Coming soon.",
+      description: "A repositioning project aimed at bringing Confartigianato closer to Gen Z. Starting from market and competitor analysis, the brand proposition was restructured and the content strategy rebuilt to speak to a younger audience.",
+      cover: "img/pj/08-confartigianato/00-cop-confartigianato.png",
+      images: []
+    }
+  ];
+
+  /* ============================================================
+     UTILS
+     ============================================================ */
+  function encodePath(path){
+    return path.split("/").map(encodeURIComponent).join("/");
+  }
+
+  /* ============================================================
+     GRIGLIA GRID-VIEW — come modificarla
+     ------------------------------------------------------------
+     La grid-view di ogni progetto è una griglia fissa 12 colonne x 6
+     righe (vedi .detail-gallery.grid-view più sopra nel CSS). Ogni
+     immagine occupa un certo numero di colonne e righe: {col, row}.
+
+     Per un dato numero di immagini N, viene usata la ricetta
+     BENTO_LAYOUTS[N] qui sotto: un array di N oggetti {col, row}, in
+     ORDINE — il primo oggetto corrisponde alla prima immagine del
+     progetto (images[0]), il secondo a images[1], ecc. La somma di
+     tutti i col*row deve fare 72 (12x6) per riempire esattamente lo
+     spazio senza buchi né scroll.
+
+     Per cambiare la disposizione di un singolo progetto SENZA
+     toccare gli altri che hanno lo stesso numero di immagini, basta
+     aggiungere un campo "layout" direttamente dentro l'oggetto del
+     progetto in PROJECTS (vedi più sotto), es.:
+
+       layout: [{col:6,row:6},{col:3,row:3},{col:3,row:3}, ...]
+
+     Se presente, questo layout ha la precedenza sulla ricetta
+     generica di BENTO_LAYOUTS per quel progetto.
+
+     Se invece vuoi cambiare la disposizione per TUTTI i progetti che
+     hanno lo stesso numero di immagini, modifica la ricetta
+     corrispondente qui sotto (es. BENTO_LAYOUTS[9] per un progetto
+     con 9 immagini). Se il numero di immagini non ha una ricetta
+     esplicita, viene usato il fallback generico di getBentoLayout().
+     ============================================================ */
+  const BENTO_LAYOUTS = {
+    1: [{col:12,row:6}],
+    2: [{col:6,row:6},{col:6,row:6}],
+    3: [{col:6,row:6},{col:3,row:6},{col:3,row:6}],
+    4: [{col:6,row:3},{col:6,row:3},{col:6,row:3},{col:6,row:3}],
+    8: [{col:3,row:3},{col:3,row:3},{col:3,row:3},{col:3,row:3},{col:3,row:3},{col:3,row:3},{col:3,row:3},{col:3,row:3}],
+    9: [{col:2,row:3},{col:2,row:3},{col:2,row:3},{col:2,row:3},{col:2,row:3},{col:2,row:3},{col:4,row:3},{col:4,row:3},{col:4,row:3}],
+    10:[{col:3,row:3},{col:3,row:3},{col:3,row:3},{col:3,row:3},{col:2,row:3},{col:2,row:3},{col:2,row:3},{col:2,row:3},{col:2,row:3},{col:2,row:3}]
+  };
+
+  function getBentoLayout(n){
+    if(BENTO_LAYOUTS[n]) return BENTO_LAYOUTS[n];
+    const layout = [];
+    let remaining = n, rowsLeft = 6;
+    while(remaining > 0 && rowsLeft > 0){
+      const rows = Math.min(3, rowsLeft);
+      const perBand = remaining >= 6 ? 6 : (remaining >= 4 ? 4 : (remaining >= 3 ? 3 : remaining));
+      const colSpan = Math.max(1, Math.floor(12 / perBand));
+      for(let i=0; i<perBand; i++) layout.push({col:colSpan, row:rows});
+      remaining -= perBand;
+      rowsLeft -= rows;
+    }
+    while(remaining > 0){ layout.push({col:2, row:3}); remaining--; }
+    return layout;
+  }
+
+  /* ============================================================
+     INTRO SPLASH
+     ============================================================ */
+  const introScreen = document.getElementById("intro-screen");
+  const introEnter = document.getElementById("intro-enter");
+  const introLogo = document.getElementById("intro-logo");
+  const introPlaceholder = document.getElementById("intro-logo-placeholder");
+
+  function revealIntroLogo(){
+    introLogo.style.display = "block";
+    introPlaceholder.style.display = "none";
+  }
+  function hideIntroLogo(){
+    introLogo.style.display = "none";
+    introPlaceholder.style.display = "block";
+  }
+  introLogo.addEventListener("load", revealIntroLogo);
+  introLogo.addEventListener("error", hideIntroLogo);
+  if(introLogo.complete){
+    introLogo.naturalWidth > 0 ? revealIntroLogo() : hideIntroLogo();
+  }
+
+  introEnter.addEventListener("click", ()=>{
+    introScreen.classList.add("fade-out");
+    setTimeout(()=>{ introScreen.style.display = "none"; }, 600);
+  });
+
+  /* ============================================================
+     NAVIGAZIONE
+     ============================================================ */
+  let activeFilter = "all";
+
+  function showView(name){
+    const current = document.querySelector(".view.active");
+    const next = document.querySelector(`.view[data-view="${name}"]`);
+    if(!next || next === current) return;
+
+    next.classList.add("active");
+
+    if(name === "projects"){
+      document.getElementById("projects-list").scrollTop = 0;
+    }
+
+    void next.offsetWidth;
+    next.classList.add("visible");
+
+    if(current){
+      current.classList.remove("visible");
+      current.addEventListener("transitionend", function cleanup(e){
+        if(e.propertyName !== "opacity") return;
+        current.classList.remove("active");
+        current.removeEventListener("transitionend", cleanup);
+      });
+    }
+  }
+
+  function navigate(name, pushState = true){
+    showView(name);
+    if(pushState){
+      const hash = name === "home" ? "" : "#" + name;
+      history.pushState({view:name}, "", hash || location.pathname);
+    }
+  }
+
+  document.querySelectorAll("[data-nav]").forEach(el=>{
+    el.addEventListener("click", () => navigate(el.dataset.nav));
+  });
+
+  window.addEventListener("popstate", (e)=>{
+    const name = (e.state && e.state.view) || "home";
+    showView(name);
+  });
+
+  /* ============================================================
+     LOGO HEADER
+     ============================================================ */
+  const headerLogo = document.getElementById("header-logo");
+  const headerLogoPlaceholder = document.getElementById("header-logo-placeholder");
+  function revealHeaderLogo(){
+    headerLogo.style.display = "block";
+    headerLogoPlaceholder.style.display = "none";
+  }
+  function hideHeaderLogo(){
+    headerLogo.style.display = "none";
+    headerLogoPlaceholder.style.display = "inline-block";
+  }
+  headerLogo.addEventListener("load", revealHeaderLogo);
+  headerLogo.addEventListener("error", hideHeaderLogo);
+  if(headerLogo.complete){
+    headerLogo.naturalWidth > 0 ? revealHeaderLogo() : hideHeaderLogo();
+  }
+
+  /* ============================================================
+     FOTO ABOUT
+     ============================================================ */
+  const aboutPhoto = document.getElementById("about-photo");
+  (function loadAboutPhoto(){
+    const img = new Image();
+    img.alt = "Foto di " + CONFIG.name;
+    img.onload = () => { aboutPhoto.innerHTML = ""; aboutPhoto.appendChild(img); };
+    img.onerror = () => {};
+    img.src = CONFIG.photoPath;
+  })();
+
+  /* ============================================================
+     RENDER: FOOTER
+     ============================================================ */
+  function renderFooter(){
+    document.getElementById("footer-text").textContent = CONFIG.name + "  |  Portfolio  |  2026";
+  }
+
+  /* ============================================================
+     RENDER: ABOUT
+     ============================================================ */
+  function renderAbout(){
+    document.getElementById("about-name").textContent = CONFIG.name;
+    document.getElementById("about-tagline").textContent = CONFIG.tagline;
+    document.getElementById("about-bio").textContent = CONFIG.bio;
+
+    document.getElementById("about-skills-list").innerHTML =
+      CONFIG.skills.map(s => `<li>${s}</li>`).join("");
+
+    document.getElementById("about-contacts").innerHTML = `
+      <div class="contact-list">
+        <a class="contact-link" href="mailto:${CONFIG.email}">${CONFIG.email}</a>
+        <a class="contact-link" href="tel:${CONFIG.phone.replace(/\s+/g,'')}">${CONFIG.phone}</a>
+        <a class="contact-link" href="${CONFIG.instagramUrl}" target="_blank" rel="noopener">${CONFIG.instagramHandle}</a>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn-download" href="${encodePath(CONFIG.cvPath)}" target="_blank" rel="noopener">Download CV<svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg></a>
+        <a class="btn btn-download" href="${encodePath(CONFIG.portfolioPath)}" target="_blank" rel="noopener">Download Portfolio<svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg></a>
+      </div>
+    `;
+  }
+
+  /* ============================================================
+     RENDER: FILTRI + LISTA PROGETTI
+     ============================================================ */
+  function renderFilters(){
+    const categories = ["all", "Brand Identity", "Content Strategy"];
+    const container = document.getElementById("filters");
+    container.innerHTML = categories.map(cat => {
+      const label = cat === "all" ? "All" : cat;
+      return `<button class="filter-btn ${cat === activeFilter ? 'active' : ''}" data-filter="${cat}">${label}</button>`;
+    }).join("");
+
+    container.querySelectorAll(".filter-btn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        activeFilter = btn.dataset.filter;
+        renderFilters();
+        renderProjectsList();
+        document.getElementById("projects-list").scrollTop = 0;
+      });
+    });
+  }
+
+  function renderProjectsList(){
+    const list = PROJECTS.filter(p => activeFilter === "all" || p.categories.includes(activeFilter));
+    const container = document.getElementById("projects-list");
+
+    container.innerHTML = list.map(p => {
+      const moreFields = [
+        ["Year", p.year],
+        ["Client", p.client],
+        ["Team", p.team.join(", ")]
+      ].filter(([,value]) => value);
+      return `
+      <div class="project-row" data-project="${p.id}">
+        <div class="project-row-text">
+          <div class="project-row-main">
+            <span class="project-row-title">${p.name}</span>
+            <p class="project-row-more-desc">${p.description}</p>
+            <ul class="project-row-tags">${p.tags.map(t => `<li>${t}</li>`).join("")}</ul>
+            <div class="project-row-more">
+              <button class="project-row-more-toggle">
+                More Info
+                <svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg>
+              </button>
+              <ul class="project-row-more-list">
+                ${moreFields.map(([label, value]) => `<li><span class="more-label">${label}</span><span class="more-value">${value}</span></li>`).join("")}
+              </ul>
+            </div>
+          </div>
+          <button class="btn btn-forward project-row-view-btn" data-project="${p.id}">View Project<svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></button>
+        </div>
+        <div class="project-row-image">Image — replace with yours<br>(${p.name})</div>
+      </div>
+    `;
+    }).join("");
+
+    list.forEach(p=>{
+      if(p.cover){
+        const img = container.querySelector(`[data-project="${p.id}"] .project-row-image`);
+        img.innerHTML = `<img src="${encodePath(p.cover)}" alt="${p.name}">`;
+      }
+    });
+
+    container.querySelectorAll(".project-row-view-btn").forEach(btn=>{
+      btn.addEventListener("click", ()=> openProject(btn.dataset.project));
+    });
+
+    container.querySelectorAll(".project-row-more-toggle").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const list = btn.parentElement.querySelector(".project-row-more-list");
+        const isOpen = list.classList.toggle("open");
+        btn.classList.toggle("open", isOpen);
+      });
+    });
+  }
+
+  /* ============================================================
+     RENDER: DETTAGLIO PROGETTO
+     ============================================================ */
+  let galleryViewMode = "scroll"; // "scroll" | "grid"
+
+  function renderGalleryToggle(){
+    const container = document.getElementById("detail-view-toggle");
+    container.innerHTML = `
+      <button class="filter-btn ${galleryViewMode === "scroll" ? "active" : ""}" data-mode="scroll">Scroll</button>
+      <button class="filter-btn ${galleryViewMode === "grid" ? "active" : ""}" data-mode="grid">Grid</button>
+    `;
+    container.querySelectorAll("[data-mode]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        galleryViewMode = btn.dataset.mode;
+        renderGalleryToggle();
+        applyGalleryViewMode();
+      });
+    });
+  }
+
+  function applyGalleryViewMode(){
+    const gallery = document.getElementById("detail-gallery");
+    gallery.classList.toggle("grid-view", galleryViewMode === "grid");
+    gallery.classList.toggle("scroll-view", galleryViewMode === "scroll");
+    gallery.scrollLeft = 0;
+    gallery.scrollTop = 0;
+  }
+
+  /* ============================================================
+     LIGHTBOX
+     ============================================================ */
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img");
+  const lightboxCaption = document.getElementById("lightbox-caption");
+
+  function openLightbox(src, caption){
+    lightboxImg.src = encodePath(src);
+    lightboxImg.alt = caption;
+    lightboxCaption.textContent = caption;
+    lightbox.classList.add("active");
+  }
+  function closeLightbox(){
+    lightbox.classList.remove("active");
+    lightboxImg.src = "";
+  }
+  lightbox.addEventListener("click", closeLightbox);
+  window.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape") closeLightbox();
+  });
+
+  function openProject(id){
+    const project = PROJECTS.find(p => p.id === id);
+    if(!project) return;
+
+    document.getElementById("detail-title").textContent = project.name;
+
+    const gallery = document.getElementById("detail-gallery");
+    const images = project.images && project.images.length ? project.images : [null, null, null, null];
+    const bento = project.layout || getBentoLayout(images.length);
+    gallery.innerHTML = images.map((image, i) => {
+      const span = `grid-column:span ${bento[i].col}; grid-row:span ${bento[i].row};`;
+      if(image){
+        const caption = image.caption || "";
+        return `
+          <div class="gallery-item-wrap">
+            <div class="gallery-item" style="${span}" data-src="${image.src}" data-caption="${caption}">
+              <img src="${encodePath(image.src)}" alt="${project.name} — ${caption || ("image " + (i+1))}">
+            </div>
+          </div>`;
+      }
+      return `
+        <div class="gallery-item-wrap">
+          <div class="gallery-item" style="${span}">Image ${i+1} — replace with yours<br>(${project.name})</div>
+        </div>`;
+    }).join("");
+
+    gallery.querySelectorAll(".gallery-item[data-src]").forEach(item=>{
+      item.addEventListener("click", ()=>{
+        openLightbox(item.dataset.src, item.dataset.caption);
+      });
+    });
+
+    renderGalleryToggle();
+    applyGalleryViewMode();
+
+    gallery.onwheel = (e) => {
+      if(galleryViewMode !== "scroll") return;
+      if(window.matchMedia("(max-width:800px)").matches) return;
+      if(e.deltaY !== 0){
+        e.preventDefault();
+        gallery.scrollLeft += e.deltaY;
+      }
+    };
+
+    navigate("detail");
+  }
+
+  /* ============================================================
+     INIT
+     ============================================================ */
+  renderFooter();
+  renderAbout();
+  renderFilters();
+  renderProjectsList();
+
+  document.querySelector(".view.active").classList.add("visible");
+  if(location.hash){
+    history.replaceState({view:"home"}, "", location.pathname);
+  }
+
+</script>
+</body>
+</html>

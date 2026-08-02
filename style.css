@@ -1,0 +1,619 @@
+/* ============================================================
+   STYLE.CSS — versione LAPTOP / DESKTOP
+   Identico allo stile originale. Nessuna regola qui dentro
+   dipende dalla larghezza dello schermo: è la base condivisa
+   da tutti i dispositivi. mobile.css sovrascrive queste regole
+   solo sotto gli 800px di larghezza.
+   ============================================================ */
+
+/* ============================================================
+   NEUE HAAS DISPLAY — font caricati localmente da /font
+   ============================================================ */
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayXXThin.ttf') format('truetype'); font-weight:100; font-style:normal; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayXXThinItalic.ttf') format('truetype'); font-weight:100; font-style:italic; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayXThin.ttf') format('truetype'); font-weight:200; font-style:normal; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayXThinItalic.ttf') format('truetype'); font-weight:200; font-style:italic; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayThin.ttf') format('truetype'); font-weight:300; font-style:normal; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayThinItalic.ttf') format('truetype'); font-weight:300; font-style:italic; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayLight.ttf') format('truetype'); font-weight:350; font-style:normal; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayLightItalic.ttf') format('truetype'); font-weight:350; font-style:italic; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayRoman.ttf') format('truetype'); font-weight:400; font-style:normal; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayRomanItalic.ttf') format('truetype'); font-weight:400; font-style:italic; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayMediu.ttf') format('truetype'); font-weight:500; font-style:normal; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayMediumItalic.ttf') format('truetype'); font-weight:500; font-style:italic; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayBold.ttf') format('truetype'); font-weight:700; font-style:normal; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayBoldItalic.ttf') format('truetype'); font-weight:700; font-style:italic; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayBlack.ttf') format('truetype'); font-weight:900; font-style:normal; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayBlackItalic.ttf') format('truetype'); font-weight:900; font-style:italic; }
+
+:root{
+  --bg:#f9fdfe;
+  --text:#0a0a0a;
+  --text-secondary:#6e6e6e;
+  --accent:#191bdf;
+  --accent-light:#9898f1;
+  --accent-tint:rgba(25,27,223,0.06);
+  --surface:#e4e9f4;
+
+  --header-size:72px;
+  --footer-size:44px;
+  --edge:40px;
+  --arrow-size:1.6rem;
+
+  --font-body:'Neue Haas Grotesk', 'Helvetica Neue', Arial, sans-serif;
+
+  --cursor-brand:url("img/svg/cursore.svg") 7 7, auto;
+  --cursor-close:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 -960 960 960'%3E%3Cpath fill='%230a0a0a' d='m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z'/%3E%3C/svg%3E") 10 10, pointer;
+}
+
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;padding:0;}
+html{overscroll-behavior:none;} /* niente rimbalzo della pagina intera (Safari/iOS) oltre le view interne */
+body{
+  font-family:var(--font-body);
+  color:var(--text);
+  background:var(--bg);
+  overflow:hidden;
+  overscroll-behavior:none;
+  cursor:var(--cursor-brand);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+button{font-family:inherit;background:none;border:none;text-align:left;}
+a{color:inherit;text-decoration:none;}
+ul{margin:0;padding:0;list-style:none;}
+h1,p{margin:0;}
+
+button, a{cursor:var(--cursor-brand);}
+.clickable-title{cursor:var(--cursor-brand); user-select:none;}
+
+/* le foto non sono salvabili/copiabili: pointer-events:none toglie
+   l'immagine stessa dall'hit-test del browser, quindi tasto destro/tocco
+   prolungato non "vedono" alcuna immagine su cui offrire Salva/Copia — è
+   il blocco più efficace, più affidabile del solo preventDefault via JS
+   (comunque presente come ulteriore livello, vedi index.html). Funziona
+   perché ogni foto cliccabile ha il listener sul contenitore attorno
+   (gallery-item, project-row-image, ecc.), mai sull'<img> stesso, quindi
+   il click passa comunque al genitore. Fa eccezione solo il logo header,
+   che è lui stesso l'elemento cliccabile (vedi sotto) */
+img, video{
+  -webkit-user-select:none; user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-user-drag:none; user-drag:none;
+  pointer-events:none;
+}
+#header-logo{pointer-events:auto;}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+
+.eyebrow{
+  display:block;
+  font-size:0.75rem;
+  font-weight:600;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+}
+
+/* ============================================================
+   INTRO SPLASH — schermata iniziale, si chiude solo al click
+   ============================================================ */
+.intro-screen{
+  position:fixed; inset:0; z-index:100;
+  background:var(--accent);
+  display:flex; align-items:center; justify-content:center;
+  transition:opacity 0.6s ease;
+  cursor:var(--cursor-brand);
+  will-change:opacity;
+  transform:translateZ(0);
+}
+.intro-screen *{cursor:var(--cursor-brand);}
+.intro-screen.fade-out{opacity:0; pointer-events:none;}
+
+.intro-enter{
+  display:flex; align-items:center; justify-content:center;
+}
+
+#intro-logo{
+  width:min(220px,55vw); height:auto; display:none;
+  animation:intro-pulse 2.6s ease-in-out infinite;
+}
+@keyframes intro-pulse{
+  0%,100%{ transform:scale(1); opacity:1; }
+  50%{ transform:scale(1.08); opacity:0.82; }
+}
+
+.intro-logo-placeholder{
+  width:min(320px,75vw);
+  aspect-ratio:1/1;
+  display:flex; align-items:center; justify-content:center;
+  border:1px dashed #ffffff;
+  color:#ffffff;
+  font-family:var(--font-body);
+  font-size:0.82rem; text-align:center; letter-spacing:0.02em;
+  padding:20px;
+  animation:intro-pulse 2.6s ease-in-out infinite;
+}
+
+.intro-enter-label{
+  position:absolute; left:0; right:0; bottom:76px;
+  text-align:center;
+  color:#ffffff;
+  font-size:0.75rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase;
+  opacity:0.85;
+}
+
+.intro-footer-text{
+  position:absolute; left:0; right:0; bottom:48px;
+  text-align:center;
+  color:#ffffff;
+  font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
+  opacity:0.7;
+}
+
+@media (prefers-reduced-motion:reduce){
+  #intro-logo, .intro-logo-placeholder{ animation:none; }
+}
+
+/* ============================================================
+   HEADER GLOBALE
+   ============================================================ */
+.site-header{
+  position:fixed; top:0; left:0; right:0; height:var(--header-size);
+  border-bottom:1px solid var(--accent);
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  z-index:30;
+  transform:translateZ(0);
+}
+.site-header img{height:15px;width:auto;display:block;}
+.site-header .logo-placeholder{
+  font-family:var(--font-body);
+  font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--text-secondary);
+  border:1px dashed var(--accent);
+  padding:6px 16px;
+}
+
+/* ============================================================
+   FOOTER GLOBALE
+   ============================================================ */
+.site-footer{
+  position:fixed; bottom:0; left:0; right:0; height:var(--footer-size);
+  border-top:1px solid var(--accent);
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  z-index:30;
+  transform:translateZ(0);
+}
+.site-footer span{
+  font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--text-secondary);
+  text-align:center;
+}
+/* separatore "|" tra nome/Portfolio/anno, sia nel footer che nella
+   scritta della schermata di caricamento: margine invece di spazi nel
+   testo, che verrebbero collassati a uno solo dal browser */
+.footer-sep{margin:0 12px; display:inline-block;}
+/* contatti nel footer: solo mobile, solo nella pagina About (vedi mobile.css) */
+.footer-contacts{display:none;}
+
+/* ============================================================
+   VIEW SWITCHING
+   ============================================================ */
+.view{
+  display:none;
+  position:fixed;
+  top:var(--header-size); left:0; right:0; bottom:var(--footer-size);
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(16px) scale(0.99);
+  transition:opacity .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+}
+.view.active{display:block;}
+.view.active.visible{opacity:1; transform:translateY(0) scale(1); pointer-events:auto;}
+
+@media (prefers-reduced-motion:reduce){
+  .view{transition:none;}
+}
+
+/* ============================================================
+   HOME
+   ============================================================ */
+#view-home.active{display:grid; grid-template-rows:1fr 1fr 1fr;}
+
+.home-main{
+  min-height:0;
+  display:flex; align-items:center; justify-content:center;
+  text-align:center;
+  padding:var(--edge);
+}
+.home-name-line{
+  display:block;
+  white-space:nowrap;
+  font-weight:500;
+  font-size:clamp(0.9rem,4vw,1.7rem);
+  line-height:1.15;
+  letter-spacing:-0.01em;
+  text-transform:uppercase;
+  color:var(--text);
+}
+.home-role{margin-top:10px;}
+
+.tab{
+  width:100%; min-height:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 var(--edge);
+  border-top:1px solid var(--accent);
+  color:var(--text);
+  transition:color .15s ease, background-color .15s ease;
+}
+.tab span{
+  font-weight:600;
+  font-size:0.9rem;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+}
+.tab:hover{color:var(--accent); background:var(--accent-tint);}
+.tab-arrow{font-size:var(--arrow-size); line-height:1; display:flex; align-items:center; transition:transform .15s ease;}
+.tab:hover .tab-arrow{transform:scale(1.15);}
+
+.icon-svg{width:1em; height:1em; display:block; fill:currentColor;}
+
+/* ============================================================
+   TITLE ROW — condivisa tra About / Projects / Detail
+   ============================================================ */
+.title-row{
+  display:flex; align-items:center; gap:20px;
+  padding:var(--edge);
+}
+.back-btn-inline{
+  font-size:calc(var(--arrow-size) * 0.7);
+  line-height:1;
+  padding:6px 0;
+  display:flex; align-items:center;
+  color:var(--accent);
+  transition:color .15s ease, transform .15s ease;
+}
+.back-btn-inline:hover{color:var(--accent); transform:scale(1.15);}
+.title-row h1{
+  font-weight:400;
+  font-size:clamp(1.7rem,3.6vw,2.5rem);
+  text-transform:uppercase;
+  letter-spacing:-0.01em;
+}
+
+/* variante centrata, usata da Projects */
+.title-row-centered{
+  position:relative;
+  justify-content:center;
+}
+.title-row-centered .back-btn-inline{position:absolute; left:var(--edge);}
+.title-row-centered h1{text-align:center;}
+
+/* ============================================================
+   ABOUT
+   ============================================================ */
+#view-about.active{display:flex;}
+.about-layout{flex:1; display:flex; min-height:0; width:100%;}
+.about-left{
+  flex:1; min-width:0; display:flex; flex-direction:column; height:100%;
+  /* fallback: se il contenuto (nome, bio, skills, contatti, download) non
+     sta nell'altezza disponibile (es. finestra molto bassa), scorre invece
+     di traboccare tagliando i bottoni di download. Niente
+     overscroll-behavior qui: quando il contenuto sta già nello spazio
+     disponibile (caso normale) l'elemento è sempre "al limite" dello
+     scroll, e overscroll-behavior:contain bloccherebbe la rotellina del
+     mouse impedendole di raggiungere lo scroll della pagina/lista sotto */
+  overflow-y:auto; scrollbar-width:none;
+}
+.about-left::-webkit-scrollbar{display:none;}
+.about-name-big{font-size:clamp(2.2rem,6vw,4.2rem);}
+.about-body{padding:0 var(--edge); flex:0 0 auto;}
+.about-tagline{font-size:0.9rem; margin-bottom:14px;}
+.about-bio{font-size:1rem; line-height:1.65; max-width:520px; margin-bottom:24px;}
+.about-skills{margin-top:40px;}
+.about-skills ul, .project-row-tags{display:flex; flex-wrap:wrap;}
+.about-skills li, .project-row-tags li{
+  letter-spacing:0.04em; text-transform:uppercase;
+  color:var(--text);
+  margin-right:14px; padding-right:14px;
+  border-right:1px solid var(--text);
+}
+.about-skills li{font-size:0.78rem;}
+.project-row-tags li{font-size:0.7rem;}
+.about-skills li:last-child, .project-row-tags li:last-child{margin-right:0; padding-right:0; border-right:none;}
+.about-spacer{flex:1;}
+.about-contacts{display:flex; flex-direction:column; align-items:flex-start; padding:8px var(--edge) var(--edge); flex:0 0 auto;}
+.contact-list{display:flex; flex-direction:column; gap:10px; margin-bottom:20px;}
+.contact-link{
+  font-size:0.9rem; font-weight:600; letter-spacing:0.05em; text-transform:none;
+  color:var(--text);
+  transition:color .15s ease;
+  overflow-wrap:break-word; /* email/indirizzi lunghi vanno a capo invece di traboccare fuori dalla colonna sugli schermi più stretti */
+}
+.contact-link:hover{color:var(--accent);}
+.btn-row{display:flex; flex-wrap:wrap; gap:24px;}
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  border:none; background:none; padding:0;
+  font-size:0.78rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
+  color:var(--accent);
+  transform-origin:left center;
+  transition:transform .15s ease;
+}
+.btn .icon-svg{transition:transform .15s ease;}
+.btn:hover{transform:scale(1.06);}
+.btn-forward .icon-svg{width:0.85em; height:0.85em;}
+.btn-forward:hover .icon-svg{transform:translateX(4px);}
+.btn-download .icon-svg{width:0.8em; height:0.47em;}
+.btn-download:hover .icon-svg{transform:translateY(1.5px);}
+
+.about-photo{width:50%; flex-shrink:0; height:100%; background:var(--surface);}
+.about-photo img{width:100%; height:100%; object-fit:cover; display:block;}
+.about-photo-placeholder{
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text-secondary);
+  font-size:0.82rem; text-align:center; padding:24px;
+}
+
+/* ============================================================
+   PROJECTS — lista
+   ============================================================ */
+#view-projects.active{display:flex; flex-direction:column;}
+#view-projects .title-row, #view-detail .title-row{padding-top:18px; padding-bottom:8px;}
+.filters{display:flex; flex-wrap:wrap; justify-content:center; gap:28px; padding:0 var(--edge) 20px; border-bottom:1px solid var(--accent);}
+.filter-btn{
+  position:relative;
+  padding:10px 2px 0;
+  font-size:0.75rem; font-weight:450; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--text-secondary);
+  transition:color .15s ease;
+}
+.filter-btn::before{
+  content:"";
+  position:absolute; top:0; left:0; right:0;
+  height:2px;
+  background:var(--accent);
+  opacity:0;
+  transition:opacity .15s ease;
+}
+.filter-btn:hover{color:var(--accent);}
+.filter-btn.active{color:var(--text);}
+.filter-btn.active::before{opacity:1;}
+
+/* wrapper attorno a lista + pallini: i pallini si centrano su questo (la
+   sola fascia progetto), non sull'intera view (che include anche
+   titolo/filtri sopra) */
+.projects-list-wrap{position:relative; flex:1; min-height:0; display:flex; flex-direction:column;}
+.projects-list{flex:1; overflow-y:auto; overscroll-behavior-y:contain; scroll-snap-type:y mandatory; scroll-behavior:smooth; scrollbar-width:none;}
+.projects-list::-webkit-scrollbar{display:none;}
+
+/* pallini di paginazione verticali, al posto della scrollbar sul lato destro
+   (mobile: orizzontali in basso, vedi mobile.css) */
+.project-dots{
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:8px;
+  position:absolute; right:10px; top:50%;
+  transform:translateY(-50%);
+}
+.project-dot{
+  width:3px; height:16px; border-radius:2px;
+  background:var(--surface);
+  opacity:0.45;
+  cursor:var(--cursor-brand);
+  transition:background .3s cubic-bezier(.4,0,.2,1), height .3s cubic-bezier(.4,0,.2,1), opacity .3s cubic-bezier(.4,0,.2,1);
+}
+.project-dot.active{
+  background:var(--accent);
+  height:24px;
+  opacity:1;
+}
+
+/* wrapper attorno alla galleria di dettaglio: i pallini si centrano su
+   questo invece che sull'intera view (vedi .projects-list-wrap, stessa idea) */
+.detail-gallery-wrap{position:relative; flex:1; min-height:0; display:flex; flex-direction:column;}
+.detail-gallery{scrollbar-width:none;}
+.detail-gallery::-webkit-scrollbar{display:none;}
+
+/* pallini orizzontali al posto della scrollbar, solo in Scroll view (in
+   Grid view non c'è nulla da scorrere) */
+.detail-gallery-dots{
+  display:flex; flex-wrap:wrap;
+  align-items:center; justify-content:center;
+  gap:8px;
+  position:absolute; left:0; right:0; bottom:14px;
+}
+#detail-gallery.grid-view ~ .detail-gallery-dots{display:none;}
+.detail-dot{
+  width:16px; height:3px; border-radius:2px;
+  background:var(--surface);
+  opacity:0.45;
+  cursor:var(--cursor-brand);
+  transition:background .3s cubic-bezier(.4,0,.2,1), width .3s cubic-bezier(.4,0,.2,1), opacity .3s cubic-bezier(.4,0,.2,1);
+}
+.detail-dot.active{
+  background:var(--accent);
+  width:24px;
+  opacity:1;
+}
+
+.project-row{
+  display:flex; align-items:stretch; gap:32px;
+  width:100%; height:100%;
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+}
+
+.project-row-text{
+  flex:1; min-width:0; align-self:stretch;
+  display:flex; flex-direction:column; justify-content:space-between;
+  padding:56px 0 56px var(--edge);
+  /* di norma il contenuto sta nell'altezza della riga (bloccata da scroll-snap
+     sul 100% di .projects-list); overflow-y:auto è un fallback per non
+     tagliare/sovrapporre righe quando lo spazio verticale è insolitamente
+     poco (es. finestra del laptop molto bassa). Niente overscroll-behavior:
+     nel caso normale (contenuto già capiente) l'elemento è sempre "al
+     limite", e overscroll-behavior:contain impedirebbe alla rotellina del
+     mouse di raggiungere lo scroll-snap di .projects-list sotto */
+  overflow-y:auto; scrollbar-width:none;
+}
+.project-row-text::-webkit-scrollbar{display:none;}
+.project-row-main{display:flex; flex-direction:column; gap:14px;}
+.project-row-more{margin-top:14px;}
+.project-row-more-toggle{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:0;
+  font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase;
+  color:var(--text-secondary);
+  transition:color .15s ease;
+}
+.project-row-more-toggle:hover{color:var(--text);}
+.project-row-more-toggle .icon-svg{width:0.85em; height:0.5em; transition:transform .2s ease;}
+.project-row-more-toggle.open .icon-svg{transform:rotate(180deg);}
+.project-row-more-list{
+  text-align:left;
+  display:flex; flex-direction:column; gap:10px;
+  max-height:0; overflow:hidden; opacity:0;
+  transition:max-height .35s ease, opacity .25s ease, margin-top .35s ease;
+}
+.project-row-more-list.open{max-height:280px; opacity:1; margin-top:14px;}
+.project-row-more-list li{display:flex; flex-direction:column; gap:2px;}
+.more-label{font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-secondary);}
+.more-value{font-size:0.85rem; color:var(--text);}
+/* righe Tags/Descrizione dentro "More Info": nascoste su desktop (sono già
+   visibili nella lista principale), vengono mostrate solo su mobile via mobile.css.
+   Specificità aumentata (.project-row-more-list li) per battere la regola
+   ".project-row-more-list li{display:flex}" qui sopra. */
+.project-row-more-list .more-tags-row{display:none;}
+.project-row-more-list .more-desc-row{display:none;}
+.project-row-title{
+  font-weight:400;
+  font-size:clamp(1.7rem,4.2vw,3.1rem);
+  line-height:1;
+  margin-top:-0.12em;
+  text-transform:uppercase; letter-spacing:-0.01em;
+}
+.project-row-more-desc{
+  font-size:1rem; color:var(--text); line-height:1.65;
+  max-width:440px;
+}
+.project-row-tags{margin-top:14px;}
+/* frase riassuntiva breve: solo mobile (vedi mobile.css), qui la
+   descrizione completa e i tag sono già visibili nella scheda */
+.project-row-blurb{display:none;}
+.project-row-view-btn{align-self:flex-start;}
+
+.project-row-image{
+  width:50%; flex-shrink:0; align-self:stretch;
+  border:1px dashed var(--accent);
+  background:var(--surface);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text-secondary);
+  font-size:0.8rem; text-align:center; padding:16px;
+  cursor:var(--cursor-brand);
+}
+.project-row-image:has(img){border:none; padding:0; background:none;}
+.project-row-image img{width:100%; height:100%; object-fit:cover; display:block;}
+
+/* ============================================================
+   PROJECT DETAIL
+   ============================================================ */
+#view-detail.active{display:flex; flex-direction:column;}
+.detail-title-big{font-size:clamp(2.6rem,7vw,5.5rem);}
+
+.detail-gallery{
+  flex:1;
+  gap:20px;
+  padding:0 var(--edge) 0;
+}
+
+.detail-gallery.scroll-view{display:flex; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain;}
+/* in Scroll view i gruppi-riga sono trasparenti: le foto restano una fila
+   piatta, nell'ordine originale */
+.detail-gallery.scroll-view .gallery-row{display:contents;}
+.detail-gallery.scroll-view .gallery-item-wrap{
+  flex:0 0 auto; height:100%; aspect-ratio:16/9;
+}
+.detail-gallery.scroll-view .gallery-item{width:100%; height:100%;}
+
+/* Grid view: 3 righe (vedi threeRowCounts in JS, es. 3/4/3 per 10 foto).
+   Tutte le foto hanno la stessa dimensione e mantengono le proporzioni
+   reali (1920x1080 = 16:9), niente ritagli forzati. Statica, senza
+   scorrimento: --tile-w viene calcolato via JS (layoutGridView) in modo
+   da occupare tutto lo spazio verticale disponibile tra header e footer;
+   le righe più corte restano centrate invece di stirarsi. */
+.detail-gallery.grid-view{
+  display:flex; flex-direction:column;
+  justify-content:center;
+  gap:6px;
+  overflow:hidden;
+}
+.detail-gallery.grid-view .gallery-row{
+  display:flex; flex-direction:row;
+  justify-content:center; align-items:center;
+  flex:0 0 auto;
+  gap:6px;
+}
+.detail-gallery.grid-view .gallery-row .gallery-item-wrap{display:contents;}
+.detail-gallery.grid-view .gallery-item{
+  width:var(--tile-w, 200px); flex:0 0 auto;
+  aspect-ratio:16/9;
+}
+.gallery-item[data-src]{cursor:var(--cursor-brand);}
+
+.gallery-item{
+  border:1px dashed var(--accent);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text-secondary);
+  font-size:0.85rem; text-align:center; padding:20px;
+  background:var(--surface);
+}
+.gallery-item:has(img){border:none; padding:0; background:none;}
+.gallery-item:has(video){border:none; padding:0; background:none;}
+.gallery-item img{width:100%; height:100%; object-fit:cover; display:block;}
+.gallery-item video{width:100%; height:100%; object-fit:cover; display:block;}
+
+/* ============================================================
+   LIGHTBOX — apertura immagine a schermo intero (visualizzazione grid)
+   ============================================================ */
+.lightbox{
+  position:fixed; inset:0; z-index:90;
+  background:var(--bg);
+  display:none; align-items:center; justify-content:center;
+  flex-direction:column; gap:16px;
+  padding:var(--edge);
+  cursor:var(--cursor-close);
+}
+.lightbox.active{display:flex;}
+.lightbox img{max-width:70vw; max-height:65vh; object-fit:contain; box-shadow:0 8px 24px rgba(0,0,0,0.15);}
+.lightbox video{max-width:70vw; max-height:65vh; object-fit:contain; box-shadow:0 8px 24px rgba(0,0,0,0.15); display:none;}
+.lightbox-caption{
+  color:var(--text); font-size:0.8rem; font-weight:500;
+  letter-spacing:0.06em; text-transform:uppercase;
+}
+/* barrette di paginazione dentro il lightbox, per indicare a che foto/video
+   si è arrivati (frecce da tastiera su desktop, swipe su mobile): stessi
+   colori/dimensioni di .project-dots nella lista progetti (mobile),
+   ancorate in fondo allo schermo qui perché il lightbox è un overlay a
+   schermo intero senza un punto "in fondo al flusso" naturale */
+.lightbox-dots{
+  position:absolute; left:0; right:0; bottom:var(--edge);
+  display:flex; flex-wrap:wrap;
+  align-items:center; justify-content:center;
+  gap:8px;
+}
+.lightbox-dot{
+  width:16px; height:3px; border-radius:2px;
+  background:var(--surface);
+  cursor:var(--cursor-brand);
+  transition:background .2s ease, width .2s ease;
+}
+.lightbox-dot.active{
+  background:var(--accent);
+  width:24px;
+}

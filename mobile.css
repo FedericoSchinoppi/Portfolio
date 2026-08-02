@@ -1,0 +1,418 @@
+/* ============================================================
+   MOBILE.CSS — versione MOBILE
+   Va caricato DOPO style.css: le regole qui dentro sovrascrivono
+   quelle di base solo sotto gli 800px (tablet/telefono grande) e
+   sotto i 640px (telefono).
+
+   Indice:
+   1. Header più compatto
+   1bis. Home: nome leggermente più grande, tab "Projects"/"About me" blu
+   2. About: due colonne, foto verticale a destra, titolo/bio/contatti a
+      sinistra (niente skills), download staccati in fondo
+   3. Footer: visibile solo in Home/About, contenuto leggermente più in
+      basso, sempre con la scritta "Nome | Portfolio | anno"
+   4. Filtri nascosti (lista progetti + toggle Scroll/Grid)
+   5. Lista progetti: scroll orizzontale, cover fissa 9:10 (come da
+      laptop), frase riassuntiva sotto il titolo, descrizione e tag
+      dentro More Info (bottone Info più grande e azzurro anche a riposo,
+      View Project più in basso e più grande, nascosto mentre Info è aperto)
+   6. Dettaglio progetto: solo scroll verticale, immagini 16:9
+   7. Titoli centrati (About + progetto singolo, e tra le due linee blu
+      di header/title-row in Projects e Detail), senza sovrapposizioni
+      con la freccia indietro
+   8. Hover/tap: tutti i pulsanti diventano blu
+   9. Animazioni più fluide (dissolvenza pura tra le pagine, Info con
+      altezza misurata via JS, View Project, frecce indietro)
+   10. Breakpoint telefono (≤640px): rifinitura dimensioni testo
+   ============================================================ */
+
+@media (max-width:800px){
+
+  :root{
+    --edge:28px;
+    --header-size:58px;
+    --arrow-size:1.45rem;
+    --cover-ratio:1080/900; /* proporzioni reali del file di copertina, da non alterare */
+  }
+
+  /* ---------- 1. HEADER più compatto ---------- */
+  .site-header img{height:13px;}
+  .site-header .logo-placeholder{font-size:0.62rem; padding:5px 12px;}
+
+  /* ---------- 1bis. HOME: nome leggermente più grande, blu; tab sempre blu ---------- */
+  .home-name-line{font-size:clamp(1rem, 4.6vw, 1.85rem); color:var(--accent);}
+  .home-role{color:var(--accent-light);}
+  .tab{color:var(--accent);}
+
+  /* ---------- 1ter. INTRO: posizioni invariate rispetto al laptop
+     (lì "click to enter" si è spostato più in alto per fare spazio alla
+     scritta del footer) ---------- */
+  .intro-enter-label{bottom:48px;}
+  .intro-footer-text{bottom:18px;}
+
+  /* ---------- 2. ABOUT: due colonne, foto verticale a destra ---------- */
+  /* le skills sono state tolte: al loro posto, nella colonna sinistra,
+     tornano i contatti ad elenco (il footer non li mostra più, vedi
+     sezione 3) */
+  .about-layout{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 32%;
+    /* "clabel" è min-content invece di auto: le righe auto vengono stirate
+       (align-content:stretch di default) per riempire lo spazio lasciato
+       libero da "photo" che attraversa tutte le righe — min-content esce da
+       quella distribuzione, così la riga si attacca esattamente al margine
+       dichiarato invece di allargarsi in modo imprevedibile */
+    grid-template-rows:auto auto min-content auto auto;
+    column-gap:16px;
+    grid-template-areas:
+      "title     photo"
+      "body      photo"
+      "clabel    photo"
+      "contacts  photo"
+      "downloads photo";
+    overflow-x:hidden;
+    /* di norma il contenuto sta nello schermo e non serve scorrimento;
+       overflow-y:auto è solo un fallback per non tagliare mai i bottoni di
+       download sui telefoni più piccoli/bassi (es. 320px di larghezza, dove
+       l'email va a capo su più righe e il contenuto totale può superare
+       l'altezza disponibile) */
+    overflow-y:auto; overscroll-behavior-y:contain; scrollbar-width:none;
+  }
+  .about-layout::-webkit-scrollbar{display:none;}
+  .about-left{display:contents;}
+  /* align-self:start su tutte le celle della colonna sinistra: di default i
+     grid item si stirano (align-self:stretch) per riempire l'altezza della
+     riga, che qui può essere più alta del loro contenuto a causa di "photo"
+     che si estende su tutte le righe — senza "start" gli spazi tra title/
+     body/clabel/contacts/downloads diventerebbero imprevedibili (dipendenti
+     da quella riga "gonfiata") invece che pari ai margini dichiarati */
+  .about-layout .title-row{grid-area:title; min-width:0; align-self:start;}
+  .about-layout .about-body{grid-area:body; min-width:0; align-self:start;}
+  .about-layout .about-photo{grid-area:photo; grid-row:1 / -1; height:100%; align-self:stretch;}
+  .about-contacts{display:contents;}
+  .about-layout .btn-row{grid-area:downloads; min-width:0; align-self:start;}
+  .about-layout .contact-list{
+    grid-area:contacts; min-width:0; align-self:start;
+    padding:0 var(--edge);
+    margin-bottom:24px; /* stessa distanza dai bottoni di download sotto che dalla descrizione sopra (vedi .about-contacts-label e .about-bio) */
+    gap:5px; /* righe più vicine tra loro */
+  }
+
+  .about-contacts-label{grid-area:clabel; margin-top:24px; align-self:start;}
+
+  /* foto: colonna stretta a piena altezza, quindi naturalmente verticale */
+  .about-photo{
+    width:100%;
+    margin:0;
+  }
+  .about-spacer{display:none;}
+
+  .about-body{padding:0 var(--edge);}
+  .about-tagline{display:none;}
+  .about-bio{margin-bottom:0; font-size:0.85rem; line-height:1.5;} /* lo spazio verso Contacts è tutto su .about-contacts-label, per poterlo confrontare 1:1 con quello verso i download */
+
+  /* nome: la colonna sinistra è più stretta ora che la foto occupa la
+     destra, quindi il nome può andare su due righe se serve, invece di
+     restringersi fino a diventare illeggibile o sovrapporsi alla foto */
+  .about-name-big{
+    font-size:clamp(1.15rem, 6.5vw, 1.9rem);
+    line-height:1.15;
+  }
+
+  /* skills rimosse dalla versione mobile */
+  .about-skills{display:none;}
+
+  /* contatti: elenco verticale al posto delle skills, in regular invece che bold */
+  .contact-link{font-size:0.72rem; font-weight:400;}
+
+  /* download: staccati dai contatti (la riga vuota elastica sopra li
+     spinge verso il fondo), affiancati per non occupare troppa altezza */
+  .about-layout .btn-row{
+    display:flex; flex-direction:row; flex-wrap:wrap;
+    align-items:center;
+    column-gap:20px; row-gap:6px; /* i due bottoni vanno quasi sempre a capo (poco spazio orizzontale): riga più stretta per tenerli vicini */
+    padding:0 var(--edge); margin:0 0 18px;
+  }
+
+  /* ---------- 3. FOOTER: visibile solo in Home e About ---------- */
+  .site-footer{display:none;}
+  body:has(#view-home.active) .site-footer,
+  body:has(#view-about.active) .site-footer{display:flex;}
+  #view-projects, #view-detail{bottom:0;}
+
+  /* scritte leggermente più in basso nella fascia del footer */
+  .site-footer{align-items:flex-end; padding-bottom:8px;}
+
+  /* padding simmetrico: il titolo resta centrato tra la linea blu dell'header
+     sopra e quella del title-row sotto */
+  #view-projects .title-row, #view-detail .title-row{padding-top:17px; padding-bottom:17px; border-bottom:1px solid var(--accent);}
+
+  /* titolo "Projects" più piccolo; il titolo del progetto in Detail usa la stessa misura.
+     margin-top: il testo maiuscolo non usa mai lo spazio riservato ai
+     discendenti sotto la baseline, quindi anche con padding perfettamente
+     simmetrico l'inchiostro risulta un filo più in alto del centro reale
+     della fascia; piccolo aggiustamento in em per restare proporzionale */
+  #view-projects .title-row h1,
+  #view-detail .title-row h1{
+    font-size:clamp(1.2rem, 5.5vw, 1.6rem);
+    margin-top:0.05em;
+  }
+
+  /* ---------- 4. FILTRI nascosti (lista progetti + toggle Scroll/Grid) ---------- */
+  .filters{display:none;}
+
+  /* ---------- 5. LISTA PROGETTI ---------- */
+  .projects-list{
+    display:flex; flex-direction:row;
+    overflow-x:auto; overflow-y:hidden;
+    overscroll-behavior-x:contain; /* niente rimbalzo oltre il primo/ultimo progetto */
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none; /* Firefox: nessuna barra di scorrimento visibile, solo le barrette */
+  }
+  .projects-list::-webkit-scrollbar{display:none;}
+
+  /* barrette di paginazione: una per ogni scheda scorribile. Su desktop sono
+     verticali e sostituiscono la scrollbar (vedi style.css); qui restano
+     orizzontali e nel flusso normale come prima */
+  .project-dots{
+    display:flex; flex:0 0 auto; flex-direction:row;
+    align-items:center; justify-content:center;
+    gap:8px;
+    padding:14px 0;
+    position:static; transform:none;
+  }
+  .project-dot{
+    width:16px; height:3px; border-radius:2px;
+    background:var(--surface);
+    opacity:1;
+    transition:background .2s ease, width .2s ease;
+  }
+  .project-dot.active{
+    background:var(--accent);
+    width:24px; height:3px;
+  }
+
+  /* .lightbox-dot: stile condiviso, vedi style.css. L'immagine aperta e la
+     distanza dei pallini dal fondo invece restano quelle di prima anche qui:
+     le ultime modifiche (immagine più piccola, pallini più staccati dal
+     margine) erano richieste solo per la versione laptop */
+  .lightbox img, .lightbox video{max-width:100%; max-height:85vh;}
+  .lightbox-dots{bottom:14px;}
+  .lightbox-caption{
+    font-size:0.72rem;
+    text-align:center;
+  }
+
+  .project-row{
+    flex:0 0 100%; width:100%; height:100%;
+    flex-direction:column; flex-wrap:nowrap;
+    /* di norma il contenuto sta tutto nell'altezza disponibile e non serve
+       scorrimento; overflow-y:auto è solo un fallback per non tagliare mai
+       "View Project" sui telefoni dove la UI del browser (barra indirizzo,
+       ecc.) riduce l'altezza visibile rispetto al viewport nominale */
+    overflow-y:auto; overflow-x:hidden;
+    overscroll-behavior-y:contain;
+    scroll-snap-align:start; scroll-snap-stop:always;
+    scrollbar-width:none;
+    gap:10px; /* più stretto rispetto a prima: la sezione titolo/sottotitolo/info si
+      comprime, il divario verso cover e View Project resta invariato (vedi i
+      margin-top che lo compensano su .project-row-image e .project-row-view-btn) */
+    padding:44px var(--edge) 22px;
+  }
+  .project-row::-webkit-scrollbar{display:none;}
+
+  /* la card diventa un contenitore flessibile "piatto": titolo, Info,
+     cover e View Project diventano fratelli diretti, così possiamo
+     riordinarli liberamente con "order" */
+  .project-row-text{display:contents;}
+  .project-row-main{display:contents;}
+
+  .project-row-title{order:1; text-align:center;}
+  .project-row-more-desc{display:none;} /* la descrizione si sposta dentro More Info */
+  .project-row-tags{display:none;}      /* i tag tornano dentro More Info */
+
+  /* frase riassuntiva breve: subito sotto il titolo, al posto dei tag */
+  .project-row-blurb{
+    display:block;
+    order:2;
+    text-align:center;
+    font-size:0.85rem;
+    color:var(--text-secondary);
+    margin:0;
+  }
+
+  /* "Info": leggermente più staccato dalla frase, centrato */
+  .project-row-more{
+    order:3;
+    display:flex; flex-direction:column;
+    margin-top:4px; padding-top:0;
+    border-top:none;
+  }
+  .project-row-more-toggle{
+    align-self:center;
+    font-size:0.8rem;
+    color:var(--accent); /* blu anche a riposo, non solo al tocco */
+  }
+  .more-info-prefix{display:none;} /* "More " nascosto: resta solo "Info" */
+
+  /* cover: proporzioni reali del file (1080x900), mai alterate. Scompare
+     quando Info è aperto, per lasciare spazio al contenuto (animata via
+     JS in setCoverImageHidden, in sincrono con l'apertura di Info, invece
+     di un display:none istantaneo). Leggermente più in basso per via
+     della frase sopra */
+  .project-row-image{
+    order:4;
+    width:100%; flex:0 0 auto; align-self:auto;
+    margin-top:6px; /* compensa la riduzione del gap della riga, così la distanza dalla sezione Info resta quella di prima */
+    aspect-ratio:var(--cover-ratio);
+    overflow:hidden;
+    transition:max-height .4s cubic-bezier(.16,1,.3,1), opacity .3s ease;
+  }
+
+  /* "View Project": sotto la cover, centrato, leggermente più in basso e più
+     grande. Sparisce mentre Info è aperto (animato via JS in setViewBtnHidden,
+     in sincrono con l'apertura di Info, come già la cover) */
+  .project-row-view-btn{
+    order:5;
+    justify-content:center;
+    margin-top:6px; padding-top:22px; /* margin-top compensa la riduzione del gap della riga, così la distanza dalla cover resta quella di prima */
+    border-top:1px solid var(--surface);
+    align-self:stretch;
+    font-size:0.85rem;
+    overflow:hidden;
+    min-height:0; /* i figli flex hanno un min-height:auto implicito basato sul
+      contenuto, che altrimenti vince su max-height e impedisce la chiusura a 0 */
+  }
+  .project-row-view-btn.collapsed{border-top-color:transparent; padding-top:0; margin-top:0;}
+  .project-row-view-btn .icon-svg{width:0.95em; height:0.95em;}
+
+  /* dentro More Info tornano descrizione e tag */
+  .project-row-more-list .more-desc-row,
+  .project-row-more-list .more-tags-row{display:flex;}
+  .more-desc-row .more-value{display:block; line-height:1.6; font-size:0.88rem;}
+  .more-tags-row .more-value{line-height:1.5;}
+  .project-row-more-list.open{max-height:600px;}
+
+  /* ---------- 6. DETTAGLIO PROGETTO: solo scroll verticale, immagini 16:9 ---------- */
+  /* scroll-snap: lo scorrimento si blocca sempre su una foto intera, niente
+     rimbalzo/scorrimento a vuoto prima della prima o dopo l'ultima */
+  .detail-gallery.scroll-view{
+    flex-direction:column;
+    overflow-x:hidden; overflow-y:auto;
+    overscroll-behavior:contain;
+    scroll-snap-type:y mandatory;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:24px;
+    gap:16px;
+  }
+  /* scroll-snap-stop:always: ogni swipe si ferma sempre sulla foto
+     successiva/precedente, non può saltarne più di una anche con uno
+     swipe veloce — è quello che rende lo scorrimento "fluido" ma
+     comunque controllato, mai a vuoto oltre la prima/ultima foto */
+  .detail-gallery.scroll-view .gallery-item-wrap{
+    width:100%; height:auto; flex-shrink:0;
+    aspect-ratio:16/9;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+  }
+  .detail-gallery.scroll-view .gallery-item-wrap:last-child{
+    scroll-snap-align:end;
+  }
+  /* la modalità Grid non è più raggiungibile (toggle nascosto), ma
+     forziamo comunque lo scroll verticale per sicurezza */
+  .detail-gallery.grid-view{
+    display:flex; flex-direction:column;
+    overflow-x:hidden; overflow-y:auto;
+    overscroll-behavior-y:contain;
+  }
+  /* i pallini orizzontali sostituiscono la scrollbar solo su desktop (la
+     galleria qui scorre in verticale, senza scrollbar visibile) */
+  .detail-gallery-dots{display:none;}
+
+  /* ---------- 7. TITOLI CENTRATI, senza sovrapposizioni con la freccia ---------- */
+  /* About ha ora un layout a due colonne: il titolo resta allineato a
+     sinistra come il resto del contenuto, non centrato (altrimenti il
+     nome finisce per sovrapporsi alla foto). */
+  #view-about .title-row{position:relative;}
+  /* top:var(--edge) invece di lasciarlo centrato sull'intero blocco: il
+     nome può andare su più righe (fino a 3 sui telefoni più stretti), e
+     centrare la freccia sull'intero blocco la fa finire a metà del testo
+     invece che allineata alla prima riga */
+  #view-about .back-btn-inline{position:absolute; left:var(--edge); top:var(--edge);}
+  #view-about .title-row h1{
+    padding-left:40px; /* spazio di sicurezza per il pulsante indietro */
+  }
+  .title-row-centered h1{
+    text-align:center;
+    padding:0 40px; /* spazio di sicurezza attorno al pulsante indietro */
+  }
+
+  /* ---------- 8. HOVER/TAP: pulsanti cliccabili diventano blu ---------- */
+  .project-row-more-toggle:hover,
+  .project-row-more-toggle:active,
+  .project-row-more-toggle:focus-visible,
+  .project-row-more-toggle.open{
+    color:var(--accent);
+  }
+
+  /* ---------- 9. ANIMAZIONI più fluide e curate (Info, View Project, frecce indietro) ---------- */
+  /* cambio pagina: dissolvenza pura (solo opacità, niente traslazione/scala)
+     invece dello slide-up ereditato da style.css — più fluida e senza lag percepito */
+  .view{
+    transform:none;
+    transition:opacity .3s ease-out;
+  }
+  .view.active.visible{
+    transform:none;
+  }
+  .project-row-more-list{
+    transition:max-height .4s cubic-bezier(.16,1,.3,1), opacity .3s ease, margin-top .4s cubic-bezier(.16,1,.3,1);
+  }
+  .project-row-more-toggle{
+    transition:color .2s ease, transform .15s cubic-bezier(.16,1,.3,1);
+  }
+  .project-row-more-toggle:active{transform:scale(0.96);}
+  .back-btn-inline{
+    transition:color .2s ease, transform .2s cubic-bezier(.16,1,.3,1);
+  }
+  .back-btn-inline:active{transform:scale(0.82);}
+  .project-row-view-btn{
+    transition:transform .2s cubic-bezier(.16,1,.3,1), max-height .4s cubic-bezier(.16,1,.3,1), opacity .3s ease, border-top-color .3s ease, padding-top .4s cubic-bezier(.16,1,.3,1), margin-top .4s cubic-bezier(.16,1,.3,1);
+  }
+  .project-row-view-btn:active{transform:scale(0.96);}
+}
+
+/* ============================================================
+   9. TELEFONO — rifinitura dimensioni testo e spaziature
+   ============================================================ */
+@media (max-width:640px){
+  :root{
+    --edge:20px;
+    --header-size:50px;
+    --footer-size:36px;
+    --arrow-size:1.3rem;
+  }
+
+  .site-header img{height:12px;}
+  .site-header .logo-placeholder{font-size:0.58rem; padding:4px 10px;}
+  .site-footer span{font-size:0.62rem;}
+
+  .tab span{font-size:0.78rem;}
+
+  .title-row{gap:12px;}
+  .title-row h1{font-size:clamp(1.35rem,6vw,1.9rem);}
+  .title-row-centered h1,
+  #view-about .title-row h1{padding:0 32px;}
+
+  .about-name-big{font-size:clamp(1rem,6.5vw,1.6rem);}
+  .about-bio{font-size:0.9rem;}
+
+  .project-row{padding:36px var(--edge) 18px; gap:8px;}
+  .project-row-title{font-size:clamp(1.35rem,6.5vw,2rem);}
+  .project-row-view-btn{padding-top:20px;}
+
+  .detail-title-big{font-size:clamp(1.7rem,8vw,2.9rem);}
+
+  .intro-logo-placeholder{font-size:0.75rem;}
+}
