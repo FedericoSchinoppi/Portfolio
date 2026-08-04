@@ -151,7 +151,6 @@
       year: "2026",
       client: "Politecnico of Milan",
       team: ["Pietro Alborghetti", "Giulia Cavaliere", "Silvia Colli", "Stella Zanardi"],
-      myJob: "My job — replace with a short sentence about your role in this project",
       blurb: "A collective and connected ritual",
       description: "A group project reimagining the 2028 edition of Kappa Futur Festival through a complex interactive system. The goal was to enrich the attendee experience and connect participants with one another, turning the festival into a collective, connected journey.",
       cover: "img/pj/01-kff/00-cop-kff.jpg",
@@ -176,7 +175,6 @@
       year: "2024",
       client: "Politecnico of Milan",
       team: ["Chiara Agnelli", "Chiara Campironi", "Giulia d'Ercole", "Vittorio Paulato"],
-      myJob: "My job — replace with a short sentence about your role in this project",
       blurb: "Cleopatra reimagined in jewelry",
       description: "A tribute to Cleopatra's hidden facets and mythological presence, translated into a luxury jewelry brand. The identity was built from a deep study of her character, then extended into a full brand experience.",
       cover: "img/pj/02-cleo/00-cop-cleo.jpg",
@@ -201,7 +199,6 @@
       year: "2025",
       client: "Politecnico of Milan",
       team: ["Chiara Campironi", "Nicole Di Gregorio", "Martina Pastorelli", "Vittorio Paulato", "Federico Pucci"],
-      myJob: "My job — replace with a short sentence about your role in this project",
       blurb: "Authentic heritage, refined presence",
       description: "A visual refresh for La Manèga, a winery at the heart of Franciacorta. The brand identity was redesigned to meet the owners' needs, giving the company's image a more authentic, refined presence.",
       cover: "img/pj/03-manega/00-cop-manega.jpg",
@@ -226,7 +223,6 @@
       year: "2026",
       client: "Politecnico of Milan",
       team: ["Chiara Balestra", "Teresa Barbieri", "Sofiia Dutchina", "Samantha Fabbri"],
-      myJob: "My job — replace with a short sentence about your role in this project",
       blurb: "Art made accessible",
       description: "A collaboration with the Museo Tattile Statale Omero to make Roberto Papini's artworks accessible to blind, low-vision, and deaf audiences. The project translated the artist's work into tactile experiences, a tactile book, and video content, supported by a descriptive website with audio guides.",
       cover: "img/pj/04-sinfonie/00-cop-sinfonie.jpg",
@@ -251,7 +247,6 @@
       year: "From 2024",
       client: "ASD Oratorio Sale Gussago",
       team: ["Personal Work"],
-      myJob: "My job — replace with a short sentence about your role in this project",
       blurb: "Six teams, one voice",
       description: "Social media management and communication for a historic football club in the Brescia football scene, overseeing six different teams under a single society at the same time.",
       cover: "img/pj/05-sale/00-cop-sale.jpg",
@@ -276,7 +271,6 @@
       year: "2023",
       client: "Politecnico of Milan",
       team: ["Valentina Bestetti", "Chiara Campironi", "Allegra Costato", "Anna Chiara Marsili", "Vittorio Paulato", "Beatrice Nati", "Pietro Zanotto"],
-      myJob: "My job — replace with a short sentence about your role in this project",
       blurb: "One drink, new connections",
       description: "A new non-alcoholic drink built to spark the evening among friends at a bar. Market analysis guided the brand's positioning, followed by the visual identity and promotional strategy.",
       cover: "img/pj/06-blesh/00-cop-blesh.jpg",
@@ -301,7 +295,6 @@
       year: "2024",
       client: "Parrocchia Santa Maria Assunta",
       team: ["Michele Greotti"],
-      myJob: "My job — replace with a short sentence about your role in this project",
       blurb: "New identity, same community",
       description: "A personal project, developed with a friend, giving new visual form to the Gussago oratory. The identity was rebuilt to reflect the community's spirit, alongside redesigned and consistent communication channels.",
       cover: "img/pj/07-oratorio/00-cop-oraz.png",
@@ -326,7 +319,6 @@
       year: "2025",
       client: "Politecnico of Milan",
       team: ["Viola Ambrosini", "Francesca Bianchi", "Giorgia Fontana", "Renata Romagnuolo", "Matteo Roscigno"],
-      myJob: "My job — replace with a short sentence about your role in this project",
       blurb: "Closing the gap with Gen Z",
       description: "A repositioning project aimed at bringing Confartigianato closer to Gen Z. Starting from market and competitor analysis, the brand proposition was restructured and the content strategy rebuilt to speak to a younger audience.",
       cover: "img/pj/08-confartigianato/00-cop-confartigianato.jpg",
@@ -619,11 +611,13 @@
   /* indice a griglia: sempre 2 righe, le colonne si adattano al numero di
      progetti del filtro corrente (in "All" con 8 progetti: 4 colonne).
      Titolo in alto a sinistra, frase riassuntiva sotto (la stessa usata
-     in mobile al posto dei tag) e un solo tag. La copertina riempie tutto
-     il riquadro al passaggio del cursore (vedi CSS, .index-tile:hover
-     .index-tile-cover), momento in cui restano visibili solo il titolo
-     (in bianco) e la copertina: frasetta e tag scompaiono. Un click apre
-     la scheda già esistente su quel progetto specifico */
+     in mobile al posto dei tag) e un solo tag, ancorato in fondo al
+     riquadro (vedi CSS, .index-tile-tags{margin-top:auto}) e staccato dal
+     blocco titolo/frasetta. La copertina riempie tutto il riquadro al
+     passaggio del cursore (vedi CSS, .index-tile:hover .index-tile-cover),
+     momento in cui titolo, frasetta e tag scompaiono tutti e resta
+     visibile solo la copertina. Un click apre la scheda già esistente su
+     quel progetto specifico */
   function renderProjectsIndexGrid(list){
     const grid = document.getElementById("projects-index-grid");
     const cols = Math.max(1, Math.ceil(list.length / 2));
@@ -634,6 +628,8 @@
         <div class="index-tile-info">
           <span class="index-tile-title">${p.name}</span>
           <p class="index-tile-blurb">${p.blurb}</p>
+        </div>
+        <div class="index-tile-tags">
           <span class="index-tile-tag">${p.tags[0] || ""}</span>
         </div>
       </div>
@@ -656,8 +652,7 @@
       const moreFields = [
         ["Year", p.year],
         ["Client", p.client],
-        ["Team", p.team.join(", ")],
-        ["My Job", p.myJob]
+        ["Team", p.team.join(", ")]
       ].filter(([,value]) => value);
       return `
       <div class="project-row" data-project="${p.id}">

@@ -167,8 +167,12 @@
   .index-tile{padding:14px;}
   .index-tile-info{gap:5px;}
   .index-tile-title{font-size:0.92rem;}
-  .index-tile-blurb{font-size:0.68rem; -webkit-line-clamp:3; line-clamp:3;}
-  .index-tile-tag{font-size:0.56rem;}
+  /* display ripristinato: style.css li nasconde (display:none) nella fascia
+     "desktop stretto" 800-1000px, ma qui sotto gli 800px c'è spazio ed
+     entrambi vanno mostrati di nuovo */
+  .index-tile-blurb{display:-webkit-box; font-size:0.72rem; -webkit-line-clamp:3; line-clamp:3;}
+  .index-tile-tags{display:flex; gap:3px;}
+  .index-tile-tag{font-size:0.6rem;}
 
   /* ---------- 5. LISTA PROGETTI ---------- */
   .projects-list{

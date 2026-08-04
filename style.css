@@ -4,6 +4,11 @@
    dipende dalla larghezza dello schermo: è la base condivisa
    da tutti i dispositivi. mobile.css sovrascrive queste regole
    solo sotto gli 800px di larghezza.
+   Unica eccezione voluta: il media query in fondo al file, sezione
+   "GRIGLIA INDICE — transizione desktop stretto" (sotto i 1000px ma
+   sopra gli 800px di mobile.css), che alleggerisce i riquadri della
+   griglia indice progetti prima che si arrivi al layout mobile vero
+   e proprio.
    ============================================================ */
 
 /* ============================================================
@@ -424,7 +429,7 @@ img, video{
   background:var(--bg);
   border-right:1px solid var(--accent);
   display:flex; flex-direction:column; justify-content:flex-start; align-items:flex-start;
-  padding:24px;
+  padding:32px;
   cursor:var(--cursor-brand);
 }
 .index-tile.index-tile-top-row{border-bottom:1px solid var(--accent);}
@@ -447,28 +452,18 @@ img, video{
 }
 .index-tile-title{
   position:relative;
-  font-size:1.55rem; font-weight:400;
+  display:block;
+  font-size:1.35rem; font-weight:400;
   text-transform:uppercase; letter-spacing:-0.01em;
   line-height:1.1;
-  transition:color .3s ease;
+  transition:opacity .2s ease;
+  /* nomi lunghi e senza spazi (es. "CONFARTIGIANATO") vanno a capo invece
+     di sforare il riquadro: con overflow:hidden sul riquadro (vedi
+     .index-tile) uno sforamento verrebbe tagliato a metà parola */
+  overflow-wrap:break-word; word-break:break-word;
 }
-/* al passaggio del cursore resta visibile solo il titolo (in bianco, per
-   leggerlo sopra la copertina): frasetta e tag scompaiono. L'ombra non
-   copre più tutto il riquadro, solo un rettangolo dietro la scritta
-   stessa (::before dietro il testo, non sull'intera .index-tile-cover) */
-.index-tile-title::before{
-  content:"";
-  position:absolute; z-index:-1;
-  inset:-6px -10px;
-  border-radius:2px;
-  background:rgba(10,10,10,0.55);
-  opacity:0;
-  transition:opacity .3s ease;
-}
-.index-tile:hover .index-tile-title{color:#f9fdfe;}
-.index-tile:hover .index-tile-title::before{opacity:1;}
 .index-tile-blurb{
-  font-size:0.85rem; color:var(--text-secondary);
+  font-size:0.95rem; color:var(--text-secondary);
   margin:0;
   /* al massimo 2 righe: i riquadri hanno un'altezza fissa (2 righe della
      griglia), un testo troppo lungo non deve sforare */
@@ -476,12 +471,25 @@ img, video{
   overflow:hidden;
   transition:opacity .2s ease;
 }
+/* elenco tag, staccato dal blocco titolo/frasetta e ancorato in fondo al
+   riquadro (margin-top:auto lo spinge in fondo allo spazio verticale
+   disponibile, qualunque sia la lunghezza della frasetta sopra) */
+.index-tile-tags{
+  position:relative; z-index:1;
+  display:flex; flex-direction:column; gap:6px;
+  margin-top:auto;
+  max-width:100%;
+}
 .index-tile-tag{
-  font-size:0.68rem; letter-spacing:0.04em; text-transform:uppercase;
+  font-size:0.7rem; letter-spacing:0.04em; text-transform:uppercase;
   color:var(--text-secondary);
   transition:opacity .2s ease;
 }
-.index-tile:hover .index-tile-blurb, .index-tile:hover .index-tile-tag{opacity:0;}
+/* al passaggio del cursore resta visibile solo la copertina: titolo,
+   frasetta e tag scompaiono tutti */
+.index-tile:hover .index-tile-title,
+.index-tile:hover .index-tile-blurb,
+.index-tile:hover .index-tile-tag{opacity:0;}
 
 /* wrapper attorno a lista + pallini: i pallini si centrano su questo (la
    sola fascia progetto), non sull'intera view (che include anche
@@ -501,36 +509,30 @@ img, video{
 }
 .project-dot{
   position:relative;
-  /* stesso stile "trattino" dei pallini nello scroll di immagini
-     (.detail-dot/.lightbox-dot): barretta orizzontale che si allarga
-     quando attiva, non più una barretta verticale che si allunga */
-  width:16px; height:3px; border-radius:2px;
-  /* box-sizing:content-box esplicito: il resto del sito azzera tutto a
-     border-box (vedi *{box-sizing:border-box} in cima al file), che farebbe
-     collassare il content-box a 0 dato che qui il padding è più grande
-     della width/height dichiarate — risultato: il pallino diventava
-     invisibile invece di restare piccolo con solo un'area cliccabile
-     più ampia intorno */
-  box-sizing:content-box;
-  /* padding invisibile: allarga l'area cliccabile/hover (per il tooltip)
-     senza ingrandire il pallino visibile, confinato al content-box */
-  padding:8px 6px;
+  /* stesse identiche dimensioni/distanze di .detail-dot (i pallini in
+     fondo allo scroll immagini di ogni progetto), solo ruotate in
+     verticale: nessun padding extra per l'area cliccabile, altrimenti lo
+     spazio tra un pallino e l'altro non combacerebbe più */
+  width:3px; height:16px; border-radius:2px;
   /* niente "opacity" qui: opacity su un elemento si applica anche ai suoi
      discendenti/pseudo-elementi (compositing, non ereditarietà normale),
      quindi smorzerebbe anche il tooltip qui sotto (.project-dot::after) —
-     la sfumatura del pallino spento si ottiene invece con un colore
-     semi-trasparente proprio, che non tocca il tooltip */
+     la trasparenza si ottiene invece con un colore di sfondo semi-
+     trasparente proprio (rgba), che lascia intravedere la copertina del
+     progetto sotto (varia da riquadro a riquadro) senza toccare il
+     tooltip */
   background-color:rgba(228,233,244,0.55);
-  background-clip:content-box;
   cursor:var(--cursor-brand);
-  transition:background-color .3s cubic-bezier(.4,0,.2,1), width .3s cubic-bezier(.4,0,.2,1);
+  transition:background-color .3s cubic-bezier(.4,0,.2,1), height .3s cubic-bezier(.4,0,.2,1);
 }
 .project-dot.active{
   /* background-color (non la shorthand "background"): la shorthand
      resetterebbe anche background-clip al suo default border-box, facendo
-     riempire l'intero riquadro col padding invece del solo pallino */
-  background-color:var(--accent);
-  width:24px;
+     riempire l'intero riquadro col padding invece del solo pallino.
+     Alpha alta ma non piena: resta chiaramente il pallino blu attivo,
+     ma lascia intravedere leggermente anche lui la copertina sotto */
+  background-color:rgba(25,27,223,0.85);
+  height:24px;
 }
 /* titolo del progetto al passaggio del cursore su un pallino, al posto del
    vecchio menu a tendina sui filtri: appare a sinistra (i pallini sono
@@ -757,4 +759,17 @@ img, video{
 .lightbox-dot.active{
   background:var(--accent);
   width:24px;
+}
+
+/* ============================================================
+   GRIGLIA INDICE — transizione desktop stretto
+   Unica regola di questo file legata alla larghezza dello schermo (vedi
+   nota in cima al file): sotto i 1000px i riquadri della griglia indice
+   iniziano a stare stretti (frasetta che va a capo, poco spazio per i
+   tag) ma non siamo ancora nel layout mobile vero e proprio (sotto gli
+   800px, vedi mobile.css) — qui si toglie solo la frasetta e il tag,
+   lasciando il riquadro con il solo titolo, più pulito e leggibile.
+   ============================================================ */
+@media (max-width:1000px){
+  .index-tile-blurb, .index-tile-tags{display:none;}
 }
