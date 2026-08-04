@@ -161,6 +161,15 @@
   /* ---------- 4. FILTRI nascosti (lista progetti + toggle Scroll/Grid) ---------- */
   .filters{display:none;}
 
+  /* ---------- 4bis. INDICE A GRIGLIA: più compatto, niente hover (touch) ---------- */
+  /* le colonne restano dinamiche (--index-grid-cols, vedi style.css e JS):
+     "sempre due righe" vale anche qui */
+  .index-tile{padding:14px;}
+  .index-tile-info{gap:5px;}
+  .index-tile-title{font-size:0.92rem;}
+  .index-tile-blurb{font-size:0.68rem; -webkit-line-clamp:3; line-clamp:3;}
+  .index-tile-tag{font-size:0.56rem;}
+
   /* ---------- 5. LISTA PROGETTI ---------- */
   .projects-list{
     display:flex; flex-direction:row;
@@ -192,6 +201,10 @@
     background:var(--accent);
     width:24px; height:3px;
   }
+  /* niente tooltip col titolo qui: i pallini sono orizzontali e il tooltip
+     (pensato per il layout verticale desktop, vedi style.css) sarebbe fuori
+     posto; su touch non c'è comunque un vero hover */
+  .project-dot::after{display:none;}
 
   /* .lightbox-dot: stile condiviso, vedi style.css. L'immagine aperta e la
      distanza dei pallini dal fondo invece restano quelle di prima anche qui:

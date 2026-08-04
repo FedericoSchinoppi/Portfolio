@@ -43,7 +43,11 @@
   --font-body:'Neue Haas Grotesk', 'Helvetica Neue', Arial, sans-serif;
 
   --cursor-brand:url("img/svg/cursore.svg") 7 7, auto;
-  --cursor-close:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 -960 960 960'%3E%3Cpath fill='%230a0a0a' d='m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z'/%3E%3C/svg%3E") 10 10, pointer;
+  --cursor-brand-white:url("img/svg/cursore-white.svg") 7 7, auto;
+  /* cerchio semi-trasparente dietro l'icona: resta visibile su qualunque
+     foto, chiara o scura, invece della sola icona a tinta piena */
+  --cursor-close:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='rgba(249,253,254,0.55)'/%3E%3Csvg x='7.5' y='7.5' width='17' height='17' viewBox='0 -960 960 960'%3E%3Cpath fill='%230a0a0a' d='m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z'/%3E%3C/svg%3E%3C/svg%3E") 16 16, pointer;
+  --cursor-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='rgba(249,253,254,0.55)'/%3E%3Csvg x='8' y='8' width='16' height='16' viewBox='0 -960 960 960'%3E%3Cpath fill='%23191bdf' d='M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z'/%3E%3C/svg%3E%3C/svg%3E") 16 16, pointer;
 }
 
 *{box-sizing:border-box;}
@@ -104,11 +108,14 @@ img, video{
   background:var(--accent);
   display:flex; align-items:center; justify-content:center;
   transition:opacity 0.6s ease;
-  cursor:var(--cursor-brand);
+  cursor:var(--cursor-brand-white);
   will-change:opacity;
   transform:translateZ(0);
 }
-.intro-screen *{cursor:var(--cursor-brand);}
+.intro-screen *{cursor:var(--cursor-brand-white);}
+/* al click, pointer-events:none toglie subito questo layer dall'hit-test:
+   il cursore passa così, automaticamente, al blu di sempre già impostato
+   sul body sottostante — non serve animarlo, il cambio è comunque istantaneo */
 .intro-screen.fade-out{opacity:0; pointer-events:none;}
 
 .intro-enter{
@@ -385,6 +392,97 @@ img, video{
 .filter-btn.active{color:var(--text);}
 .filter-btn.active::before{opacity:1;}
 
+/* ============================================================
+   PROJECTS — indice a griglia (prima tappa entrando in Projects)
+   ============================================================ */
+/* nascosta di default: #view-projects.grid-mode la mostra, .list-mode
+   mostra invece .projects-list-wrap sotto (vedi JS: projectsMode).
+   Sempre 2 righe: le colonne (--index-grid-cols, impostata via JS in
+   renderProjectsIndexGrid) si adattano al numero di progetti del filtro
+   corrente — 8 progetti in "All" = 4 colonne */
+.projects-index-grid{display:none;}
+#view-projects.grid-mode .projects-index-grid{
+  display:grid;
+  grid-template-columns:repeat(var(--index-grid-cols, 4), 1fr);
+  grid-template-rows:repeat(2, 1fr);
+  border-left:1px solid var(--accent);
+  flex:1; min-height:0;
+  overflow:hidden; /* mai scrollabile: le righe si dividono lo spazio disponibile */
+  cursor:var(--cursor-brand);
+}
+#view-projects.grid-mode .projects-list-wrap{display:none;}
+
+/* righe/colonne separate da bordi sui singoli riquadri (non da gap +
+   sfondo del contenitore): con un numero di progetti che non riempie
+   l'ultima riga, un gap colorato lascerebbe le celle vuote di un blu
+   pieno invece di restare trasparenti sullo sfondo della pagina.
+   border-bottom solo sulla prima riga (classe messa via JS): sulla
+   seconda si sovrapporrebbe al border-top del footer subito sotto,
+   leggendosi come una riga più spessa delle altre */
+.index-tile{
+  position:relative; overflow:hidden;
+  background:var(--bg);
+  border-right:1px solid var(--accent);
+  display:flex; flex-direction:column; justify-content:flex-start; align-items:flex-start;
+  padding:24px;
+  cursor:var(--cursor-brand);
+}
+.index-tile.index-tile-top-row{border-bottom:1px solid var(--accent);}
+
+/* copertina che riempie l'intero riquadro al passaggio del cursore (al
+   posto della vecchia anteprima fluttuante che seguiva il cursore):
+   position:absolute dentro .index-tile stesso, che ha già overflow:hidden */
+.index-tile-cover{
+  position:absolute; inset:0; z-index:0;
+  opacity:0;
+  transition:opacity .3s ease;
+}
+.index-tile-cover img{width:100%; height:100%; object-fit:cover; display:block;}
+.index-tile:hover .index-tile-cover{opacity:1;}
+
+.index-tile-info{
+  position:relative; z-index:1;
+  display:flex; flex-direction:column; gap:8px;
+  max-width:100%;
+}
+.index-tile-title{
+  position:relative;
+  font-size:1.55rem; font-weight:400;
+  text-transform:uppercase; letter-spacing:-0.01em;
+  line-height:1.1;
+  transition:color .3s ease;
+}
+/* al passaggio del cursore resta visibile solo il titolo (in bianco, per
+   leggerlo sopra la copertina): frasetta e tag scompaiono. L'ombra non
+   copre più tutto il riquadro, solo un rettangolo dietro la scritta
+   stessa (::before dietro il testo, non sull'intera .index-tile-cover) */
+.index-tile-title::before{
+  content:"";
+  position:absolute; z-index:-1;
+  inset:-6px -10px;
+  border-radius:2px;
+  background:rgba(10,10,10,0.55);
+  opacity:0;
+  transition:opacity .3s ease;
+}
+.index-tile:hover .index-tile-title{color:#f9fdfe;}
+.index-tile:hover .index-tile-title::before{opacity:1;}
+.index-tile-blurb{
+  font-size:0.85rem; color:var(--text-secondary);
+  margin:0;
+  /* al massimo 2 righe: i riquadri hanno un'altezza fissa (2 righe della
+     griglia), un testo troppo lungo non deve sforare */
+  display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden;
+  transition:opacity .2s ease;
+}
+.index-tile-tag{
+  font-size:0.68rem; letter-spacing:0.04em; text-transform:uppercase;
+  color:var(--text-secondary);
+  transition:opacity .2s ease;
+}
+.index-tile:hover .index-tile-blurb, .index-tile:hover .index-tile-tag{opacity:0;}
+
 /* wrapper attorno a lista + pallini: i pallini si centrano su questo (la
    sola fascia progetto), non sull'intera view (che include anche
    titolo/filtri sopra) */
@@ -402,17 +500,56 @@ img, video{
   transform:translateY(-50%);
 }
 .project-dot{
-  width:3px; height:16px; border-radius:2px;
-  background:var(--surface);
-  opacity:0.45;
+  position:relative;
+  /* stesso stile "trattino" dei pallini nello scroll di immagini
+     (.detail-dot/.lightbox-dot): barretta orizzontale che si allarga
+     quando attiva, non più una barretta verticale che si allunga */
+  width:16px; height:3px; border-radius:2px;
+  /* box-sizing:content-box esplicito: il resto del sito azzera tutto a
+     border-box (vedi *{box-sizing:border-box} in cima al file), che farebbe
+     collassare il content-box a 0 dato che qui il padding è più grande
+     della width/height dichiarate — risultato: il pallino diventava
+     invisibile invece di restare piccolo con solo un'area cliccabile
+     più ampia intorno */
+  box-sizing:content-box;
+  /* padding invisibile: allarga l'area cliccabile/hover (per il tooltip)
+     senza ingrandire il pallino visibile, confinato al content-box */
+  padding:8px 6px;
+  /* niente "opacity" qui: opacity su un elemento si applica anche ai suoi
+     discendenti/pseudo-elementi (compositing, non ereditarietà normale),
+     quindi smorzerebbe anche il tooltip qui sotto (.project-dot::after) —
+     la sfumatura del pallino spento si ottiene invece con un colore
+     semi-trasparente proprio, che non tocca il tooltip */
+  background-color:rgba(228,233,244,0.55);
+  background-clip:content-box;
   cursor:var(--cursor-brand);
-  transition:background .3s cubic-bezier(.4,0,.2,1), height .3s cubic-bezier(.4,0,.2,1), opacity .3s cubic-bezier(.4,0,.2,1);
+  transition:background-color .3s cubic-bezier(.4,0,.2,1), width .3s cubic-bezier(.4,0,.2,1);
 }
 .project-dot.active{
-  background:var(--accent);
-  height:24px;
-  opacity:1;
+  /* background-color (non la shorthand "background"): la shorthand
+     resetterebbe anche background-clip al suo default border-box, facendo
+     riempire l'intero riquadro col padding invece del solo pallino */
+  background-color:var(--accent);
+  width:24px;
 }
+/* titolo del progetto al passaggio del cursore su un pallino, al posto del
+   vecchio menu a tendina sui filtri: appare a sinistra (i pallini sono
+   ancorati al bordo destro) */
+.project-dot::after{
+  content:attr(data-title);
+  position:absolute; right:100%; top:50%;
+  transform:translateY(-50%) translateX(4px);
+  margin-right:14px;
+  white-space:nowrap;
+  font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase;
+  color:var(--accent);
+  background:#ffffff;
+  padding:7px 14px;
+  box-shadow:0 10px 24px rgba(10,10,10,0.14);
+  opacity:0; pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.project-dot:hover::after{opacity:1; transform:translateY(-50%) translateX(0);}
 
 /* wrapper attorno alla galleria di dettaglio: i pallini si centrano su
    questo invece che sull'intera view (vedi .projects-list-wrap, stessa idea) */
@@ -532,7 +669,7 @@ img, video{
   padding:0 var(--edge) 0;
 }
 
-.detail-gallery.scroll-view{display:flex; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain;}
+.detail-gallery.scroll-view{display:flex; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; cursor:var(--cursor-image);}
 /* in Scroll view i gruppi-riga sono trasparenti: le foto restano una fila
    piatta, nell'ordine originale */
 .detail-gallery.scroll-view .gallery-row{display:contents;}
@@ -552,6 +689,9 @@ img, video{
   justify-content:center;
   gap:6px;
   overflow:hidden;
+  /* sempre image.svg in tutta la fascia, anche sugli spazi vuoti tra le
+     foto (i .gallery-item coprono solo le foto stesse, non i gap/righe) */
+  cursor:var(--cursor-image);
 }
 .detail-gallery.grid-view .gallery-row{
   display:flex; flex-direction:row;
@@ -564,9 +704,10 @@ img, video{
   width:var(--tile-w, 200px); flex:0 0 auto;
   aspect-ratio:16/9;
 }
-.gallery-item[data-src]{cursor:var(--cursor-brand);}
+.gallery-item[data-src]{cursor:var(--cursor-image);}
 
 .gallery-item{
+  position:relative;
   border:1px dashed var(--accent);
   display:flex; align-items:center; justify-content:center;
   color:var(--text-secondary);
