@@ -99,6 +99,9 @@
     </div>
     <div class="filters" id="filters"></div>
     <div class="projects-index-grid" id="projects-index-grid"></div>
+    <!-- versione mobile dell'indice: fasce semplici (titolo + tag) invece
+         della griglia, vedi CSS mobile.css e renderProjectsIndexList -->
+    <div class="projects-index-list" id="projects-index-list"></div>
     <div class="projects-list-wrap">
       <div class="projects-list" id="projects-list"></div>
       <div class="project-dots" id="project-dots"></div>
@@ -622,8 +625,18 @@
     const grid = document.getElementById("projects-index-grid");
     const cols = Math.max(1, Math.ceil(list.length / 2));
     grid.style.setProperty("--index-grid-cols", cols);
-    grid.innerHTML = list.map((p, i) => `
-      <div class="index-tile${i < cols ? " index-tile-top-row" : ""}" data-project="${p.id}">
+    grid.innerHTML = list.map((p, i) => {
+      const classes = ["index-tile"];
+      if(i < cols) classes.push("index-tile-top-row");
+      /* ultima colonna vera (indice di colonna cols-1): è l'unica che
+         tocca sempre il bordo destro dello schermo, quindi niente
+         border-right lì (vedi CSS). Se una riga è incompleta (l'ultimo
+         progetto non arriva fino all'ultima colonna, es. 5 progetti su
+         3 colonne) quel progetto NON è in questa colonna e mantiene il
+         bordo, perché a destra ha spazio vuoto, non il bordo schermo */
+      if(i % cols === cols - 1) classes.push("index-tile-last-col");
+      return `
+      <div class="${classes.join(" ")}" data-project="${p.id}">
         ${p.cover ? `<div class="index-tile-cover"><img src="${encodePath(p.cover)}" alt="" loading="lazy"></div>` : ""}
         <div class="index-tile-info">
           <span class="index-tile-title">${p.name}</span>
@@ -633,9 +646,27 @@
           <span class="index-tile-tag">${p.tags[0] || ""}</span>
         </div>
       </div>
-    `).join("");
+    `;
+    }).join("");
     grid.querySelectorAll(".index-tile").forEach(tile=>{
       tile.addEventListener("click", ()=> enterProjectRow(tile.dataset.project));
+    });
+  }
+
+  /* versione mobile dell'indice progetti: fasce semplici (titolo a
+     sinistra, tag a destra) invece della griglia — vedi mobile.css, che
+     nasconde .projects-index-grid e mostra questa sotto gli 800px. Stesso
+     comportamento al click: apre direttamente la scheda del progetto */
+  function renderProjectsIndexList(list){
+    const wrap = document.getElementById("projects-index-list");
+    wrap.innerHTML = list.map(p => `
+      <div class="index-row" data-project="${p.id}">
+        <span class="index-row-title">${p.name}</span>
+        <span class="index-row-tag">${p.tags[0] || ""}</span>
+      </div>
+    `).join("");
+    wrap.querySelectorAll(".index-row").forEach(row=>{
+      row.addEventListener("click", ()=> enterProjectRow(row.dataset.project));
     });
   }
 
@@ -644,6 +675,7 @@
     const container = document.getElementById("projects-list");
 
     renderProjectsIndexGrid(list);
+    renderProjectsIndexList(list);
 
     document.getElementById("project-dots").innerHTML =
       list.map((p, i) => `<span class="project-dot${i === 0 ? " active" : ""}" data-title="${p.name}"></span>`).join("");
@@ -673,6 +705,12 @@
                 ${moreFields.map(([label, value]) => `<li><span class="more-label">${label}</span><span class="more-value">${value}</span></li>`).join("")}
               </ul>
             </div>
+            <!-- solo mobile (vedi mobile.css): le foto del progetto già qui,
+                 subito sotto Info, al posto del bottone View Project e
+                 della cover — niente pagina di dettaglio separata -->
+            <div class="project-row-gallery" data-project="${p.id}">
+              ${buildGalleryItemsHtml(p).join("")}
+            </div>
           </div>
           <button class="btn btn-forward project-row-view-btn" data-project="${p.id}">View Project<svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></button>
         </div>
@@ -694,6 +732,21 @@
 
     container.querySelectorAll(".project-row-image").forEach(img=>{
       img.addEventListener("click", ()=> openProject(img.dataset.project));
+    });
+
+    /* galleria inline (solo mobile, vedi CSS): stesso meccanismo di
+       apertura del lightbox di openProject, ma qui ogni .project-row ha
+       già le sue foto nel DOM invece di ricostruirle al volo — basta
+       leggere gli item già presenti invece di rigenerarli */
+    container.querySelectorAll(".project-row-gallery").forEach(galleryEl=>{
+      const triggers = [...galleryEl.querySelectorAll(".gallery-item[data-src]")];
+      const items = triggers.map(item => ({ src: item.dataset.src, caption: item.dataset.caption }));
+      triggers.forEach((item, i)=>{
+        item.addEventListener("click", ()=>{
+          lightboxItems = items;
+          openLightbox(i);
+        });
+      });
     });
 
     container.querySelectorAll(".project-row-more-toggle").forEach(btn=>{
@@ -1033,17 +1086,13 @@
     closeLightbox();
   });
 
-  function openProject(id){
-    const project = PROJECTS.find(p => p.id === id);
-    if(!project) return;
-
-    galleryViewMode = "scroll"; /* ogni progetto riparte dalla vista Scroll, indipendentemente da cosa si era scelto prima */
-
-    document.getElementById("detail-title").textContent = project.name;
-
-    const gallery = document.getElementById("detail-gallery");
+  /* markup delle foto/video di un progetto (un .gallery-item-wrap per
+     immagine, con placeholder per gli slot vuoti): condiviso tra la
+     galleria di #view-detail (openProject, sotto) e la galleria inline
+     dentro ogni .project-row su mobile (vedi renderProjectsList) */
+  function buildGalleryItemsHtml(project){
     const images = project.images && project.images.length ? project.images : [null, null, null, null];
-    const itemsHtml = images.map((image, i) => {
+    return images.map((image, i) => {
       if(image){
         const caption = image.caption || "";
         const media = isVideo(image.src)
@@ -1061,6 +1110,18 @@
           <div class="gallery-item">Image ${i+1} — replace with yours<br>(${project.name})</div>
         </div>`;
     });
+  }
+
+  function openProject(id){
+    const project = PROJECTS.find(p => p.id === id);
+    if(!project) return;
+
+    galleryViewMode = "scroll"; /* ogni progetto riparte dalla vista Scroll, indipendentemente da cosa si era scelto prima */
+
+    document.getElementById("detail-title").textContent = project.name;
+
+    const gallery = document.getElementById("detail-gallery");
+    const itemsHtml = buildGalleryItemsHtml(project);
     /* in Grid view le immagini si dispongono su 3 righe (vedi threeRowCounts);
        in Scroll view i gruppi-riga diventano trasparenti (display:contents)
        e l'ordine resta quello originale, invariato. */

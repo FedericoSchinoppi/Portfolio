@@ -406,11 +406,17 @@ img, video{
    renderProjectsIndexGrid) si adattano al numero di progetti del filtro
    corrente — 8 progetti in "All" = 4 colonne */
 .projects-index-grid{display:none;}
+/* versione mobile dell'indice (fasce titolo+tag invece della griglia):
+   nascosta di default, la mostra solo mobile.css sotto gli 800px */
+.projects-index-list{display:none;}
 #view-projects.grid-mode .projects-index-grid{
   display:grid;
   grid-template-columns:repeat(var(--index-grid-cols, 4), 1fr);
   grid-template-rows:repeat(2, 1fr);
-  border-left:1px solid var(--accent);
+  /* niente border-left qui: si vedrebbe la linea blu attaccata al bordo
+     sinistro dello schermo. La prima colonna di riquadri non ha comunque
+     un proprio bordo sinistro (vedi .index-tile, usa solo border-right),
+     quindi il vero bordo sinistro dello schermo resta sempre libero */
   flex:1; min-height:0;
   overflow:hidden; /* mai scrollabile: le righe si dividono lo spazio disponibile */
   cursor:var(--cursor-brand);
@@ -421,9 +427,16 @@ img, video{
    sfondo del contenitore): con un numero di progetti che non riempie
    l'ultima riga, un gap colorato lascerebbe le celle vuote di un blu
    pieno invece di restare trasparenti sullo sfondo della pagina.
-   border-bottom solo sulla prima riga (classe messa via JS): sulla
-   seconda si sovrapporrebbe al border-top del footer subito sotto,
-   leggendosi come una riga più spessa delle altre */
+   border-right su tutti tranne l'ultima colonna VERA della griglia
+   (classe messa via JS, in base a --index-grid-cols): quella tocca
+   sempre il bordo destro dello schermo. Un progetto che invece è
+   l'ultimo di una riga incompleta (es. 5 progetti su 3 colonne: il
+   secondo progetto della riga 2 non arriva alla 3ª colonna) NON è in
+   questa colonna e mantiene il bordo, perché a destra ha solo spazio
+   vuoto, non il bordo dello schermo. border-bottom solo sulla prima
+   riga (classe messa via JS): sulla seconda si sovrapporrebbe al
+   border-top del footer subito sotto, leggendosi come una riga più
+   spessa delle altre */
 .index-tile{
   position:relative; overflow:hidden;
   background:var(--bg);
@@ -432,6 +445,7 @@ img, video{
   padding:32px;
   cursor:var(--cursor-brand);
 }
+.index-tile.index-tile-last-col{border-right:none;}
 .index-tile.index-tile-top-row{border-bottom:1px solid var(--accent);}
 
 /* copertina che riempie l'intero riquadro al passaggio del cursore (al
@@ -658,6 +672,10 @@ img, video{
 }
 .project-row-image:has(img){border:none; padding:0; background:none;}
 .project-row-image img{width:100%; height:100%; object-fit:cover; display:block;}
+/* galleria inline dentro la scheda: solo mobile (vedi mobile.css), al
+   posto della cover + View Project — su desktop resta il flusso attuale
+   (View Project → pagina di dettaglio separata) */
+.project-row-gallery{display:none;}
 
 /* ============================================================
    PROJECT DETAIL

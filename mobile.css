@@ -12,17 +12,22 @@
    3. Footer: visibile solo in Home/About, contenuto leggermente più in
       basso, sempre con la scritta "Nome | Portfolio | anno"
    4. Filtri nascosti (lista progetti + toggle Scroll/Grid)
-   5. Lista progetti: scroll orizzontale, cover fissa 9:10 (come da
-      laptop), frase riassuntiva sotto il titolo, descrizione e tag
-      dentro More Info (bottone Info più grande e azzurro anche a riposo,
-      View Project più in basso e più grande, nascosto mentre Info è aperto)
-   6. Dettaglio progetto: solo scroll verticale, immagini 16:9
+   4bis. Indice: niente griglia, fasce semplici (titolo + tag), una per
+      progetto — al posto della griglia pensata per il mouse
+   5. Lista progetti: scroll orizzontale tra un progetto e l'altro, frase
+      riassuntiva sotto il titolo, descrizione e tag dentro More Info
+      (bottone Info più grande e azzurro anche a riposo). Niente cover né
+      "View Project": le foto del progetto (galleria inline) iniziano già
+      subito sotto Info, il progetto è visibile per intero nella stessa
+      scheda — nessuna pagina di dettaglio separata
+   6. Dettaglio progetto (raggiungibile solo da desktop): solo scroll
+      verticale, immagini 16:9
    7. Titoli centrati (About + progetto singolo, e tra le due linee blu
       di header/title-row in Projects e Detail), senza sovrapposizioni
       con la freccia indietro
    8. Hover/tap: tutti i pulsanti diventano blu
    9. Animazioni più fluide (dissolvenza pura tra le pagine, Info con
-      altezza misurata via JS, View Project, frecce indietro)
+      altezza misurata via JS, frecce indietro)
    10. Breakpoint telefono (≤640px): rifinitura dimensioni testo
    ============================================================ */
 
@@ -161,18 +166,34 @@
   /* ---------- 4. FILTRI nascosti (lista progetti + toggle Scroll/Grid) ---------- */
   .filters{display:none;}
 
-  /* ---------- 4bis. INDICE A GRIGLIA: più compatto, niente hover (touch) ---------- */
-  /* le colonne restano dinamiche (--index-grid-cols, vedi style.css e JS):
-     "sempre due righe" vale anche qui */
-  .index-tile{padding:14px;}
-  .index-tile-info{gap:5px;}
-  .index-tile-title{font-size:0.92rem;}
-  /* display ripristinato: style.css li nasconde (display:none) nella fascia
-     "desktop stretto" 800-1000px, ma qui sotto gli 800px c'è spazio ed
-     entrambi vanno mostrati di nuovo */
-  .index-tile-blurb{display:-webkit-box; font-size:0.72rem; -webkit-line-clamp:3; line-clamp:3;}
-  .index-tile-tags{display:flex; gap:3px;}
-  .index-tile-tag{font-size:0.6rem;}
+  /* ---------- 4bis. INDICE: niente griglia qui, fasce semplici ---------- */
+  /* la griglia (pensata per il mouse: hover per l'anteprima, più colonne)
+     lascia il posto a un elenco verticale di fasce, una per progetto, con
+     solo titolo e tag — vedi renderProjectsIndexList in index.html */
+  #view-projects.grid-mode .projects-index-grid{display:none;}
+  #view-projects.grid-mode .projects-index-list{
+    display:flex; flex-direction:column;
+    flex:1; min-height:0;
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .projects-index-list::-webkit-scrollbar{display:none;}
+  .index-row{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+    padding:18px var(--edge);
+    border-bottom:1px solid var(--accent);
+    cursor:var(--cursor-brand);
+  }
+  .index-row-title{
+    font-size:0.95rem; font-weight:400;
+    text-transform:uppercase; letter-spacing:-0.01em;
+  }
+  .index-row-tag{
+    font-size:0.62rem; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--text-secondary);
+    flex-shrink:0;
+  }
 
   /* ---------- 5. LISTA PROGETTI ---------- */
   .projects-list{
@@ -224,18 +245,16 @@
   .project-row{
     flex:0 0 100%; width:100%; height:100%;
     flex-direction:column; flex-wrap:nowrap;
-    /* di norma il contenuto sta tutto nell'altezza disponibile e non serve
-       scorrimento; overflow-y:auto è solo un fallback per non tagliare mai
-       "View Project" sui telefoni dove la UI del browser (barra indirizzo,
-       ecc.) riduce l'altezza visibile rispetto al viewport nominale */
+    /* la scheda ora contiene anche tutte le foto del progetto (vedi
+       .project-row-gallery), quindi è quasi sempre più alta dello schermo:
+       scorre in verticale al suo interno, mentre .projects-list scorre in
+       orizzontale tra un progetto e l'altro (scroll annidati indipendenti) */
     overflow-y:auto; overflow-x:hidden;
     overscroll-behavior-y:contain;
     scroll-snap-align:start; scroll-snap-stop:always;
     scrollbar-width:none;
-    gap:10px; /* più stretto rispetto a prima: la sezione titolo/sottotitolo/info si
-      comprime, il divario verso cover e View Project resta invariato (vedi i
-      margin-top che lo compensano su .project-row-image e .project-row-view-btn) */
-    padding:44px var(--edge) 22px;
+    gap:10px;
+    padding:44px var(--edge) 32px;
   }
   .project-row::-webkit-scrollbar{display:none;}
 
@@ -273,36 +292,26 @@
   }
   .more-info-prefix{display:none;} /* "More " nascosto: resta solo "Info" */
 
-  /* cover: proporzioni reali del file (1080x900), mai alterate. Scompare
-     quando Info è aperto, per lasciare spazio al contenuto (animata via
-     JS in setCoverImageHidden, in sincrono con l'apertura di Info, invece
-     di un display:none istantaneo). Leggermente più in basso per via
-     della frase sopra */
-  .project-row-image{
-    order:4;
-    width:100%; flex:0 0 auto; align-self:auto;
-    margin-top:6px; /* compensa la riduzione del gap della riga, così la distanza dalla sezione Info resta quella di prima */
-    aspect-ratio:var(--cover-ratio);
-    overflow:hidden;
-    transition:max-height .4s cubic-bezier(.16,1,.3,1), opacity .3s ease;
-  }
+  /* niente cover né "View Project" qui: il progetto è già visibile per
+     intero nella scheda stessa, foto comprese (vedi .project-row-gallery
+     sotto) — non serve più un secondo passaggio per vederle */
+  .project-row-image{display:none;}
+  .project-row-view-btn{display:none;}
 
-  /* "View Project": sotto la cover, centrato, leggermente più in basso e più
-     grande. Sparisce mentre Info è aperto (animato via JS in setViewBtnHidden,
-     in sincrono con l'apertura di Info, come già la cover) */
-  .project-row-view-btn{
-    order:5;
-    justify-content:center;
-    margin-top:6px; padding-top:22px; /* margin-top compensa la riduzione del gap della riga, così la distanza dalla cover resta quella di prima */
-    border-top:1px solid var(--surface);
-    align-self:stretch;
-    font-size:0.85rem;
-    overflow:hidden;
-    min-height:0; /* i figli flex hanno un min-height:auto implicito basato sul
-      contenuto, che altrimenti vince su max-height e impedisce la chiusura a 0 */
+  /* galleria inline: le foto del progetto (stesse di #view-detail, ma già
+     qui) iniziano subito sotto Info. Semplice colonna, senza scroll-snap
+     proprio: scorre insieme al resto della scheda (.project-row ha già
+     overflow-y:auto). Se Info si apre, cresce e spinge la galleria più in
+     basso — nessun calcolo extra, è il normale flusso del documento */
+  .project-row-gallery{
+    order:4;
+    display:flex; flex-direction:column;
+    gap:14px;
+    margin-top:10px;
+    width:100%;
   }
-  .project-row-view-btn.collapsed{border-top-color:transparent; padding-top:0; margin-top:0;}
-  .project-row-view-btn .icon-svg{width:0.95em; height:0.95em;}
+  .project-row-gallery .gallery-item-wrap{width:100%; aspect-ratio:16/9;}
+  .project-row-gallery .gallery-item{width:100%; height:100%;}
 
   /* dentro More Info tornano descrizione e tag */
   .project-row-more-list .more-desc-row,
@@ -394,10 +403,6 @@
     transition:color .2s ease, transform .2s cubic-bezier(.16,1,.3,1);
   }
   .back-btn-inline:active{transform:scale(0.82);}
-  .project-row-view-btn{
-    transition:transform .2s cubic-bezier(.16,1,.3,1), max-height .4s cubic-bezier(.16,1,.3,1), opacity .3s ease, border-top-color .3s ease, padding-top .4s cubic-bezier(.16,1,.3,1), margin-top .4s cubic-bezier(.16,1,.3,1);
-  }
-  .project-row-view-btn:active{transform:scale(0.96);}
 }
 
 /* ============================================================
@@ -425,9 +430,8 @@
   .about-name-big{font-size:clamp(1rem,6.5vw,1.6rem);}
   .about-bio{font-size:0.9rem;}
 
-  .project-row{padding:36px var(--edge) 18px; gap:8px;}
+  .project-row{padding:36px var(--edge) 24px; gap:8px;}
   .project-row-title{font-size:clamp(1.35rem,6.5vw,2rem);}
-  .project-row-view-btn{padding-top:20px;}
 
   .detail-title-big{font-size:clamp(1.7rem,8vw,2.9rem);}
 
