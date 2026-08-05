@@ -286,7 +286,7 @@ img, video{
   line-height:1;
   padding:6px 0;
   display:flex; align-items:center;
-  color:var(--accent);
+  color:var(--text);
   transition:color .15s ease, transform .15s ease;
 }
 .back-btn-inline:hover{color:var(--accent); transform:scale(1.15);}
@@ -352,6 +352,9 @@ img, video{
   display:inline-flex; align-items:center; gap:8px;
   border:none; background:none; padding:0;
   font-size:0.78rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
+  /* blu sempre, non nero-con-hover come le altre frecce: View Project e i
+     Download sono i tre pulsanti più importanti del sito, restano i più
+     riconoscibili a colpo d'occhio */
   color:var(--accent);
   transform-origin:left center;
   transition:transform .15s ease;
@@ -457,7 +460,12 @@ img, video{
   transition:opacity .3s ease;
 }
 .index-tile-cover img{width:100%; height:100%; object-fit:cover; display:block;}
-.index-tile:hover .index-tile-cover{opacity:1;}
+/* .hover-ready (aggiunta via JS solo al primo movimento reale del mouse
+   dentro la griglia, vedi armGridHoverGate): senza, se il cursore si trova
+   già fermo su un riquadro appena la pagina appare, l'hover CSS scatta
+   comunque subito, rivelando l'anteprima senza che l'utente abbia mosso
+   nulla */
+.projects-index-grid.hover-ready .index-tile:hover .index-tile-cover{opacity:1;}
 
 .index-tile-info{
   position:relative; z-index:1;
@@ -500,10 +508,10 @@ img, video{
   transition:opacity .2s ease;
 }
 /* al passaggio del cursore resta visibile solo la copertina: titolo,
-   frasetta e tag scompaiono tutti */
-.index-tile:hover .index-tile-title,
-.index-tile:hover .index-tile-blurb,
-.index-tile:hover .index-tile-tag{opacity:0;}
+   frasetta e tag scompaiono tutti (stesso gate .hover-ready di cui sopra) */
+.projects-index-grid.hover-ready .index-tile:hover .index-tile-title,
+.projects-index-grid.hover-ready .index-tile:hover .index-tile-blurb,
+.projects-index-grid.hover-ready .index-tile:hover .index-tile-tag{opacity:0;}
 
 /* wrapper attorno a lista + pallini: i pallini si centrano su questo (la
    sola fascia progetto), non sull'intera view (che include anche
@@ -548,6 +556,9 @@ img, video{
   background-color:rgba(25,27,223,0.85);
   height:24px;
 }
+/* hover azzurrino, non blu pieno: il blu pieno indica già "selezionato"
+   (vedi .active sopra), un hover dello stesso colore sarebbe ambiguo */
+.project-dot:not(.active):hover{background-color:var(--accent-light);}
 /* titolo del progetto al passaggio del cursore su un pallino, al posto del
    vecchio menu a tendina sui filtri: appare a sinistra (i pallini sono
    ancorati al bordo destro) */
@@ -584,15 +595,18 @@ img, video{
 #detail-gallery.grid-view ~ .detail-gallery-dots{display:none;}
 .detail-dot{
   width:16px; height:3px; border-radius:2px;
-  background:var(--surface);
-  opacity:0.45;
+  /* rgba diretto invece di background+opacity sull'elemento: stessa
+     tecnica di .project-dot, lascia intravedere la foto sotto e resta
+     comunque leggero, senza il rischio che un domani un pseudo-elemento
+     figlio (tooltip, badge, ecc.) erediti la stessa attenuazione */
+  background-color:rgba(228,233,244,0.55);
   cursor:var(--cursor-brand);
-  transition:background .3s cubic-bezier(.4,0,.2,1), width .3s cubic-bezier(.4,0,.2,1), opacity .3s cubic-bezier(.4,0,.2,1);
+  transition:background-color .3s cubic-bezier(.4,0,.2,1), width .3s cubic-bezier(.4,0,.2,1);
 }
+.detail-dot:hover{background-color:var(--accent-light);}
 .detail-dot.active{
-  background:var(--accent);
+  background-color:rgba(25,27,223,0.85);
   width:24px;
-  opacity:1;
 }
 
 .project-row{
@@ -622,10 +636,10 @@ img, video{
   display:inline-flex; align-items:center; gap:8px;
   padding:0;
   font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase;
-  color:var(--text-secondary);
+  color:var(--text);
   transition:color .15s ease;
 }
-.project-row-more-toggle:hover{color:var(--text);}
+.project-row-more-toggle:hover{color:var(--accent);}
 .project-row-more-toggle .icon-svg{width:0.85em; height:0.5em; transition:transform .2s ease;}
 .project-row-more-toggle.open .icon-svg{transform:rotate(180deg);}
 .project-row-more-list{
@@ -777,6 +791,9 @@ img, video{
   cursor:var(--cursor-brand);
   transition:background .2s ease, width .2s ease;
 }
+/* stessa coerenza degli altri pallini (project-dot/detail-dot): hover
+   azzurrino sui non selezionati, mai sul blu pieno già "attivo" */
+.lightbox-dot:not(.active):hover{background:var(--accent-light);}
 .lightbox-dot.active{
   background:var(--accent);
   width:24px;

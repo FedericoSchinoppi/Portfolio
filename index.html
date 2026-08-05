@@ -418,10 +418,23 @@
      dell'indice — si scorre ancora tra le schede come prima una volta lì */
   let projectsMode = "grid";
 
+  /* il cursore potrebbe già trovarsi fermo sopra un riquadro quando la
+     griglia appare (prima visita, cambio filtro, ritorno da un progetto):
+     senza questo accorgimento l'hover CSS scatterebbe subito, rivelando
+     l'anteprima senza che l'utente abbia davvero mosso il mouse. La
+     classe .hover-ready si aggiunge solo al primo movimento reale dentro
+     la griglia (vedi CSS, .projects-index-grid.hover-ready) */
+  function armGridHoverGate(){
+    const grid = document.getElementById("projects-index-grid");
+    grid.classList.remove("hover-ready");
+    grid.addEventListener("mousemove", ()=> grid.classList.add("hover-ready"), { once:true });
+  }
+
   function applyProjectsMode(){
     const view = document.getElementById("view-projects");
     view.classList.toggle("grid-mode", projectsMode === "grid");
     view.classList.toggle("list-mode", projectsMode === "list");
+    if(projectsMode === "grid") armGridHoverGate();
   }
 
   function enterProjectRow(id){
@@ -657,16 +670,20 @@
     });
   }
 
-  /* versione mobile dell'indice progetti: fasce semplici (titolo a
-     sinistra, tag a destra) invece della griglia — vedi mobile.css, che
-     nasconde .projects-index-grid e mostra questa sotto gli 800px. Stesso
-     comportamento al click: apre direttamente la scheda del progetto */
+  /* versione mobile dell'indice progetti: fasce semplici (titolo, tag
+     sotto e freccetta a destra) invece della griglia — vedi mobile.css,
+     che nasconde .projects-index-grid e mostra questa sotto gli 800px.
+     Stesso comportamento al click: apre direttamente la scheda del
+     progetto */
   function renderProjectsIndexList(list){
     const wrap = document.getElementById("projects-index-list");
     wrap.innerHTML = list.map(p => `
       <div class="index-row" data-project="${p.id}">
-        <span class="index-row-title">${p.name}</span>
-        <span class="index-row-tag">${p.tags[0] || ""}</span>
+        <div class="index-row-text">
+          <span class="index-row-title">${p.name}</span>
+          <span class="index-row-tag">${p.tags[0] || ""}</span>
+        </div>
+        <span class="index-row-arrow"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></span>
       </div>
     `).join("");
     wrap.querySelectorAll(".index-row").forEach(row=>{

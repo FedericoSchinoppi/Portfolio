@@ -169,24 +169,29 @@
   /* ---------- 4bis. INDICE: niente griglia qui, fasce semplici ---------- */
   /* la griglia (pensata per il mouse: hover per l'anteprima, più colonne)
      lascia il posto a un elenco verticale di fasce, una per progetto, con
-     solo titolo e tag — vedi renderProjectsIndexList in index.html */
+     titolo, tag sotto e freccetta a destra — vedi renderProjectsIndexList
+     in index.html. Ogni fascia occupa lo spazio di due fasce "originali"
+     (flex-basis:25% invece di divise in parti uguali tra tutte e 8): con
+     8 progetti se ne vedono 4 per volta, il resto scorre */
   #view-projects.grid-mode .projects-index-grid{display:none;}
   #view-projects.grid-mode .projects-index-list{
     display:flex; flex-direction:column;
     flex:1; min-height:0;
-    /* niente scroll: le fasce si dividono tutto lo spazio verticale
-       disponibile e arrivano fino in fondo alla pagina (vedi .index-row) */
-    overflow:hidden;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    /* "none" non "contain": niente rimbalzo oltre l'ultimo progetto (vedi
+       stessa scelta su .project-row più sotto) */
+    overscroll-behavior-y:none;
   }
   .index-row{
     display:flex; align-items:center; justify-content:space-between;
-    flex:1; min-height:0;
+    flex:0 0 25%;
     gap:16px;
     padding:0 var(--edge);
     border-bottom:1px solid var(--accent);
     cursor:var(--cursor-brand);
   }
-  .index-row:last-child{border-bottom:none;}
+  .index-row-text{display:flex; flex-direction:column; gap:6px;}
   .index-row-title{
     font-size:0.95rem; font-weight:400;
     text-transform:uppercase; letter-spacing:-0.01em;
@@ -194,6 +199,11 @@
   .index-row-tag{
     font-size:0.62rem; letter-spacing:0.04em; text-transform:uppercase;
     color:var(--text-secondary);
+  }
+  .index-row-arrow{
+    font-size:1.1rem; line-height:1;
+    display:flex; align-items:center;
+    color:var(--text);
     flex-shrink:0;
   }
 
@@ -271,11 +281,12 @@
        il titolo, sotto l'ultima immagine) — "none" disattiva anche quello */
     overscroll-behavior-y:none;
     scroll-snap-align:start; scroll-snap-stop:always;
-    scrollbar-width:none;
+    /* qui la barra di scorrimento resta visibile (a differenza del resto
+       del sito, dove è sempre nascosta a favore dei pallini): la scheda è
+       lunga (testo + 10 foto) e la barra aiuta a capire a che punto si è */
     gap:10px;
     padding:44px var(--edge) 32px;
   }
-  .project-row::-webkit-scrollbar{display:none;}
 
   /* la card diventa un contenitore flessibile "piatto": titolo, Info,
      cover e View Project diventano fratelli diretti, così possiamo
