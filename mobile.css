@@ -193,7 +193,7 @@
   }
   .index-row-text{display:flex; flex-direction:column; gap:6px;}
   .index-row-title{
-    font-size:0.95rem; font-weight:400;
+    font-size:1.05rem; font-weight:400;
     text-transform:uppercase; letter-spacing:-0.01em;
   }
   .index-row-tag{
@@ -201,47 +201,25 @@
     color:var(--text-secondary);
   }
   .index-row-arrow{
-    font-size:1.1rem; line-height:1;
+    font-size:0.9rem; line-height:1;
     display:flex; align-items:center;
-    color:var(--text);
+    color:var(--accent);
     flex-shrink:0;
   }
 
   /* ---------- 5. LISTA PROGETTI ---------- */
+  /* niente scorrimento orizzontale tra un progetto e l'altro: si vede solo
+     la scheda corrente (classe .current, messa via JS in enterProjectRow),
+     tutte le altre restano fuori dal flusso. Per cambiare progetto si torna
+     all'elenco (freccia indietro) e se ne sceglie un altro — niente più
+     swipe laterale né pallini di paginazione orizzontali */
   .projects-list{
     display:flex; flex-direction:row;
-    overflow-x:auto; overflow-y:hidden;
-    overscroll-behavior-x:contain; /* niente rimbalzo oltre il primo/ultimo progetto */
-    scroll-snap-type:x mandatory;
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none; /* Firefox: nessuna barra di scorrimento visibile, solo le barrette */
+    overflow:hidden;
   }
-  .projects-list::-webkit-scrollbar{display:none;}
-
-  /* barrette di paginazione: una per ogni scheda scorribile. Su desktop sono
-     verticali e sostituiscono la scrollbar (vedi style.css); qui restano
-     orizzontali e nel flusso normale come prima */
-  .project-dots{
-    display:flex; flex:0 0 auto; flex-direction:row;
-    align-items:center; justify-content:center;
-    gap:8px;
-    padding:14px 0;
-    position:static; transform:none;
-  }
-  .project-dot{
-    width:16px; height:3px; border-radius:2px;
-    background:var(--surface);
-    opacity:1;
-    transition:background .2s ease, width .2s ease;
-  }
-  .project-dot.active{
-    background:var(--accent);
-    width:24px; height:3px;
-  }
-  /* niente tooltip col titolo qui: i pallini sono orizzontali e il tooltip
-     (pensato per il layout verticale desktop, vedi style.css) sarebbe fuori
-     posto; su touch non c'è comunque un vero hover */
-  .project-dot::after{display:none;}
+  .project-row{display:none;}
+  .project-row.current{display:flex;}
+  .project-dots{display:none;}
 
   /* .lightbox-dot: stile condiviso, vedi style.css. L'immagine aperta e la
      distanza dei pallini dal fondo invece restano quelle di prima anche qui:

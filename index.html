@@ -434,7 +434,13 @@
     const view = document.getElementById("view-projects");
     view.classList.toggle("grid-mode", projectsMode === "grid");
     view.classList.toggle("list-mode", projectsMode === "list");
-    if(projectsMode === "grid") armGridHoverGate();
+    if(projectsMode === "grid"){
+      armGridHoverGate();
+      /* si torna sempre all'elenco con lo scorrimento in cima, non dove
+         l'utente l'aveva eventualmente lasciato l'ultima volta (solo
+         mobile, l'indice a griglia desktop non scorre) */
+      document.getElementById("projects-index-list").scrollTop = 0;
+    }
   }
 
   function enterProjectRow(id){
@@ -442,6 +448,11 @@
     applyProjectsMode();
     const container = document.getElementById("projects-list");
     const row = container.querySelector(`.project-row[data-project="${id}"]`);
+    /* su mobile non si scorre più in orizzontale tra i progetti (vedi
+       mobile.css): si vede solo la scheda "corrente", le altre restano
+       fuori dal flusso. Su desktop questa classe non ha alcun effetto
+       visivo (lì si scorre ancora in verticale, vedi scrollIntoView) */
+    container.querySelectorAll(".project-row").forEach(r=> r.classList.toggle("current", r === row));
     row?.scrollIntoView({ behavior:"instant", block:"start", inline:"start" });
   }
 
