@@ -33,6 +33,10 @@
 
   <!-- LIGHTBOX — apertura immagine a schermo intero (visualizzazione grid) -->
   <div class="lightbox" id="lightbox">
+    <!-- solo mobile (vedi mobile.css): su desktop la chiusura è già
+         segnalata dal cursore --cursor-close, qui invece serve una X
+         visibile e toccabile, alla stessa altezza dei titoli di pagina -->
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></button>
     <img src="" alt="" id="lightbox-img">
     <video id="lightbox-video" autoplay loop muted playsinline></video>
     <span class="lightbox-caption" id="lightbox-caption"></span>
@@ -759,8 +763,6 @@
         list.style.maxHeight = opening ? list.scrollHeight + "px" : "0px";
         list.classList.toggle("open", opening);
         btn.classList.toggle("open", opening);
-        setCoverImageHidden(btn.closest(".project-row"), opening);
-        setViewBtnHidden(btn.closest(".project-row"), opening);
       });
     });
 
@@ -784,77 +786,6 @@
     });
   }
 
-  /* Su mobile "View Project" sparisce mentre Info è aperto per lasciare
-     spazio al contenuto, e riappare quando Info si richiude: stessa
-     tecnica di setCoverImageHidden (altezza + opacità animate), ma qui
-     l'altezza naturale del bottone è misurabile con scrollHeight in ogni
-     momento (non dipende dalla larghezza della riga come la cover). */
-  function setViewBtnHidden(row, hidden){
-    if(!window.matchMedia("(max-width:800px)").matches) return;
-    const btn = row.querySelector(".project-row-view-btn");
-    if(!btn) return;
-    if(hidden){
-      /* altezza naturale catturata ORA (bottone ancora nel suo stato pieno,
-         con padding intatto) e salvata per il riutilizzo alla riapertura:
-         misurarla di nuovo a quel punto darebbe un valore sbagliato, perché
-         nello stato compresso anche il padding è animato a 0 */
-      const startHeight = btn.getBoundingClientRect().height;
-      btn.dataset.naturalHeight = startHeight;
-      btn.style.maxHeight = startHeight + "px";
-      btn.style.opacity = "1";
-      void btn.offsetHeight;
-      requestAnimationFrame(()=>{
-        btn.style.maxHeight = "0px";
-        btn.style.opacity = "0";
-        btn.classList.add("collapsed");
-      });
-    } else {
-      const naturalHeight = btn.dataset.naturalHeight || btn.scrollHeight;
-      btn.classList.remove("collapsed");
-      requestAnimationFrame(()=>{
-        btn.style.maxHeight = naturalHeight + "px";
-        btn.style.opacity = "1";
-      });
-    }
-  }
-
-  /* Su mobile la cover sparisce quando Info è aperto per lasciare spazio al
-     contenuto: invece di un display:none istantaneo, la anima (altezza +
-     opacità) in sincrono con l'apertura/chiusura di Info. Su desktop non
-     fa nulla: lì la cover resta sempre visibile a lato. */
-  function setCoverImageHidden(row, hidden){
-    if(!window.matchMedia("(max-width:800px)").matches) return;
-    const image = row.querySelector(".project-row-image");
-    if(!image) return;
-    if(hidden){
-      const startHeight = image.getBoundingClientRect().height;
-      image.style.display = "";
-      image.style.maxHeight = startHeight + "px";
-      image.style.opacity = "1";
-      void image.offsetHeight; /* forza il reflow: il browser registra il valore di partenza prima del cambio successivo */
-      requestAnimationFrame(()=>{
-        image.style.maxHeight = "0px";
-        image.style.opacity = "0";
-      });
-      image.addEventListener("transitionend", function onEnd(e){
-        if(e.propertyName !== "max-height") return;
-        image.removeEventListener("transitionend", onEnd);
-        if(image.style.maxHeight === "0px") image.style.display = "none";
-      });
-    } else {
-      /* larghezza nota (il project-row è sempre visibile) → altezza naturale
-         della cover, deve combaciare con --cover-ratio (1080/900) in mobile.css */
-      const naturalHeight = row.clientWidth * 900 / 1080;
-      image.style.display = "";
-      image.style.maxHeight = "0px";
-      image.style.opacity = "0";
-      void image.offsetHeight;
-      requestAnimationFrame(()=>{
-        image.style.maxHeight = naturalHeight + "px";
-        image.style.opacity = "1";
-      });
-    }
-  }
 
   /* barrette: evidenziano quella corrispondente al progetto corrente.
      Mobile scorre in orizzontale, desktop in verticale (vedi CSS) */
@@ -985,6 +916,7 @@
   const lightboxVideo = document.getElementById("lightbox-video");
   const lightboxCaption = document.getElementById("lightbox-caption");
   const lightboxDots = document.getElementById("lightbox-dots");
+  const lightboxClose = document.getElementById("lightbox-close");
 
   /* elenco ordinato delle foto/video della galleria aperta, per poter
      scorrere avanti/indietro con le frecce della tastiera una volta aperto
@@ -1038,6 +970,13 @@
     lightboxVideo.pause();
     lightboxVideo.src = "";
   }
+  lightboxClose.addEventListener("click", (e)=>{
+    /* senza stopPropagation il click risalirebbe fino a .lightbox, che
+       chiuderebbe comunque — ma è più corretto che sia la X stessa a farlo,
+       non un evento che "passa attraverso" */
+    e.stopPropagation();
+    closeLightbox();
+  });
   function stepLightbox(delta){
     if(!lightboxItems.length) return;
     const next = (lightboxIndex + delta + lightboxItems.length) % lightboxItems.length;

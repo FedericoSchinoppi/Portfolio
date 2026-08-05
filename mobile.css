@@ -174,17 +174,19 @@
   #view-projects.grid-mode .projects-index-list{
     display:flex; flex-direction:column;
     flex:1; min-height:0;
-    overflow-y:auto; -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
+    /* niente scroll: le fasce si dividono tutto lo spazio verticale
+       disponibile e arrivano fino in fondo alla pagina (vedi .index-row) */
+    overflow:hidden;
   }
-  .projects-index-list::-webkit-scrollbar{display:none;}
   .index-row{
     display:flex; align-items:center; justify-content:space-between;
+    flex:1; min-height:0;
     gap:16px;
-    padding:18px var(--edge);
+    padding:0 var(--edge);
     border-bottom:1px solid var(--accent);
     cursor:var(--cursor-brand);
   }
+  .index-row:last-child{border-bottom:none;}
   .index-row-title{
     font-size:0.95rem; font-weight:400;
     text-transform:uppercase; letter-spacing:-0.01em;
@@ -242,6 +244,19 @@
     text-align:center;
   }
 
+  /* X di chiusura, alla stessa altezza dei titoli di pagina (.title-row usa
+     lo stesso padding:var(--edge)): stessa funzione del tap sullo schermo,
+     ma visibile e prevedibile anche senza saperlo */
+  .lightbox-close{
+    display:flex; align-items:center; justify-content:center;
+    position:absolute; top:var(--edge); right:var(--edge);
+    z-index:10;
+    color:var(--accent);
+    transition:transform .15s ease;
+  }
+  .lightbox-close:active{transform:scale(0.85);}
+  .lightbox-close .icon-svg{width:1.1rem; height:1.1rem;}
+
   .project-row{
     flex:0 0 100%; width:100%; height:100%;
     flex-direction:column; flex-wrap:nowrap;
@@ -250,7 +265,11 @@
        scorre in verticale al suo interno, mentre .projects-list scorre in
        orizzontale tra un progetto e l'altro (scroll annidati indipendenti) */
     overflow-y:auto; overflow-x:hidden;
-    overscroll-behavior-y:contain;
+    /* "none" invece di "contain": "contain" impedisce solo che il rimbalzo
+       elastico si propaghi alla pagina sotto, ma l'elemento può ancora
+       rimbalzare per conto suo oltre l'inizio/la fine del contenuto (sopra
+       il titolo, sotto l'ultima immagine) — "none" disattiva anche quello */
+    overscroll-behavior-y:none;
     scroll-snap-align:start; scroll-snap-stop:always;
     scrollbar-width:none;
     gap:10px;
