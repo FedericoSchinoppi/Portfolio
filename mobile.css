@@ -186,8 +186,8 @@
        scorrimento il contenuto vicino al bordo inferiore dello schermo
        sfuma nella pagina invece di interrompersi di colpo su una fascia
        solida (vedi stesso trattamento su .project-row più sotto) */
-    -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 56px), transparent 100%);
-    mask-image:linear-gradient(to bottom, #000 calc(100% - 56px), transparent 100%);
+    -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 25px), transparent 100%);
+    mask-image:linear-gradient(to bottom, #000 calc(100% - 25px), transparent 100%);
   }
   .index-row{
     display:flex; align-items:center; justify-content:space-between;
@@ -272,8 +272,8 @@
     padding:44px var(--edge) 32px;
     /* dissolvenza in fondo invece di un taglio netto (vedi stesso
        trattamento su .projects-index-list più sopra) */
-    -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 56px), transparent 100%);
-    mask-image:linear-gradient(to bottom, #000 calc(100% - 56px), transparent 100%);
+    -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 25px), transparent 100%);
+    mask-image:linear-gradient(to bottom, #000 calc(100% - 25px), transparent 100%);
   }
 
   /* la card diventa un contenitore flessibile "piatto": titolo, Info,

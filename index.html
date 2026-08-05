@@ -443,7 +443,7 @@
     }
   }
 
-  function enterProjectRow(id){
+  function enterProjectRow(id, pushState = true){
     projectsMode = "list";
     applyProjectsMode();
     const container = document.getElementById("projects-list");
@@ -454,11 +454,13 @@
        visivo (lì si scorre ancora in verticale, vedi scrollIntoView) */
     container.querySelectorAll(".project-row").forEach(r=> r.classList.toggle("current", r === row));
     row?.scrollIntoView({ behavior:"instant", block:"start", inline:"start" });
+    if(pushState) pushNavState("projects");
   }
 
-  function exitToGrid(){
+  function exitToGrid(pushState = true){
     projectsMode = "grid";
     applyProjectsMode();
+    if(pushState) pushNavState("projects");
   }
 
   function showView(name, keepProjectsState = false){
@@ -501,12 +503,30 @@
     }
   }
 
+  /* stato completo da salvare nella cronologia del browser: non solo quale
+     sezione è visibile, ma anche filtro/modalità griglia-scheda e quale
+     progetto — altrimenti i tasti avanti/indietro del browser potrebbero
+     solo riattivare la sezione "Projects" o "Detail" senza sapere più con
+     quale progetto o filtro, mostrando contenuti non coerenti con quel
+     passo della cronologia (es. la scheda di un altro progetto rimasta
+     da prima) */
+  function currentNavState(name){
+    return {
+      view: name,
+      filter: activeFilter,
+      mode: projectsMode,
+      listProject: document.querySelector(".project-row.current")?.dataset.project || null,
+      detailProject: document.getElementById("view-detail").dataset.project || null,
+    };
+  }
+  function pushNavState(name){
+    const hash = name === "home" ? "" : "#" + name;
+    history.pushState(currentNavState(name), "", hash || location.pathname);
+  }
+
   function navigate(name, pushState = true, keepProjectsState = false){
     showView(name, keepProjectsState);
-    if(pushState){
-      const hash = name === "home" ? "" : "#" + name;
-      history.pushState({view:name}, "", hash || location.pathname);
-    }
+    if(pushState) pushNavState(name);
   }
 
   document.querySelectorAll("[data-nav]").forEach(el=>{
@@ -525,9 +545,29 @@
     });
   });
 
+  /* ricostruisce lo stato esatto invece di limitarsi a riattivare la
+     sezione: filtro, modalità griglia/scheda e progetto (lista o
+     dettaglio) vengono rimessi com'erano a quel passo della cronologia,
+     PRIMA di rendere la sezione visibile — altrimenti si vedrebbe per un
+     istante il contenuto vecchio (es. la scheda di un altro progetto) */
   window.addEventListener("popstate", (e)=>{
-    const name = (e.state && e.state.view) || "home";
-    showView(name);
+    const state = e.state || { view:"home" };
+    const name = state.view || "home";
+
+    if(name === "projects"){
+      activeFilter = state.filter || "all";
+      projectsMode = state.mode || "grid";
+      renderFilters();
+      renderProjectsList();
+      applyProjectsMode();
+      if(projectsMode === "list" && state.listProject){
+        enterProjectRow(state.listProject, false);
+      }
+    } else if(name === "detail" && state.detailProject){
+      openProject(state.detailProject, false);
+    }
+
+    showView(name, true);
   });
 
   /* ============================================================
@@ -635,6 +675,10 @@
            viene ignorata da Chrome perché scroll-behavior:smooth la tratta
            come un'animazione che qui non parte mai (bug del browser) */
         list.scrollTo({top:0, left:0, behavior:"instant"});
+        /* ogni cambio filtro è un passo a sé nella cronologia: i tasti
+           avanti/indietro del browser devono poter tornare al filtro
+           precedente, non solo alla sezione */
+        pushNavState("projects");
       });
     });
   }
@@ -1079,13 +1123,17 @@
     });
   }
 
-  function openProject(id){
+  function openProject(id, pushState = true){
     const project = PROJECTS.find(p => p.id === id);
     if(!project) return;
 
     galleryViewMode = "scroll"; /* ogni progetto riparte dalla vista Scroll, indipendentemente da cosa si era scelto prima */
 
     document.getElementById("detail-title").textContent = project.name;
+    /* letto da currentNavState per salvare/ricostruire la cronologia:
+       senza, i tasti avanti/indietro del browser tra due progetti diversi
+       (stesso "#detail") non saprebbero più quale dei due mostrare */
+    document.getElementById("view-detail").dataset.project = id;
 
     const gallery = document.getElementById("detail-gallery");
     const itemsHtml = buildGalleryItemsHtml(project);
@@ -1119,10 +1167,17 @@
       }
     };
 
-    navigate("detail");
-    /* il reset va rifatto DOPO navigate(): prima di questo punto #view-detail
-       è ancora display:none, e scrollLeft/scrollTop su un elemento nascosto
-       non hanno alcun effetto (la vecchia posizione di scroll resterebbe) */
+    if(pushState){
+      navigate("detail");
+    } else {
+      /* ricostruzione da popstate: la cronologia va lasciata intatta,
+         non ne va creata una nuova voce */
+      showView("detail", true);
+    }
+    /* il reset va rifatto DOPO showView/navigate: prima di questo punto
+       #view-detail è ancora display:none, e scrollLeft/scrollTop su un
+       elemento nascosto non hanno alcun effetto (la vecchia posizione di
+       scroll resterebbe) */
     gallery.scrollTo({top:0, left:0, behavior:"instant"});
     /* su iOS lo scroll momentum del touch può restare "in volo" e sovrascrivere
        questo reset un istante dopo: un secondo reset al frame successivo lo

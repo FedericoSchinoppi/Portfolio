@@ -77,6 +77,18 @@ h1,p{margin:0;}
 button, a{cursor:var(--cursor-brand);}
 .clickable-title{cursor:var(--cursor-brand); user-select:none;}
 
+/* niente selezione testo "accidentale" sugli elementi cliccabili non
+   pensati per la lettura (tile, righe, pallini, pulsanti): un doppio
+   tap/click veloce — specie durante la navigazione avanti/indietro —
+   altrimenti può evidenziare del testo invece di limitarsi ad attivare
+   l'azione. La maggior parte dei browser lo fa già di default sui
+   <button>, ma non è garantito ovunque: esplicito qui per sicurezza */
+button,
+.index-tile, .index-row, .project-dot, .detail-dot, .lightbox-dot,
+.gallery-item[data-src], .project-row-image{
+  -webkit-user-select:none; user-select:none;
+}
+
 /* le foto non sono salvabili/copiabili: pointer-events:none toglie
    l'immagine stessa dall'hit-test del browser, quindi tasto destro/tocco
    prolungato non "vedono" alcuna immagine su cui offrire Salva/Copia — è
