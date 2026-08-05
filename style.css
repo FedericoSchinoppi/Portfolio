@@ -14,22 +14,14 @@
 /* ============================================================
    NEUE HAAS DISPLAY — font caricati localmente da /font
    ============================================================ */
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayXXThin.ttf') format('truetype'); font-weight:100; font-style:normal; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayXXThinItalic.ttf') format('truetype'); font-weight:100; font-style:italic; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayXThin.ttf') format('truetype'); font-weight:200; font-style:normal; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayXThinItalic.ttf') format('truetype'); font-weight:200; font-style:italic; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayThin.ttf') format('truetype'); font-weight:300; font-style:normal; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayThinItalic.ttf') format('truetype'); font-weight:300; font-style:italic; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayLight.ttf') format('truetype'); font-weight:350; font-style:normal; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayLightItalic.ttf') format('truetype'); font-weight:350; font-style:italic; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayRoman.ttf') format('truetype'); font-weight:400; font-style:normal; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayRomanItalic.ttf') format('truetype'); font-weight:400; font-style:italic; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayMediu.ttf') format('truetype'); font-weight:500; font-style:normal; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayMediumItalic.ttf') format('truetype'); font-weight:500; font-style:italic; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayBold.ttf') format('truetype'); font-weight:700; font-style:normal; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayBoldItalic.ttf') format('truetype'); font-weight:700; font-style:italic; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayBlack.ttf') format('truetype'); font-weight:900; font-style:normal; }
-@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplayBlackItalic.ttf') format('truetype'); font-weight:900; font-style:italic; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplay-Light.woff2') format('woff2'); font-weight:350; font-style:normal; font-display:swap; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplay-LightItalic.woff2') format('woff2'); font-weight:350; font-style:italic; font-display:swap; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplay-Roman.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplay-RomanItalic.woff2') format('woff2'); font-weight:400; font-style:italic; font-display:swap; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplay-Mediu.woff2') format('woff2'); font-weight:500; font-style:normal; font-display:swap; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplay-MediumItalic.woff2') format('woff2'); font-weight:500; font-style:italic; font-display:swap; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplay-Bold.woff2') format('woff2'); font-weight:700; font-style:normal; font-display:swap; }
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('font/NeueHaasDisplay-BoldItalic.woff2') format('woff2'); font-weight:700; font-style:italic; font-display:swap; }
 
 :root{
   --bg:#f9fdfe;
@@ -489,8 +481,18 @@ img, video{
    dentro la griglia, vedi armGridHoverGate): senza, se il cursore si trova
    già fermo su un riquadro appena la pagina appare, l'hover CSS scatta
    comunque subito, rivelando l'anteprima senza che l'utente abbia mosso
-   nulla */
-.projects-index-grid.hover-ready .index-tile:hover .index-tile-cover{opacity:1;}
+   nulla.
+   @media(hover:hover): questa griglia è pensata per il mouse ed è nascosta
+   sotto gli 800px (vedi mobile.css), ma resta quella attiva su schermi
+   touch più larghi di 800px (tablet, telefoni in orizzontale, foldable) —
+   lì, senza questo guard, un tocco prolungato sul riquadro fa scattare lo
+   stesso lo stato :hover (comportamento noto di WebKit/Chrome su touch) e
+   la copertina appare come se fosse stata "premuta apposta". Stessa
+   protezione già usata per tutti gli altri :hover del sito (tab, bottoni,
+   pallini, ecc.) */
+@media (hover:hover){
+  .projects-index-grid.hover-ready .index-tile:hover .index-tile-cover{opacity:1;}
+}
 
 .index-tile-info{
   position:relative; z-index:1;
@@ -533,10 +535,13 @@ img, video{
   transition:opacity .2s ease;
 }
 /* al passaggio del cursore resta visibile solo la copertina: titolo,
-   frasetta e tag scompaiono tutti (stesso gate .hover-ready di cui sopra) */
-.projects-index-grid.hover-ready .index-tile:hover .index-tile-title,
-.projects-index-grid.hover-ready .index-tile:hover .index-tile-blurb,
-.projects-index-grid.hover-ready .index-tile:hover .index-tile-tag{opacity:0;}
+   frasetta e tag scompaiono tutti (stesso gate .hover-ready e stesso
+   guard hover:hover di cui sopra) */
+@media (hover:hover){
+  .projects-index-grid.hover-ready .index-tile:hover .index-tile-title,
+  .projects-index-grid.hover-ready .index-tile:hover .index-tile-blurb,
+  .projects-index-grid.hover-ready .index-tile:hover .index-tile-tag{opacity:0;}
+}
 
 /* wrapper attorno a lista + pallini: i pallini si centrano su questo (la
    sola fascia progetto), non sull'intera view (che include anche
@@ -685,6 +690,12 @@ img, video{
   grid-template-rows:0fr;
   opacity:0;
   transition:grid-template-rows .35s ease, opacity .25s ease, margin-top .35s ease;
+  /* grid-template-rows anima un valore di layout (non è compositor-only
+     come transform/opacity): "contain:layout" dice al browser che questo
+     ricalcolo non deve mai propagarsi oltre questo elemento, così il costo
+     resta isolato al solo blocco che si apre invece di poter influenzare
+     il resto della pagina */
+  contain:layout;
 }
 .project-row-more-collapse.open{grid-template-rows:1fr; opacity:1; margin-top:14px;}
 .project-row-more-list{

@@ -225,7 +225,12 @@
      distanza dei pallini dal fondo invece restano quelle di prima anche qui:
      le ultime modifiche (immagine più piccola, pallini più staccati dal
      margine) erano richieste solo per la versione laptop */
-  .lightbox img, .lightbox video{max-width:100%; max-height:85vh;}
+  /* max-height:85vh come fallback per i browser che non conoscono ancora
+     dvh; la riga dvh sotto (dynamic viewport height) la sovrascrive dove
+     supportata — dvh si adatta in automatico quando la barra degli
+     indirizzi del browser mobile si nasconde/riappare, invece di lasciare
+     che l'immagine "salti" di dimensione in quel momento */
+  .lightbox img, .lightbox video{max-width:100%; max-height:85vh; max-height:85dvh;}
   .lightbox-dots{bottom:14px;}
   .lightbox-caption{
     font-size:0.72rem;
@@ -264,6 +269,11 @@
        lunga (testo + 10 foto) e la barra aiuta a capire a che punto si è */
     gap:10px;
     padding:44px var(--edge) 32px;
+    /* niente content-visibility qui (l'avevo aggiunto in una modifica
+       precedente pensando alle altre schede come "fuori schermo" da
+       ottimizzare): con .project-row.current sotto, le schede non correnti
+       sono già display:none, quindi il browser le salta del tutto da solo
+       — content-visibility non avrebbe avuto nulla in più da ottimizzare */
   }
 
   /* la card diventa un contenitore flessibile "piatto": titolo, Info,

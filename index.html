@@ -3,9 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FSR - Portfolio</title>
+<title>Federico Schinoppi Rossi - Communication designer</title>
+<meta name="description" content="Digital portfolio 2026">
+
+<!-- anteprima del link quando lo condividi (LinkedIn, WhatsApp, email, ecc.) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://federicoschinoppi.github.io/Portfolio/">
+<meta property="og:title" content="Federico Schinoppi Rossi - Communication designer">
+<meta property="og:description" content="Digital portfolio 2026">
+<meta property="og:image" content="https://federicoschinoppi.github.io/Portfolio/img/about.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Federico Schinoppi Rossi - Communication designer">
+<meta name="twitter:description" content="Digital portfolio 2026">
+<meta name="twitter:image" content="https://federicoschinoppi.github.io/Portfolio/img/about.jpg">
+
+<!-- senza questo, ogni browser richiede comunque /favicon.ico da solo ad
+     ogni caricamento: una richiesta di rete in più che va sempre a vuoto
+     (404 silenzioso). Riuso il logo che hai già, stesso file dell'header -->
+<link rel="icon" type="image/svg+xml" href="img/svg/fs-blu.svg">
+<!-- font e logo dell'intro sono le prime due cose che l'utente vede:
+     preload li mette in cima alla coda di rete invece di farli scoprire
+     solo dopo che il browser ha finito di leggere tutto il CSS -->
+<link rel="preload" href="font/NeueHaasDisplay-Roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="img/svg/fs-white.svg" as="image">
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="mobile.css">
+<!-- caricato solo su schermi ≤800px: sotto quella soglia il browser lo
+     scarica comunque (in background, per averlo pronto se la finestra si
+     restringe) ma NON lo considera bloccante per il primo render su
+     desktop/tablet larghi, dove tutte le regole al suo interno sono
+     comunque inapplicabili -->
+<link rel="stylesheet" href="mobile.css" media="(max-width:800px)">
 </head>
 <body>
 
@@ -356,6 +383,31 @@
     return VIDEO_EXT.test(src || "");
   }
 
+  /* video "pigri": niente autoplay in HTML (che li farebbe partire tutti
+     insieme appena inseriti nel DOM, anche fuori schermo — il vero
+     collo di bottiglia su mobile con più gallerie inline aperte insieme).
+     Un solo IntersectionObserver condiviso si occupa di avviarli quando
+     entrano in vista e metterli in pausa quando escono: al massimo 1-2
+     video attivi alla volta invece di tutti insieme. preload="none" li
+     lascia scaricare solo al momento del play, non prima. */
+  const lazyVideoObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      const video = entry.target;
+      if(entry.isIntersecting){
+        if(video.preload === "none") video.preload = "auto";
+        video.play().catch(()=>{}); /* i browser possono rifiutare il play se non ancora pronto: si riprova al frame successivo grazie all'observer stesso */
+      } else {
+        video.pause();
+      }
+    });
+  }, { rootMargin:"200px 0px", threshold:0.25 });
+
+  function observeLazyVideos(root){
+    root.querySelectorAll("video[data-lazy-video]").forEach(video=>{
+      lazyVideoObserver.observe(video);
+    });
+  }
+
   /* click su un pallino: dissolvenza invece di uno scorrimento visibile —
      il contenuto sfuma a 0, lo scroll salta di scatto alla nuova posizione
      mentre è invisibile, poi risfuma a 1. L'assegnazione a scrollTop va
@@ -418,16 +470,38 @@
      dell'indice — si scorre ancora tra le schede come prima una volta lì */
   let projectsMode = "grid";
 
+  /* true dopo la prima renderProjectsList() riuscita: serve a showView()
+     per capire se può riusare la lista già costruita invece di rifarla
+     da zero (vedi sotto — è lì il vero motivo del lag al click sul tab
+     Projects) */
+  let projectsListReady = false;
+
   /* il cursore potrebbe già trovarsi fermo sopra un riquadro quando la
      griglia appare (prima visita, cambio filtro, ritorno da un progetto):
      senza questo accorgimento l'hover CSS scatterebbe subito, rivelando
-     l'anteprima senza che l'utente abbia davvero mosso il mouse. La
-     classe .hover-ready si aggiunge solo al primo movimento reale dentro
-     la griglia (vedi CSS, .projects-index-grid.hover-ready) */
+     l'anteprima senza che l'utente abbia davvero mosso il mouse. Non basta
+     però "un qualunque movimento" (anche solo un tremolio dentro lo stesso
+     riquadro rivelerebbe comunque quello): serve che il cursore passi
+     davvero a un riquadro diverso (o allo spazio vuoto) da quello in cui
+     si trovava al primo movimento rilevato. La classe .hover-ready si
+     aggiunge solo a quel punto (vedi CSS, .projects-index-grid.hover-ready)
+     e resta valida per il resto della visita alla griglia. */
   function armGridHoverGate(){
     const grid = document.getElementById("projects-index-grid");
     grid.classList.remove("hover-ready");
-    grid.addEventListener("mousemove", ()=> grid.classList.add("hover-ready"), { once:true });
+    let restingTile; // undefined = non ancora rilevato
+    function onMove(e){
+      const tile = e.target.closest(".index-tile") || null;
+      if(restingTile === undefined){
+        restingTile = tile;
+        return;
+      }
+      if(tile !== restingTile){
+        grid.classList.add("hover-ready");
+        grid.removeEventListener("mousemove", onMove);
+      }
+    }
+    grid.addEventListener("mousemove", onMove);
   }
 
   function applyProjectsMode(){
@@ -443,6 +517,34 @@
     }
   }
 
+  /* Costruisce la galleria inline di UN solo progetto, solo la prima volta
+     che quella scheda diventa "corrente" su mobile (vedi enterProjectRow).
+     Prima, renderProjectsList() costruiva le gallerie di TUTTI e 8 i
+     progetti a ogni render — su desktop sprecato al 100% (quel div resta
+     sempre display:none, la vista Detail ha la sua galleria separata), su
+     mobile utile solo per il singolo progetto aperto in quel momento. Ora
+     il lavoro (string building, parsing, listener del lightbox, video da
+     osservare) si fa una sola volta per progetto, solo quando serve
+     davvero — idempotente via data-built, per non rifarlo se si rientra
+     nella stessa scheda più volte. */
+  function populateProjectRowGallery(id){
+    const project = PROJECTS.find(p => p.id === id);
+    if(!project) return;
+    const galleryEl = document.querySelector(`#projects-list .project-row-gallery[data-project="${id}"]`);
+    if(!galleryEl || galleryEl.dataset.built) return;
+    galleryEl.dataset.built = "1";
+    galleryEl.innerHTML = buildGalleryItemsHtml(project).join("");
+    const triggers = [...galleryEl.querySelectorAll(".gallery-item[data-src]")];
+    const items = triggers.map(item => ({ src: item.dataset.src, caption: item.dataset.caption }));
+    triggers.forEach((item, i)=>{
+      item.addEventListener("click", ()=>{
+        lightboxItems = items;
+        openLightbox(i);
+      });
+    });
+    observeLazyVideos(galleryEl);
+  }
+
   function enterProjectRow(id, pushState = true){
     projectsMode = "list";
     applyProjectsMode();
@@ -453,6 +555,12 @@
        fuori dal flusso. Su desktop questa classe non ha alcun effetto
        visivo (lì si scorre ancora in verticale, vedi scrollIntoView) */
     container.querySelectorAll(".project-row").forEach(r=> r.classList.toggle("current", r === row));
+    /* la galleria inline serve solo su mobile (su desktop .project-row-gallery
+       è sempre display:none): costruirla anche su desktop sarebbe lavoro
+       sprecato ad ogni apertura di scheda */
+    if(window.matchMedia("(max-width:800px)").matches){
+      populateProjectRowGallery(id);
+    }
     row?.scrollIntoView({ behavior:"instant", block:"start", inline:"start" });
     if(pushState) pushNavState("projects");
   }
@@ -474,11 +582,21 @@
       /* si riparte dall'indice a griglia nel filtro "all" solo quando si entra
          in Projects dal menu/tab; tornando indietro da un progetto (back-btn
          o titolo) si resta invece sul filtro e sulla scheda di provenienza */
+      /* la lista va ricostruita solo se lo stato precedente non era già
+         quello di default (filtro "all" + griglia) o se non è mai stata
+         costruita: prima questo blocco rifaceva SEMPRE tutta la lista —
+         fino a 80 foto/video nelle gallerie inline — a ogni singolo tap sul
+         tab Projects, anche quando il contenuto sarebbe rimasto identico.
+         Era il costo maggiore del lag percepito al click. */
+      const needsRebuild = !projectsListReady || activeFilter !== "all" || projectsMode !== "grid";
       activeFilter = "all";
       projectsMode = "grid";
-      applyProjectsMode();
-      renderFilters();
-      renderProjectsList();
+      if(needsRebuild){
+        applyProjectsMode();
+        renderFilters();
+        renderProjectsList();
+        projectsListReady = true;
+      }
       document.getElementById("projects-list").scrollTo({top:0, left:0, behavior:"instant"});
     }
 
@@ -785,10 +903,13 @@
             </div>
             <!-- solo mobile (vedi mobile.css): le foto del progetto già qui,
                  subito sotto Info, al posto del bottone View Project e
-                 della cover — niente pagina di dettaglio separata -->
-            <div class="project-row-gallery" data-project="${p.id}">
-              ${buildGalleryItemsHtml(p).join("")}
-            </div>
+                 della cover — niente pagina di dettaglio separata.
+                 Vuota qui apposta: viene riempita solo quando questa
+                 scheda diventa quella "corrente" (vedi enterProjectRow più
+                 sotto e populateProjectRowGallery) — su desktop questo div
+                 resta sempre display:none (vedi CSS) e prima veniva comunque
+                 costruito per tutti gli 8 progetti a ogni render, sprecato -->
+            <div class="project-row-gallery" data-project="${p.id}"></div>
           </div>
           <button class="btn btn-forward project-row-view-btn" data-project="${p.id}">View Project<svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></button>
         </div>
@@ -810,21 +931,6 @@
 
     container.querySelectorAll(".project-row-image").forEach(img=>{
       img.addEventListener("click", ()=> openProject(img.dataset.project));
-    });
-
-    /* galleria inline (solo mobile, vedi CSS): stesso meccanismo di
-       apertura del lightbox di openProject, ma qui ogni .project-row ha
-       già le sue foto nel DOM invece di ricostruirle al volo — basta
-       leggere gli item già presenti invece di rigenerarli */
-    container.querySelectorAll(".project-row-gallery").forEach(galleryEl=>{
-      const triggers = [...galleryEl.querySelectorAll(".gallery-item[data-src]")];
-      const items = triggers.map(item => ({ src: item.dataset.src, caption: item.dataset.caption }));
-      triggers.forEach((item, i)=>{
-        item.addEventListener("click", ()=>{
-          lightboxItems = items;
-          openLightbox(i);
-        });
-      });
     });
 
     container.querySelectorAll(".project-row-more-toggle").forEach(btn=>{
@@ -865,16 +971,29 @@
 
 
   /* barrette: evidenziano quella corrispondente al progetto corrente.
-     Mobile scorre in orizzontale, desktop in verticale (vedi CSS) */
+     Mobile scorre in orizzontale, desktop in verticale (vedi CSS).
+     Con lo scroll-snap, l'evento "scroll" può sparare molte volte al
+     secondo durante l'inerzia del touch: prima questo handler girava per
+     intero (query DOM + matchMedia + forEach) ad ogni singolo tick, anche
+     più volte per frame. Il flag scrollTicking lo raggruppa a un massimo
+     di un'esecuzione per frame disegnato (via requestAnimationFrame),
+     evitando lavoro ridondante proprio mentre l'utente sta scorrendo. */
+  let projectDotsTicking = false;
   document.getElementById("projects-list").addEventListener("scroll", ()=>{
-    const list = document.getElementById("projects-list");
-    const dots = document.querySelectorAll("#project-dots .project-dot");
-    if(!dots.length) return;
-    const isMobile = window.matchMedia("(max-width:800px)").matches;
-    const idx = isMobile
-      ? (list.clientWidth ? Math.round(list.scrollLeft / list.clientWidth) : 0)
-      : (list.clientHeight ? Math.round(list.scrollTop / list.clientHeight) : 0);
-    dots.forEach((d,i)=> d.classList.toggle("active", i === idx));
+    if(projectDotsTicking) return;
+    projectDotsTicking = true;
+    requestAnimationFrame(()=>{
+      const list = document.getElementById("projects-list");
+      const dots = document.querySelectorAll("#project-dots .project-dot");
+      if(dots.length){
+        const isMobile = window.matchMedia("(max-width:800px)").matches;
+        const idx = isMobile
+          ? (list.clientWidth ? Math.round(list.scrollLeft / list.clientWidth) : 0)
+          : (list.clientHeight ? Math.round(list.scrollTop / list.clientHeight) : 0);
+        dots.forEach((d,i)=> d.classList.toggle("active", i === idx));
+      }
+      projectDotsTicking = false;
+    });
   });
 
   /* frecce tastiera: scorrono tra i progetti, solo desktop (mobile usa lo
@@ -946,7 +1065,18 @@
     const idx = maxScroll > 0 ? Math.round((gallery.scrollLeft / maxScroll) * (dots.length - 1)) : 0;
     dots.forEach((d,i)=> d.classList.toggle("active", i === idx));
   }
-  document.getElementById("detail-gallery").addEventListener("scroll", updateDetailDots);
+  /* stesso raggruppamento per-frame dello scroll di #projects-list qui sopra
+     (vedi commento lì): la galleria di dettaglio scorre spesso via inerzia,
+     updateDetailDots non deve girare ad ogni singolo tick dell'evento */
+  let detailDotsTicking = false;
+  document.getElementById("detail-gallery").addEventListener("scroll", ()=>{
+    if(detailDotsTicking) return;
+    detailDotsTicking = true;
+    requestAnimationFrame(()=>{
+      updateDetailDots();
+      detailDotsTicking = false;
+    });
+  });
 
   /* Distribuisce N immagini su 3 righe, il più possibile equilibrate:
      l'eventuale immagine in più va alla riga centrale, le eventuali due in
@@ -1112,7 +1242,7 @@
       if(image){
         const caption = image.caption || "";
         const media = isVideo(image.src)
-          ? `<video src="${encodePath(image.src)}" autoplay loop muted playsinline preload="metadata"></video>`
+          ? `<video src="${encodePath(image.src)}" loop muted playsinline preload="none" data-lazy-video></video>`
           : `<img src="${encodePath(image.src)}" alt="${project.name} — ${caption || ("image " + (i+1))}" loading="lazy" decoding="async">`;
         return `
           <div class="gallery-item-wrap">
@@ -1152,6 +1282,8 @@
       cursor += count;
       return `<div class="gallery-row">${rowHtml}</div>`;
     }).join("");
+
+    observeLazyVideos(gallery);
 
     const lightboxTriggers = gallery.querySelectorAll(".gallery-item[data-src]");
     lightboxItems = [...lightboxTriggers].map(item => ({ src: item.dataset.src, caption: item.dataset.caption }));
@@ -1204,15 +1336,30 @@
      INIT
      ============================================================ */
   renderFooter();
-  renderAbout();
   renderFilters();
   applyProjectsMode();
-  renderProjectsList();
 
   document.querySelector(".view.active").classList.add("visible");
   if(location.hash){
     history.replaceState({view:"home"}, "", location.pathname);
   }
+
+  /* About e, soprattutto, Projects (fino a 80 foto/video nelle gallerie
+     inline mobile) sono le parti più pesanti da costruire. Farlo qui in
+     modo sincrono, prima ancora che la pagina diventi interattiva,
+     blocca il thread principale proprio mentre la schermata di
+     caricamento è a schermo — su un telefono lento il tap su
+     "click to enter" può restare in coda finché quel lavoro non finisce,
+     e il passaggio sembra scattare in ritardo. Rimandarle al frame
+     successivo lascia che il browser disegni prima la pagina e la renda
+     subito reattiva al tocco; il contenuto arriva comunque un istante
+     dopo, ben prima che serva davvero (l'utente deve ancora leggere/
+     cliccare la schermata di caricamento). */
+  requestAnimationFrame(()=>{
+    renderAbout();
+    renderProjectsList();
+    projectsListReady = true;
+  });
 
 </script>
 </body>
