@@ -775,11 +775,13 @@
                 <span class="more-info-label"><span class="more-info-prefix">More </span>Info</span>
                 <svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg>
               </button>
-              <ul class="project-row-more-list">
-                <li class="more-desc-row"><span class="more-value">${p.description}</span></li>
-                <li class="more-tags-row"><span class="more-label">Tags</span><span class="more-value">${p.tags.join(", ")}</span></li>
-                ${moreFields.map(([label, value]) => `<li><span class="more-label">${label}</span><span class="more-value">${value}</span></li>`).join("")}
-              </ul>
+              <div class="project-row-more-collapse">
+                <ul class="project-row-more-list">
+                  <li class="more-desc-row"><span class="more-value">${p.description}</span></li>
+                  <li class="more-tags-row"><span class="more-label">Tags</span><span class="more-value">${p.tags.join(", ")}</span></li>
+                  ${moreFields.map(([label, value]) => `<li><span class="more-label">${label}</span><span class="more-value">${value}</span></li>`).join("")}
+                </ul>
+              </div>
             </div>
             <!-- solo mobile (vedi mobile.css): le foto del progetto già qui,
                  subito sotto Info, al posto del bottone View Project e
@@ -827,13 +829,16 @@
 
     container.querySelectorAll(".project-row-more-toggle").forEach(btn=>{
       btn.addEventListener("click", ()=>{
-        const list = btn.parentElement.querySelector(".project-row-more-list");
-        const opening = !list.classList.contains("open");
-        /* altezza esatta misurata invece di un max-height fisso arbitrario:
-           l'animazione percorre sempre la distanza reale, quindi la velocità
-           percepita resta costante indipendentemente dalla lunghezza del testo */
-        list.style.maxHeight = opening ? list.scrollHeight + "px" : "0px";
-        list.classList.toggle("open", opening);
+        const collapse = btn.parentElement.querySelector(".project-row-more-collapse");
+        const opening = !collapse.classList.contains("open");
+        /* grid-template-rows 0fr->1fr invece di misurare scrollHeight e
+           animare max-height: niente lettura sincrona del layout al click
+           (che con la galleria inline ora sotto poteva essere pesante, si
+           sentiva "a scatti" proprio nell'istante del tap), e la distanza
+           percorsa resta comunque quella reale del contenuto — stessa
+           velocità percepita indipendentemente dalla lunghezza del testo,
+           ma calcolata dal browser durante l'animazione stessa */
+        collapse.classList.toggle("open", opening);
         btn.classList.toggle("open", opening);
       });
     });

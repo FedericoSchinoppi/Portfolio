@@ -280,9 +280,14 @@ img, video{
   letter-spacing:0.12em;
   text-transform:uppercase;
 }
-.tab:hover{color:var(--accent); background:var(--accent-tint);}
 .tab-arrow{font-size:var(--arrow-size); line-height:1; display:flex; align-items:center; transition:transform .15s ease;}
-.tab:hover .tab-arrow{transform:scale(1.15);}
+/* (hover:hover): solo su dispositivi con un vero puntatore (mouse/trackpad).
+   Su touch un tap può altrimenti "restare" nello stato :hover finché non si
+   tocca altrove (sticky hover), lasciando fasce/pulsanti colorati appesi */
+@media (hover:hover){
+  .tab:hover{color:var(--accent); background:var(--accent-tint);}
+  .tab:hover .tab-arrow{transform:scale(1.15);}
+}
 
 .icon-svg{width:1em; height:1em; display:block; fill:currentColor;}
 
@@ -301,7 +306,9 @@ img, video{
   color:var(--text);
   transition:color .15s ease, transform .15s ease;
 }
-.back-btn-inline:hover{color:var(--accent); transform:scale(1.15);}
+@media (hover:hover){
+  .back-btn-inline:hover{color:var(--accent); transform:scale(1.15);}
+}
 .title-row h1{
   font-weight:400;
   font-size:clamp(1.7rem,3.6vw,2.5rem);
@@ -358,7 +365,9 @@ img, video{
   transition:color .15s ease;
   overflow-wrap:break-word; /* email/indirizzi lunghi vanno a capo invece di traboccare fuori dalla colonna sugli schermi più stretti */
 }
-.contact-link:hover{color:var(--accent);}
+@media (hover:hover){
+  .contact-link:hover{color:var(--accent);}
+}
 .btn-row{display:flex; flex-wrap:wrap; gap:24px;}
 .btn{
   display:inline-flex; align-items:center; gap:8px;
@@ -372,11 +381,13 @@ img, video{
   transition:transform .15s ease;
 }
 .btn .icon-svg{transition:transform .15s ease;}
-.btn:hover{transform:scale(1.06);}
 .btn-forward .icon-svg{width:0.85em; height:0.85em;}
-.btn-forward:hover .icon-svg{transform:translateX(4px);}
 .btn-download .icon-svg{width:0.8em; height:0.47em;}
-.btn-download:hover .icon-svg{transform:translateY(1.5px);}
+@media (hover:hover){
+  .btn:hover{transform:scale(1.06);}
+  .btn-forward:hover .icon-svg{transform:translateX(4px);}
+  .btn-download:hover .icon-svg{transform:translateY(1.5px);}
+}
 
 .about-photo{width:50%; flex-shrink:0; height:100%; background:var(--surface);}
 .about-photo img{width:100%; height:100%; object-fit:cover; display:block;}
@@ -408,7 +419,9 @@ img, video{
   opacity:0;
   transition:opacity .15s ease;
 }
-.filter-btn:hover{color:var(--accent);}
+@media (hover:hover){
+  .filter-btn:hover{color:var(--accent);}
+}
 .filter-btn.active{color:var(--text);}
 .filter-btn.active::before{opacity:1;}
 
@@ -570,7 +583,9 @@ img, video{
 }
 /* hover azzurrino, non blu pieno: il blu pieno indica già "selezionato"
    (vedi .active sopra), un hover dello stesso colore sarebbe ambiguo */
-.project-dot:not(.active):hover{background-color:var(--accent-light);}
+@media (hover:hover){
+  .project-dot:not(.active):hover{background-color:var(--accent-light);}
+}
 /* titolo del progetto al passaggio del cursore su un pallino, al posto del
    vecchio menu a tendina sui filtri: appare a sinistra (i pallini sono
    ancorati al bordo destro) */
@@ -588,7 +603,9 @@ img, video{
   opacity:0; pointer-events:none;
   transition:opacity .2s ease, transform .2s ease;
 }
-.project-dot:hover::after{opacity:1; transform:translateY(-50%) translateX(0);}
+@media (hover:hover){
+  .project-dot:hover::after{opacity:1; transform:translateY(-50%) translateX(0);}
+}
 
 /* wrapper attorno alla galleria di dettaglio: i pallini si centrano su
    questo invece che sull'intera view (vedi .projects-list-wrap, stessa idea) */
@@ -615,7 +632,9 @@ img, video{
   cursor:var(--cursor-brand);
   transition:background-color .3s cubic-bezier(.4,0,.2,1), width .3s cubic-bezier(.4,0,.2,1);
 }
-.detail-dot:hover{background-color:var(--accent-light);}
+@media (hover:hover){
+  .detail-dot:hover{background-color:var(--accent-light);}
+}
 .detail-dot.active{
   background-color:rgba(25,27,223,0.85);
   width:24px;
@@ -651,16 +670,28 @@ img, video{
   color:var(--text);
   transition:color .15s ease;
 }
-.project-row-more-toggle:hover{color:var(--accent);}
+@media (hover:hover){
+  .project-row-more-toggle:hover{color:var(--accent);}
+}
 .project-row-more-toggle .icon-svg{width:0.85em; height:0.5em; transition:transform .2s ease;}
 .project-row-more-toggle.open .icon-svg{transform:rotate(180deg);}
+/* wrapper che si apre/chiude: grid-template-rows 0fr->1fr invece di
+   max-height misurato via JS (vedi index.html) — l'animazione copre
+   comunque la distanza reale del contenuto (niente velocità percepita
+   diversa in base alla lunghezza del testo), ma senza dover leggere
+   scrollHeight sincronamente al click (costoso, si sentiva "a scatti") */
+.project-row-more-collapse{
+  display:grid;
+  grid-template-rows:0fr;
+  opacity:0;
+  transition:grid-template-rows .35s ease, opacity .25s ease, margin-top .35s ease;
+}
+.project-row-more-collapse.open{grid-template-rows:1fr; opacity:1; margin-top:14px;}
 .project-row-more-list{
   text-align:left;
   display:flex; flex-direction:column; gap:10px;
-  max-height:0; overflow:hidden; opacity:0;
-  transition:max-height .35s ease, opacity .25s ease, margin-top .35s ease;
+  min-height:0; overflow:hidden;
 }
-.project-row-more-list.open{max-height:280px; opacity:1; margin-top:14px;}
 .project-row-more-list li{display:flex; flex-direction:column; gap:2px;}
 .more-label{font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-secondary);}
 .more-value{font-size:0.85rem; color:var(--text);}
@@ -805,7 +836,9 @@ img, video{
 }
 /* stessa coerenza degli altri pallini (project-dot/detail-dot): hover
    azzurrino sui non selezionati, mai sul blu pieno già "attivo" */
-.lightbox-dot:not(.active):hover{background:var(--accent-light);}
+@media (hover:hover){
+  .lightbox-dot:not(.active):hover{background:var(--accent-light);}
+}
 .lightbox-dot.active{
   background:var(--accent);
   width:24px;
