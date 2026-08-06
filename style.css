@@ -855,6 +855,12 @@ img, video{
   width:24px;
 }
 
+/* anteprima a pressione prolungata sull'elenco progetti (solo mobile,
+   vedi mobile.css): niente hover reale sul touch, l'equivalente qui è
+   tenere premuto — nascosta di default, l'unica versione che la usa è
+   quella sotto gli 800px */
+.mobile-row-preview{display:none;}
+
 /* ============================================================
    GRIGLIA INDICE — transizione desktop stretto
    Unica regola di questo file legata alla larghezza dello schermo (vedi

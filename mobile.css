@@ -207,6 +207,25 @@
     flex-shrink:0;
   }
 
+  /* anteprima a pressione prolungata su una fascia (vedi
+     setupIndexRowLongPress in index.html): overlay scuro a schermo intero
+     con la copertina al centro, stesse proporzioni reali del file */
+  .mobile-row-preview{
+    display:flex; align-items:center; justify-content:center;
+    position:fixed; inset:0; z-index:96;
+    background:rgba(10,10,10,0.6);
+    padding:52px;
+    opacity:0; pointer-events:none;
+    transition:opacity .15s ease;
+  }
+  .mobile-row-preview.active{opacity:1;}
+  .mobile-row-preview img{
+    width:100%; max-width:360px;
+    aspect-ratio:var(--cover-ratio, 1080/900);
+    object-fit:cover;
+    box-shadow:0 20px 48px rgba(0,0,0,0.4);
+  }
+
   /* ---------- 5. LISTA PROGETTI ---------- */
   /* niente scorrimento orizzontale tra un progetto e l'altro: si vede solo
      la scheda corrente (classe .current, messa via JS in enterProjectRow),

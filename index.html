@@ -70,6 +70,15 @@
     <div class="lightbox-dots" id="lightbox-dots"></div>
   </div>
 
+  <!-- anteprima a pressione prolungata sull'elenco progetti mobile (vedi
+       setupIndexRowLongPress): fixed e fuori da .view per lo stesso motivo
+       del lightbox e della vecchia anteprima al passaggio del cursore —
+       un antenato con transform (.view) creerebbe un containing block
+       sbagliato per un elemento position:fixed -->
+  <div class="mobile-row-preview" id="mobile-row-preview">
+    <img id="mobile-row-preview-img" src="" alt="">
+  </div>
+
 
   <!-- ============================================================
        HOME
@@ -851,7 +860,7 @@
   function renderProjectsIndexList(list){
     const wrap = document.getElementById("projects-index-list");
     wrap.innerHTML = list.map(p => `
-      <div class="index-row" data-project="${p.id}">
+      <div class="index-row" data-project="${p.id}" data-cover="${p.cover || ""}">
         <div class="index-row-text">
           <span class="index-row-title">${p.name}</span>
           <span class="index-row-tag">${p.tags[0] || ""}</span>
@@ -860,8 +869,48 @@
       </div>
     `).join("");
     wrap.querySelectorAll(".index-row").forEach(row=>{
-      row.addEventListener("click", ()=> enterProjectRow(row.dataset.project));
+      row.addEventListener("click", ()=>{
+        /* la pressione prolungata apre solo l'anteprima (vedi
+           setupIndexRowLongPress): non deve anche far scattare la
+           navigazione quando il dito si solleva */
+        if(row.dataset.longPressed){ delete row.dataset.longPressed; return; }
+        enterProjectRow(row.dataset.project);
+      });
+      setupIndexRowLongPress(row);
     });
+  }
+
+  /* tenere premuto su una fascia dell'elenco (mobile): mostra un'anteprima
+     della copertina del progetto, stesso spirito dell'anteprima al passaggio
+     del mouse nella griglia desktop ma adattata al touch (che non ha hover).
+     Un tap rapido continua a navigare come prima; solo se il dito resta
+     fermo abbastanza a lungo scatta l'anteprima, e in quel caso il tap
+     successivo NON deve anche navigare (vedi flag row.dataset.longPressed) */
+  const LONG_PRESS_MS = 380;
+  function setupIndexRowLongPress(row){
+    let timer = null;
+    const preview = document.getElementById("mobile-row-preview");
+    const previewImg = document.getElementById("mobile-row-preview-img");
+    const clearTimer = () => { clearTimeout(timer); timer = null; };
+    const hide = () => preview.classList.remove("active");
+    row.addEventListener("touchstart", (e)=>{
+      if(e.touches.length !== 1) return;
+      const cover = row.dataset.cover;
+      if(!cover) return;
+      clearTimer();
+      timer = setTimeout(()=>{
+        row.dataset.longPressed = "1";
+        previewImg.src = encodePath(cover);
+        preview.classList.add("active");
+        /* feedback tattile leggero, se il dispositivo lo supporta */
+        if(navigator.vibrate) navigator.vibrate(12);
+      }, LONG_PRESS_MS);
+    }, { passive:true });
+    /* un dito che si muove è uno scroll della lista, non una pressione
+       ferma: annulla il timer prima che scatti l'anteprima */
+    row.addEventListener("touchmove", clearTimer, { passive:true });
+    row.addEventListener("touchend", ()=>{ clearTimer(); hide(); });
+    row.addEventListener("touchcancel", ()=>{ clearTimer(); hide(); });
   }
 
   function renderProjectsList(){
@@ -1195,6 +1244,26 @@
     else if(e.key === "ArrowRight") stepLightbox(1);
     else if(e.key === "ArrowLeft") stepLightbox(-1);
   });
+
+  /* rotella del mouse (o trackpad): avanti/indietro tra le foto come le
+     frecce, non uno scorrimento continuo — non c'è nulla da scorrere qui,
+     è una foto alla volta. L'ascoltatore è su .lightbox stesso (non su
+     window): mentre il lightbox è chiuso è display:none e non riceve mai
+     l'evento, quindi non serve nemmeno controllare "active" a mano né si
+     rischia di bloccare lo scroll della pagina sotto */
+  let lightboxWheelLock = false;
+  lightbox.addEventListener("wheel", (e)=>{
+    e.preventDefault();
+    if(lightboxWheelLock) return;
+    /* trackpad e rotelle "a step" mandano tanti eventi piccoli per un solo
+       gesto: sotto una soglia minima li ignora, altrimenti un singolo
+       scroll salterebbe più foto invece di una */
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    if(Math.abs(delta) < 8) return;
+    stepLightbox(delta > 0 ? 1 : -1);
+    lightboxWheelLock = true;
+    setTimeout(()=>{ lightboxWheelLock = false; }, 380);
+  }, { passive:false });
 
   /* swipe col dito (mobile): scorre tra le foto invece di chiudere il
      lightbox, che resta chiudibile con un tap semplice (senza spostamento) */
