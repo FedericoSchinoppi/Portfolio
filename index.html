@@ -27,6 +27,12 @@
 <link rel="preload" href="font/NeueHaasDisplay-Roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="img/svg/fs-white.svg" as="image">
 <link rel="stylesheet" href="style.css">
+<!-- versione TABLET/IPAD: 801px–1279px, tra il layout mobile (≤800px) e
+     quello laptop/desktop (≥1280px). Copre la maggior parte degli iPad in
+     entrambi gli orientamenti (portrait e landscape), tranne l'iPad Pro
+     12.9" in landscape (1366px) che ricade nel layout desktop — soglia
+     comunque facile da spostare in un secondo momento se serve -->
+<link rel="stylesheet" href="tablet.css" media="(min-width:801px) and (max-width:1279px)">
 <!-- caricato solo su schermi ≤800px: sotto quella soglia il browser lo
      scarica comunque (in background, per averlo pronto se la finestra si
      restringe) ma NON lo considera bloccante per il primo render su
@@ -390,6 +396,25 @@
   const VIDEO_EXT = /\.(mp4|webm|mov)$/i;
   function isVideo(src){
     return VIDEO_EXT.test(src || "");
+  }
+
+  /* soglie condivise con i media query CSS (vedi tablet.css / mobile.css):
+     servono qui perché alcuni comportamenti — non solo lo stile — cambiano
+     su tablet (griglia indice 2 colonne, apertura diretta del progetto) e
+     vanno decisi in JS, non solo con CSS */
+  function isTabletViewport(){
+    return window.matchMedia("(min-width:801px) and (max-width:1279px)").matches;
+  }
+  function isMobileViewport(){
+    return window.matchMedia("(max-width:800px)").matches;
+  }
+  /* usata per capire, dopo un resize/rotazione, se si è passati da un
+     "bucket" all'altro (mobile/tablet/desktop) — vedi il resize handler
+     più sotto, che ricostruisce la griglia indice solo quando serve */
+  function viewportBucket(){
+    if(isMobileViewport()) return "mobile";
+    if(isTabletViewport()) return "tablet";
+    return "desktop";
   }
 
   /* video "pigri": niente autoplay in HTML (che li farebbe partire tutti
@@ -822,11 +847,22 @@
      quel progetto specifico */
   function renderProjectsIndexGrid(list){
     const grid = document.getElementById("projects-index-grid");
-    const cols = Math.max(1, Math.ceil(list.length / 2));
+    /* Desktop: righe fisse a 2, colonne che si adattano (comportamento
+       originale). Tablet: rapporto invertito — colonne fisse a 2, righe
+       che si adattano (es. "All" con 8 progetti = 4 righe x 2 colonne;
+       un filtro con 3 progetti = 2 righe x 2 colonne, l'ultima incompleta) */
+    const tablet = isTabletViewport();
+    const rows = tablet ? Math.max(1, Math.ceil(list.length / 2)) : 2;
+    const cols = tablet ? 2 : Math.max(1, Math.ceil(list.length / rows));
     grid.style.setProperty("--index-grid-cols", cols);
+    grid.style.setProperty("--index-grid-rows", rows);
     grid.innerHTML = list.map((p, i) => {
       const classes = ["index-tile"];
-      if(i < cols) classes.push("index-tile-top-row");
+      const rowIndex = Math.floor(i / cols);
+      /* riga interna (non l'ultima): le separa dalla riga sotto — sulla
+         riga finale non serve, non c'è nulla sotto con cui confondersi
+         (vedi CSS .index-tile-top-row) */
+      if(rowIndex < rows - 1) classes.push("index-tile-top-row");
       /* ultima colonna vera (indice di colonna cols-1): è l'unica che
          tocca sempre il bordo destro dello schermo, quindi niente
          border-right lì (vedi CSS). Se una riga è incompleta (l'ultimo
@@ -848,7 +884,17 @@
     `;
     }).join("");
     grid.querySelectorAll(".index-tile").forEach(tile=>{
-      tile.addEventListener("click", ()=> enterProjectRow(tile.dataset.project));
+      tile.addEventListener("click", ()=>{
+        /* Tablet: niente scheda intermedia con "View Project" — si apre
+           subito la galleria del progetto, come su smartphone, ma
+           restando nella pagina di dettaglio "vera" (che ha ancora il
+           toggle Scroll/Grid, a differenza della versione mobile) */
+        if(isTabletViewport()){
+          openProject(tile.dataset.project);
+        } else {
+          enterProjectRow(tile.dataset.project);
+        }
+      });
     });
   }
 
@@ -1138,6 +1184,21 @@
     return [base + 1, base, base + 1];
   }
 
+  /* stessa idea di threeRowCounts ma su 2 righe: su tablet lo schermo è
+     più stretto, 3 righe (quindi più colonne per riga) darebbe riquadri
+     piccoli e poco leggibili — 2 righe più alte restano chiare */
+  function twoRowCounts(n){
+    const base = Math.floor(n / 2);
+    const rem = n - base * 2;
+    return rem === 0 ? [base, base] : [base + 1, base];
+  }
+
+  /* sceglie il numero di righe della Grid view di dettaglio in base al
+     dispositivo: 2 su tablet, 3 su desktop (vedi twoRowCounts/threeRowCounts) */
+  function rowCountsForGallery(n){
+    return isTabletViewport() ? twoRowCounts(n) : threeRowCounts(n);
+  }
+
   /* Grid statica, senza scorrimento, su 3 righe: stessa dimensione per
      tutte le foto (proporzioni reali 16:9), calcolata per riempire tutto
      lo spazio disponibile tra il menu e il footer. Le righe più corte
@@ -1162,6 +1223,26 @@
   window.addEventListener("resize", ()=>{
     clearTimeout(window.__gridResizeTimer);
     window.__gridResizeTimer = setTimeout(layoutGridView, 120);
+  });
+
+  /* ricostruisce l'indice a griglia dei progetti quando si passa da un
+     "bucket" di larghezza all'altro (mobile/tablet/desktop) — capita
+     soprattutto ruotando un iPad tra portrait e landscape a sito già
+     aperto sull'indice progetti: senza questo, --index-grid-cols/rows
+     resterebbero quelli calcolati all'apertura, sbagliati per il nuovo
+     orientamento */
+  let lastViewportBucket = viewportBucket();
+  window.addEventListener("resize", ()=>{
+    clearTimeout(window.__bucketResizeTimer);
+    window.__bucketResizeTimer = setTimeout(()=>{
+      const bucket = viewportBucket();
+      if(bucket === lastViewportBucket) return;
+      lastViewportBucket = bucket;
+      if(projectsListReady && document.getElementById("view-projects").classList.contains("grid-mode")){
+        const list = PROJECTS.filter(p => activeFilter === "all" || p.categories.includes(activeFilter));
+        renderProjectsIndexGrid(list);
+      }
+    }, 150);
   });
 
   /* ============================================================
@@ -1344,7 +1425,7 @@
     /* in Grid view le immagini si dispongono su 3 righe (vedi threeRowCounts);
        in Scroll view i gruppi-riga diventano trasparenti (display:contents)
        e l'ordine resta quello originale, invariato. */
-    const rowCounts = threeRowCounts(itemsHtml.length);
+    const rowCounts = rowCountsForGallery(itemsHtml.length);
     let cursor = 0;
     gallery.innerHTML = rowCounts.map(count => {
       const rowHtml = itemsHtml.slice(cursor, cursor + count).join("");
@@ -1424,10 +1505,26 @@
      subito reattiva al tocco; il contenuto arriva comunque un istante
      dopo, ben prima che serva davvero (l'utente deve ancora leggere/
      cliccare la schermata di caricamento). */
+  /* About e Projects sono le parti più pesanti da costruire, ma non hanno
+     lo stesso peso: About è quattro assegnazioni di testo (nome, bio,
+     skill, contatti), Projects costruisce 8 schede intere (testo, tag,
+     copertine, listener) — molto più leggero di prima (le gallerie restano
+     vuote finché non apri un progetto, vedi enterProjectRow più sopra), ma
+     comunque il pezzo più corposo del sito.
+     Se stessero nello stesso frame, proprio mentre il nome/bio/foto
+     compaiono in home partirebbe anche la costruzione di tutte le schede
+     progetto — la home "scatterebbe" un istante dopo essere apparsa. Con
+     due requestAnimationFrame annidati, About (leggerissimo) va nel primo
+     frame utile — il nome/bio in home compaiono senza nient'altro di
+     pesante appeso alla stessa esecuzione — e Projects slitta a un frame
+     ancora dopo: ~16ms in più, impercettibili, ma la home non condivide
+     più il colpo di lavoro con quello scatto */
   requestAnimationFrame(()=>{
     renderAbout();
-    renderProjectsList();
-    projectsListReady = true;
+    requestAnimationFrame(()=>{
+      renderProjectsList();
+      projectsListReady = true;
+    });
   });
 
 </script>

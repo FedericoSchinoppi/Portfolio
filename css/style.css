@@ -422,9 +422,11 @@ img, video{
    ============================================================ */
 /* nascosta di default: #view-projects.grid-mode la mostra, .list-mode
    mostra invece .projects-list-wrap sotto (vedi JS: projectsMode).
-   Sempre 2 righe: le colonne (--index-grid-cols, impostata via JS in
-   renderProjectsIndexGrid) si adattano al numero di progetti del filtro
-   corrente — 8 progetti in "All" = 4 colonne */
+   Desktop: sempre 2 righe, le colonne (--index-grid-cols, impostata via JS
+   in renderProjectsIndexGrid) si adattano al numero di progetti del filtro
+   corrente — 8 progetti in "All" = 4 colonne.
+   Tablet (vedi tablet.css + JS): il rapporto si inverte, sempre 2 colonne
+   e sono le righe (--index-grid-rows) ad adattarsi al numero di progetti. */
 .projects-index-grid{display:none;}
 /* versione mobile dell'indice (fasce titolo+tag invece della griglia):
    nascosta di default, la mostra solo mobile.css sotto gli 800px */
@@ -432,7 +434,12 @@ img, video{
 #view-projects.grid-mode .projects-index-grid{
   display:grid;
   grid-template-columns:repeat(var(--index-grid-cols, 4), 1fr);
-  grid-template-rows:repeat(2, 1fr);
+  /* --index-grid-rows: 2 su desktop (righe fisse, colonne variabili, vedi
+     JS renderProjectsIndexGrid); su tablet è invece --index-grid-cols
+     fisso a 2 e --index-grid-rows a variare col numero di progetti — la
+     stessa proprietà CSS serve entrambi i casi, cambia solo chi la JS
+     tiene fissa e chi tiene variabile */
+  grid-template-rows:repeat(var(--index-grid-rows, 2), 1fr);
   /* niente border-left qui: si vedrebbe la linea blu attaccata al bordo
      sinistro dello schermo. La prima colonna di riquadri non ha comunque
      un proprio bordo sinistro (vedi .index-tile, usa solo border-right),

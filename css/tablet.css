@@ -1,0 +1,101 @@
+/* ============================================================
+   TABLET.CSS — versione TABLET / IPAD
+   Va caricato DOPO style.css (vedi index.html): sovrascrive quelle
+   regole solo tra 801px e 1279px di larghezza — sotto agli 800px si
+   passa invece al layout mobile (mobile.css), sopra ai 1279px resta il
+   layout laptop/desktop (style.css). Copre la maggior parte degli iPad
+   in entrambi gli orientamenti; unica eccezione nota è l'iPad Pro 12.9"
+   in landscape (1366px), che ricade nel layout desktop.
+
+   A differenza del mobile, qui NON si passa alla galleria inline dentro
+   la scheda progetto: si apre direttamente la pagina di dettaglio (vedi
+   JS, index.html — il click su un riquadro della griglia chiama
+   openProject invece di enterProjectRow quando isTabletViewport() è
+   vero), che mantiene il menu Scroll/Grid.
+
+   Indice:
+   1. About: skills a elenco verticale (una sotto l'altra)
+   2. Projects — indice a griglia: tag di nuovo visibile (era nascosto
+      sotto i 1000px in style.css); righe/colonne gestite lato JS
+      (isTabletViewport in index.html), qui solo le dimensioni dei riquadri
+   3. Project detail: Scroll view verticale (come mobile) invece che
+      orizzontale, Grid view su 2 righe invece di 3 (righe scelte via JS,
+      rowCountsForGallery)
+   ============================================================ */
+
+@media (min-width:801px) and (max-width:1279px){
+
+  :root{
+    --edge:32px;
+  }
+
+  /* ---------- 1. ABOUT: skills a elenco verticale ---------- */
+  .about-skills ul{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:12px;
+  }
+  .about-skills li{
+    margin-right:0; padding-right:0; border-right:none;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--text);
+  }
+  .about-skills li:last-child{border-bottom:none; padding-bottom:0;}
+
+  /* ---------- 2. PROJECTS — indice a griglia ---------- */
+  /* il tag torna visibile (era nascosto sotto i 1000px in style.css, vedi
+     ".index-tile-blurb, .index-tile-tags{display:none}"): stessa
+     specificità della regola che lo nasconde, ma questo foglio è caricato
+     dopo style.css nel <head>, quindi vince a parità di specificità.
+     La frasetta (.index-tile-blurb) resta invece nascosta sotto i 1000px
+     come su desktop stretto — qui si è chiesto di far riapparire solo il tag */
+  .index-tile-tags{display:flex;}
+
+  /* riquadri un po' più compatti: con 2 colonne fisse e righe che
+     crescono col numero di progetti (fino a 4 righe in "All") lo spazio
+     verticale per riquadro è minore che su desktop */
+  .index-tile{padding:22px 24px;}
+  .index-tile-title{font-size:1.15rem;}
+  .index-tile-blurb{font-size:0.85rem; -webkit-line-clamp:1; line-clamp:1;}
+
+  /* ---------- 3. PROJECT DETAIL ---------- */
+  /* Scroll view verticale, come su mobile: più naturale del trascinamento
+     orizzontale su un touchscreen tenuto in verticale o orizzontale */
+  .detail-gallery.scroll-view{
+    flex-direction:column;
+    overflow-x:hidden; overflow-y:auto;
+    overscroll-behavior:contain;
+    scroll-snap-type:y mandatory;
+    -webkit-overflow-scrolling:touch;
+    gap:20px;
+    padding-bottom:28px;
+  }
+  .detail-gallery.scroll-view .gallery-row{display:contents;}
+  .detail-gallery.scroll-view .gallery-item-wrap{
+    width:100%; height:auto; flex-shrink:0;
+    /* le foto restano alla loro proporzione reale (16:9), ma non più
+       larghe del necessario perché restino ben leggibili anche su schermi
+       stretti in portrait */
+    max-width:720px;
+    aspect-ratio:16/9;
+    align-self:center;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+  }
+  .detail-gallery.scroll-view .gallery-item-wrap:last-child{
+    scroll-snap-align:end;
+  }
+
+  /* i pallini orizzontali in basso indicavano la posizione dello scroll
+     ORIZZONTALE (vedi updateDetailDots in index.html, basato su
+     scrollLeft): con lo scroll verticale qui sopra non avrebbero più
+     alcun significato, si nascondono come su mobile */
+  .detail-gallery-dots{display:none;}
+
+  /* Grid view: stessa logica di layoutGridView (JS) ma nutrita con 2 righe
+     invece di 3 (vedi rowCountsForGallery), quindi riquadri già più grandi
+     di default — qui solo un gap leggermente più ampio per arieggiarli */
+  .detail-gallery.grid-view{gap:10px;}
+  .detail-gallery.grid-view .gallery-row{gap:10px;}
+
+}
