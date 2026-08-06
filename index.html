@@ -26,19 +26,19 @@
      solo dopo che il browser ha finito di leggere tutto il CSS -->
 <link rel="preload" href="font/NeueHaasDisplay-Roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="img/svg/fs-white.svg" as="image">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 <!-- versione TABLET/IPAD: 801px–1279px, tra il layout mobile (≤800px) e
      quello laptop/desktop (≥1280px). Copre la maggior parte degli iPad in
      entrambi gli orientamenti (portrait e landscape), tranne l'iPad Pro
      12.9" in landscape (1366px) che ricade nel layout desktop — soglia
      comunque facile da spostare in un secondo momento se serve -->
-<link rel="stylesheet" href="tablet.css" media="(min-width:801px) and (max-width:1279px)">
+<link rel="stylesheet" href="css/tablet.css" media="(min-width:801px) and (max-width:1279px)">
 <!-- caricato solo su schermi ≤800px: sotto quella soglia il browser lo
      scarica comunque (in background, per averlo pronto se la finestra si
      restringe) ma NON lo considera bloccante per il primo render su
      desktop/tablet larghi, dove tutte le regole al suo interno sono
      comunque inapplicabili -->
-<link rel="stylesheet" href="mobile.css" media="(max-width:800px)">
+<link rel="stylesheet" href="css/mobile.css" media="(max-width:800px)">
 </head>
 <body>
 
