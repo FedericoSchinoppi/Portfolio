@@ -4,23 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Federico Schinoppi Rossi - Communication designer</title>
-<meta name="description" content="Digital portfolio 2026">
+<meta name="description" content="Communication designer: brand identity, content and digital strategy">
 
 <!-- anteprima del link quando lo condividi (LinkedIn, WhatsApp, email, ecc.) -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://federicoschinoppi.github.io/Portfolio/">
 <meta property="og:title" content="Federico Schinoppi Rossi - Communication designer">
-<meta property="og:description" content="Digital portfolio 2026">
+<meta property="og:description" content="Communication designer: brand identity, content and digital strategy">
 <meta property="og:image" content="https://federicoschinoppi.github.io/Portfolio/img/about.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Federico Schinoppi Rossi - Communication designer">
-<meta name="twitter:description" content="Digital portfolio 2026">
+<meta name="twitter:description" content="Communication designer: brand identity, content and digital strategy">
 <meta name="twitter:image" content="https://federicoschinoppi.github.io/Portfolio/img/about.jpg">
 
-<!-- senza questo, ogni browser richiede comunque /favicon.ico da solo ad
-     ogni caricamento: una richiesta di rete in più che va sempre a vuoto
-     (404 silenzioso). Riuso il logo che hai già, stesso file dell'header -->
-<link rel="icon" type="image/svg+xml" href="img/svg/fs-blu.svg">
+<!-- il logo orizzontale non è leggibile in una scheda del browser: serve
+     un quadrato con il marchio dentro. SVG per i browser moderni, PNG/ICO
+     per quelli che non supportano le favicon SVG (Safari) e per iOS -->
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
 <!-- font e logo dell'intro sono le prime due cose che l'utente vede:
      preload li mette in cima alla coda di rete invece di farli scoprire
      solo dopo che il browser ha finito di leggere tutto il CSS -->
@@ -761,7 +764,7 @@
        browser collassa qualunque sequenza di spazi in uno solo, quindi
        scrivere più spazi nella stringa non avrebbe alcun effetto visivo */
     const sep = `<span class="footer-sep">|</span>`;
-    const footerLine = `${CONFIG.name}${sep}Portfolio${sep}2026`;
+    const footerLine = `${CONFIG.name}${sep}2026`;
     document.getElementById("footer-text").innerHTML = footerLine;
     document.getElementById("intro-footer-text").innerHTML = footerLine;
 
@@ -807,7 +810,7 @@
       const isActive = cat === activeFilter;
       return `
         <div class="filter-item${isActive ? " active" : ""}">
-          <button class="filter-btn ${isActive ? "active" : ""}" data-filter="${cat}">${label}</button>
+          <button class="filter-btn ${isActive ? "active" : ""}" data-filter="${cat}"><span class="filter-label" data-label="${label}">${label}</span></button>
         </div>`;
     }).join("");
 
@@ -1114,8 +1117,8 @@
   function renderGalleryToggle(){
     const container = document.getElementById("detail-view-toggle");
     container.innerHTML = `
-      <button class="filter-btn ${galleryViewMode === "scroll" ? "active" : ""}" data-mode="scroll">Scroll</button>
-      <button class="filter-btn ${galleryViewMode === "grid" ? "active" : ""}" data-mode="grid">Grid</button>
+      <button class="filter-btn ${galleryViewMode === "scroll" ? "active" : ""}" data-mode="scroll"><span class="filter-label" data-label="Scroll">Scroll</span></button>
+      <button class="filter-btn ${galleryViewMode === "grid" ? "active" : ""}" data-mode="grid"><span class="filter-label" data-label="Grid">Grid</span></button>
     `;
     container.querySelectorAll("[data-mode]").forEach(btn=>{
       btn.addEventListener("click", ()=>{

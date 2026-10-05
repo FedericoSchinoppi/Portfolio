@@ -410,12 +410,12 @@
     padding:0 40px; /* spazio di sicurezza attorno al pulsante indietro */
   }
 
-  /* ---------- 8. HOVER/TAP: pulsanti cliccabili diventano blu ---------- */
+  /* ---------- 8. HOVER/TAP: pulsanti cliccabili aumentano di spessore ---------- */
   .project-row-more-toggle:hover,
   .project-row-more-toggle:active,
   .project-row-more-toggle:focus-visible,
   .project-row-more-toggle.open{
-    color:var(--accent);
+    font-weight:700;
   }
 
   /* ---------- 9. ANIMAZIONI più fluide e curate (Info, View Project, frecce indietro) ---------- */

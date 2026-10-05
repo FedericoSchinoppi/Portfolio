@@ -25,10 +25,11 @@
 
 :root{
   --bg:#f9fdfe;
-  --text:#0a0a0a;
-  --text-secondary:#6e6e6e;
   --accent:#191bdf;
-  --accent-light:#9898f1;
+  /* Una sola tinta per tutta la tipografia: la gerarchia passa dai pesi. */
+  --text:var(--accent);
+  --text-secondary:var(--accent);
+  --accent-light:var(--accent);
   --accent-tint:rgba(25,27,223,0.06);
   --surface:#e4e9f4;
 
@@ -264,7 +265,7 @@ img, video{
   padding:0 var(--edge);
   border-top:1px solid var(--accent);
   color:var(--text);
-  transition:color .15s ease, background-color .15s ease;
+  transition:none;
 }
 .tab span{
   font-weight:600;
@@ -272,13 +273,14 @@ img, video{
   letter-spacing:0.12em;
   text-transform:uppercase;
 }
-.tab-arrow{font-size:var(--arrow-size); line-height:1; display:flex; align-items:center; transition:transform .15s ease;}
+.tab > span:first-child{transition:transform .25s cubic-bezier(.16,1,.3,1);}
+.tab-arrow{font-size:var(--arrow-size); line-height:1; display:flex; align-items:center; transition:transform .25s cubic-bezier(.16,1,.3,1);}
 /* (hover:hover): solo su dispositivi con un vero puntatore (mouse/trackpad).
    Su touch un tap può altrimenti "restare" nello stato :hover finché non si
    tocca altrove (sticky hover), lasciando fasce/pulsanti colorati appesi */
 @media (hover:hover){
-  .tab:hover{color:var(--accent); background:var(--accent-tint);}
-  .tab:hover .tab-arrow{transform:scale(1.15);}
+  .tab:hover > span:first-child{font-weight:700; transform:translateX(8px);}
+  .tab:hover .tab-arrow{transform:translateX(8px);}
 }
 
 .icon-svg{width:1em; height:1em; display:block; fill:currentColor;}
@@ -296,10 +298,11 @@ img, video{
   padding:6px 0;
   display:flex; align-items:center;
   color:var(--text);
-  transition:color .15s ease, transform .15s ease;
+  font-weight:400;
+  transition:font-weight .15s ease, transform .15s ease;
 }
 @media (hover:hover){
-  .back-btn-inline:hover{color:var(--accent); transform:scale(1.15);}
+  .back-btn-inline:hover{font-weight:700; transform:scale(1.15);}
 }
 .title-row h1{
   font-weight:400;
@@ -354,11 +357,11 @@ img, video{
 .contact-link{
   font-size:0.9rem; font-weight:600; letter-spacing:0.05em; text-transform:none;
   color:var(--text);
-  transition:color .15s ease;
+  transition:font-weight .15s ease;
   overflow-wrap:break-word; /* email/indirizzi lunghi vanno a capo invece di traboccare fuori dalla colonna sugli schermi più stretti */
 }
 @media (hover:hover){
-  .contact-link:hover{color:var(--accent);}
+  .contact-link:hover{font-weight:700;}
 }
 .btn-row{display:flex; flex-wrap:wrap; gap:24px;}
 .btn{
@@ -397,11 +400,11 @@ img, video{
 #view-projects .title-row, #view-detail .title-row{padding-top:18px; padding-bottom:8px;}
 .filters{display:flex; flex-wrap:wrap; justify-content:center; gap:28px; padding:0 var(--edge) 20px; border-bottom:1px solid var(--accent);}
 .filter-btn{
-  position:relative;
+  position:relative; display:block;
   padding:10px 2px 0;
   font-size:0.75rem; font-weight:450; letter-spacing:0.08em; text-transform:uppercase;
   color:var(--text-secondary);
-  transition:color .15s ease;
+  transition:font-weight .15s ease;
 }
 .filter-btn::before{
   content:"";
@@ -411,10 +414,19 @@ img, video{
   opacity:0;
   transition:opacity .15s ease;
 }
-@media (hover:hover){
-  .filter-btn:hover{color:var(--accent);}
+.filter-label{display:grid; transition:font-weight .15s ease;}
+.filter-label::after{
+  content:attr(data-label);
+  grid-area:1/1;
+  font-weight:700;
+  visibility:hidden;
+  height:0;
+  overflow:hidden;
 }
-.filter-btn.active{color:var(--text);}
+@media (hover:hover){
+  .filter-btn:hover .filter-label{font-weight:700;}
+}
+.filter-btn.active{color:var(--text); font-weight:600;}
 .filter-btn.active::before{opacity:1;}
 
 /* ============================================================
@@ -680,10 +692,11 @@ img, video{
   padding:0;
   font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase;
   color:var(--text);
-  transition:color .15s ease;
+  font-weight:400;
+  transition:font-weight .15s ease;
 }
 @media (hover:hover){
-  .project-row-more-toggle:hover{color:var(--accent);}
+  .project-row-more-toggle:hover{font-weight:700;}
 }
 .project-row-more-toggle .icon-svg{width:0.85em; height:0.5em; transition:transform .2s ease;}
 .project-row-more-toggle.open .icon-svg{transform:rotate(180deg);}
