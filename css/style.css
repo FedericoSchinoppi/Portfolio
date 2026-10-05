@@ -273,14 +273,13 @@ img, video{
   letter-spacing:0.12em;
   text-transform:uppercase;
 }
-.tab > span:first-child{transition:transform .25s cubic-bezier(.16,1,.3,1);}
-.tab-arrow{font-size:var(--arrow-size); line-height:1; display:flex; align-items:center; transition:transform .25s cubic-bezier(.16,1,.3,1);}
+.tab-arrow{font-size:var(--arrow-size); line-height:1; display:flex; align-items:center;}
 /* (hover:hover): solo su dispositivi con un vero puntatore (mouse/trackpad).
    Su touch un tap può altrimenti "restare" nello stato :hover finché non si
    tocca altrove (sticky hover), lasciando fasce/pulsanti colorati appesi */
 @media (hover:hover){
-  .tab:hover > span:first-child{font-weight:700; transform:translateX(8px);}
-  .tab:hover .tab-arrow{transform:translateX(8px);}
+  .tab:hover > span:first-child{font-weight:700;}
+  .tab:hover .tab-arrow .icon-svg{stroke:currentColor; stroke-width:40px; stroke-linejoin:round;}
 }
 
 .icon-svg{width:1em; height:1em; display:block; fill:currentColor;}
