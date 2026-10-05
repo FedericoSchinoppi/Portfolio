@@ -268,7 +268,7 @@ img, video{
   transition:none;
 }
 .tab span{
-  font-weight:600;
+  font-weight:500;
   font-size:0.9rem;
   letter-spacing:0.12em;
   text-transform:uppercase;
@@ -354,7 +354,7 @@ img, video{
 .about-contacts{display:flex; flex-direction:column; align-items:flex-start; padding:8px var(--edge) var(--edge); flex:0 0 auto;}
 .contact-list{display:flex; flex-direction:column; gap:10px; margin-bottom:20px;}
 .contact-link{
-  font-size:0.9rem; font-weight:600; letter-spacing:0.05em; text-transform:none;
+  font-size:0.9rem; font-weight:500; letter-spacing:0.05em; text-transform:none;
   color:var(--text);
   transition:font-weight .15s ease;
   overflow-wrap:break-word; /* email/indirizzi lunghi vanno a capo invece di traboccare fuori dalla colonna sugli schermi più stretti */
