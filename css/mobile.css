@@ -6,7 +6,7 @@
 
    Indice:
    1. Header più compatto
-   1bis. Home: nome leggermente più grande, tab "Projects"/"About me" blu
+   1bis. Home: nome e tab "Projects"/"About" blu, fascia tab più bassa
    2. About: due colonne, foto verticale a destra, titolo/bio/contatti a
       sinistra (niente skills), download staccati in fondo
    3. Footer: visibile solo in Home/About, contenuto leggermente più in
@@ -44,8 +44,11 @@
   .site-header img{height:13px;}
   .site-header .logo-placeholder{font-size:0.62rem; padding:5px 12px;}
 
-  /* ---------- 1bis. HOME: nome leggermente più grande, blu; tab sempre blu ---------- */
-  .home-name-line{font-size:clamp(1rem, 4.6vw, 1.85rem); color:var(--accent);}
+  /* ---------- 1bis. HOME: nome e tab blu, fascia Projects/About più bassa ----------
+     (la dimensione del nome segue già la larghezza dello schermo, vedi
+     --home-name-size in style.css) */
+  #view-home{--home-tabs-size:84px;}
+  .home-name-line{color:var(--accent);}
   .home-role{color:var(--accent-light);}
   .tab{color:var(--accent);}
 
@@ -456,7 +459,10 @@
   .site-header .logo-placeholder{font-size:0.58rem; padding:4px 10px;}
   .site-footer span{font-size:0.62rem;}
 
-  .tab span{font-size:0.78rem;}
+  #view-home{--home-tabs-size:72px;}
+  .tab{gap:8px;}
+  .tab-label{font-size:0.8rem;}
+  .tab-arrow{font-size:0.62rem;}
 
   .title-row{gap:12px;}
   .title-row h1{font-size:clamp(1.35rem,6vw,1.9rem);}

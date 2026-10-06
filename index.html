@@ -28,6 +28,7 @@
      preload li mette in cima alla coda di rete invece di farli scoprire
      solo dopo che il browser ha finito di leggere tutto il CSS -->
 <link rel="preload" href="font/NeueHaasDisplay-Roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="font/NeueHaasDisplay-Thin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="img/svg/fs-white.svg" as="image">
 <link rel="stylesheet" href="css/style.css">
 <!-- versione TABLET/IPAD: 801px–1279px, tra il layout mobile (≤800px) e
@@ -101,12 +102,12 @@
     </div>
 
     <button class="tab tab-projects" data-nav="projects" aria-label="Go to Projects page">
-      <span>Projects</span>
+      <span class="tab-label">Projects</span>
       <span class="tab-arrow"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></span>
     </button>
     <button class="tab tab-about" data-nav="about" aria-label="Go to About page">
-      <span>About me</span>
       <span class="tab-arrow"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></span>
+      <span class="tab-label">About</span>
     </button>
   </section>
 

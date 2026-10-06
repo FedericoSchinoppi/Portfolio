@@ -14,6 +14,7 @@
 /* ============================================================
    NEUE HAAS DISPLAY — font caricati localmente da /font
    ============================================================ */
+@font-face{ font-family:'Neue Haas Grotesk'; src:url('../font/NeueHaasDisplay-Thin.woff2') format('woff2'); font-weight:300; font-style:normal; font-display:swap; }
 @font-face{ font-family:'Neue Haas Grotesk'; src:url('../font/NeueHaasDisplay-Light.woff2') format('woff2'); font-weight:350; font-style:normal; font-display:swap; }
 @font-face{ font-family:'Neue Haas Grotesk'; src:url('../font/NeueHaasDisplay-LightItalic.woff2') format('woff2'); font-weight:350; font-style:italic; font-display:swap; }
 @font-face{ font-family:'Neue Haas Grotesk'; src:url('../font/NeueHaasDisplay-Roman.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
@@ -239,47 +240,83 @@ img, video{
 /* ============================================================
    HOME
    ============================================================ */
-#view-home.active{display:grid; grid-template-rows:1fr 1fr 1fr;}
+/* nome a tutta larghezza in alto, sotto una fascia divisa a metà:
+   Projects a sinistra, About a destra.
+   --home-inset: margine laterale della home, condiviso da nome e fascia,
+   così "Projects" parte dove inizia il nome e "About" finisce dove finisce.
+   --home-name-size: il nome occupa esattamente la larghezza tra i due
+   margini — 13 è la sua larghezza in em (Neue Haas Thin, maiuscolo,
+   letter-spacing 0.03em), da ricalcolare se cambia il testo o il peso.
+   Il tetto in vh evita che su finestre larghe ma molto basse il nome
+   sfori in altezza */
+#view-home{
+  --home-inset:max(var(--edge), 6.6vw);
+  --home-tabs-size:100px;
+  --home-name-size:min(calc((100vw - 2 * var(--home-inset)) / 13), 20vh);
+}
+#view-home.active{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr var(--home-tabs-size);
+}
 
 .home-main{
+  grid-column:1 / -1;
   min-height:0;
   display:flex; align-items:center; justify-content:center;
   text-align:center;
-  padding:var(--edge);
+  padding:0 var(--home-inset);
 }
 .home-name-line{
   display:block;
   white-space:nowrap;
-  font-weight:500;
-  font-size:clamp(0.9rem,4vw,1.7rem);
-  line-height:1.15;
-  letter-spacing:-0.01em;
+  font-weight:300;
+  font-size:var(--home-name-size);
+  line-height:1;
+  /* margin-right negativo: toglie la spaziatura dopo l'ultima lettera, che
+     altrimenti sposterebbe il nome di un soffio a sinistra del centro */
+  letter-spacing:0.03em; margin-right:-0.03em;
   text-transform:uppercase;
   color:var(--text);
 }
-.home-role{margin-top:10px;}
+/* proporzionale al nome, con un minimo leggibile sugli schermi stretti */
+.home-role{
+  margin-top:0.25em;
+  font-size:max(0.75rem, calc(var(--home-name-size) * 0.19));
+  font-weight:400;
+  letter-spacing:0.02em;
+  line-height:1.2;
+}
 
 .tab{
-  width:100%; min-height:0;
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0 var(--edge);
+  min-width:0; min-height:0;
+  display:flex; align-items:center; gap:10px;
+  padding:0 var(--home-inset);
   border-top:1px solid var(--accent);
   color:var(--text);
-  transition:none;
+  transition:background-color .15s ease;
 }
-.tab span{
-  font-weight:500;
-  font-size:0.9rem;
-  letter-spacing:0.12em;
+.tab-about{justify-content:flex-end; border-left:1px solid var(--accent);}
+.tab-label{
+  font-weight:350;
+  font-size:clamp(0.85rem,1.1vw,1.05rem);
+  line-height:1;
+  letter-spacing:0.02em;
   text-transform:uppercase;
 }
-.tab-arrow{font-size:var(--arrow-size); line-height:1; display:flex; align-items:center;}
+.tab-arrow{
+  font-size:0.7rem; line-height:1;
+  display:flex; align-items:center;
+}
+/* stessa freccia di Projects, specchiata: i due lati restano simmetrici */
+.tab-about .tab-arrow .icon-svg{transform:scaleX(-1);}
 /* (hover:hover): solo su dispositivi con un vero puntatore (mouse/trackpad).
    Su touch un tap può altrimenti "restare" nello stato :hover finché non si
-   tocca altrove (sticky hover), lasciando fasce/pulsanti colorati appesi */
+   tocca altrove (sticky hover), lasciando fasce/pulsanti colorati appesi.
+   Scritta e freccia restano identiche: cambia solo lo sfondo dell'intera
+   metà della fascia */
 @media (hover:hover){
-  .tab:hover > span:first-child{font-weight:700;}
-  .tab:hover .tab-arrow .icon-svg{stroke:currentColor; stroke-width:40px; stroke-linejoin:round;}
+  .tab:hover{background-color:var(--accent-tint);}
 }
 
 .icon-svg{width:1em; height:1em; display:block; fill:currentColor;}
