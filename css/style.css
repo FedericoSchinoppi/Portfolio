@@ -393,11 +393,13 @@ img, video{
 .contact-link{
   font-size:0.9rem; font-weight:500; letter-spacing:0.05em; text-transform:none;
   color:var(--text);
-  transition:font-weight .15s ease;
+  /* hover: vedi nota su .filter-label, stessa tecnica */
+  -webkit-text-stroke:0 currentColor;
+  transition:-webkit-text-stroke-width .2s ease;
   overflow-wrap:break-word; /* email/indirizzi lunghi vanno a capo invece di traboccare fuori dalla colonna sugli schermi più stretti */
 }
 @media (hover:hover){
-  .contact-link:hover{font-weight:700;}
+  .contact-link:hover{-webkit-text-stroke-width:0.04em;}
 }
 .btn-row{display:flex; flex-wrap:wrap; gap:24px;}
 .btn{
@@ -440,7 +442,6 @@ img, video{
   padding:10px 2px 0;
   font-size:0.75rem; font-weight:450; letter-spacing:0.08em; text-transform:uppercase;
   color:var(--text-secondary);
-  transition:font-weight .15s ease;
 }
 .filter-btn::before{
   content:"";
@@ -450,7 +451,16 @@ img, video{
   opacity:0;
   transition:opacity .15s ease;
 }
-.filter-label{display:grid; transition:font-weight .15s ease;}
+/* hover: la scritta si ispessisce con un contorno dello stesso colore
+   invece che cambiando font-weight. I font sono file statici (uno per
+   peso), quindi una transition su font-weight non sfuma: scatta da un
+   peso all'altro, e in più cambia la larghezza della parola. Il contorno
+   cresce invece in modo continuo e non sposta nulla */
+.filter-label{
+  display:grid;
+  -webkit-text-stroke:0 currentColor;
+  transition:-webkit-text-stroke-width .2s ease;
+}
 .filter-label::after{
   content:attr(data-label);
   grid-area:1/1;
@@ -460,7 +470,7 @@ img, video{
   overflow:hidden;
 }
 @media (hover:hover){
-  .filter-btn:hover .filter-label{font-weight:700;}
+  .filter-btn:hover .filter-label{-webkit-text-stroke-width:0.045em;}
 }
 .filter-btn.active{color:var(--text); font-weight:600;}
 .filter-btn.active::before{opacity:1;}
