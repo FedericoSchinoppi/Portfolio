@@ -52,12 +52,8 @@
   .home-role{color:var(--accent-light);}
   .tab{color:var(--accent);}
 
-  /* ---------- 1ter. INTRO: la scritta in fondo sta esattamente dove sta
-     quella del footer (vedi sezione 3: scritta appoggiata in basso nella
-     fascia, a 8px dal bordo), stessa dimensione del testo — entrando nel
-     sito la scritta non si sposta ---------- */
+  /* ---------- 1ter. INTRO ---------- */
   .intro-enter-label{bottom:48px;}
-  .intro-footer-text{bottom:8px; font-size:0.7rem;}
 
   /* ---------- 2. ABOUT: due colonne, foto verticale a destra ---------- */
   /* le skills sono state tolte: al loro posto, nella colonna sinistra,
@@ -107,7 +103,9 @@
     gap:5px; /* righe più vicine tra loro */
   }
 
-  .about-contacts-label{grid-area:clabel; margin-top:24px; align-self:start;}
+  /* "Contacts" in Medium invece del Bold delle altre etichette (.eyebrow):
+     sopra a contatti scritti in Roman, il Bold pesava troppo */
+  .about-contacts-label{grid-area:clabel; margin-top:24px; align-self:start; font-weight:500;}
 
   /* foto: colonna stretta a piena altezza, quindi naturalmente verticale */
   .about-photo{
@@ -146,10 +144,19 @@
   /* ---------- 3. FOOTER: visibile in Home, About e nell'elenco Projects ----------
      Dentro un progetto aperto (scheda con galleria, .list-mode) resta
      nascosto: lì tutta l'altezza serve alle foto */
-  .site-footer{display:none;}
+  /* nascosto/mostrato in dissolvenza (opacity + visibility), non con
+     display: entrando o uscendo da un progetto il footer sfuma insieme
+     al resto invece di comparire/sparire di colpo */
+  .site-footer{
+    opacity:0; visibility:hidden;
+    transition:opacity var(--t-fade) var(--ease), visibility 0s linear var(--t-fade);
+  }
   body:has(#view-home.active) .site-footer,
   body:has(#view-about.active) .site-footer,
-  body:has(#view-projects.active.grid-mode) .site-footer{display:flex;}
+  body:has(#view-projects.active.grid-mode) .site-footer{
+    opacity:1; visibility:visible;
+    transition:opacity var(--t-fade) var(--ease), visibility 0s;
+  }
   #view-projects.list-mode, #view-detail{bottom:0;}
 
   /* scritte leggermente più in basso nella fascia del footer */
@@ -189,7 +196,20 @@
     /* "none" non "contain": niente rimbalzo oltre l'ultimo progetto (vedi
        stessa scelta su .project-row più sotto) */
     overscroll-behavior-y:none;
+    /* scorrendo, la linea di una fascia arriva ad affiancarsi a quella
+       sotto "Projects" (o a quella del footer in fondo) e le due insieme
+       si leggono come una linea spessa il doppio. La lista sale quindi di
+       1px sopra la linea del title-row e scende di 1px sotto quella del
+       footer (vedi #view-projects.grid-mode qui sotto): la linea della
+       fascia in arrivo finisce esattamente sopra/sotto quella fissa, sullo
+       stesso pixel, e lo spessore resta sempre uno */
+    margin-top:-1px;
+    /* rientro dall'interno di un progetto: l'elenco torna in dissolvenza */
+    animation:soft-in var(--t-fade) var(--ease);
   }
+  /* la view arriva 1px sotto il bordo del footer (che le sta sopra e la
+     copre): è quel pixel a nascondere la linea della fascia in arrivo */
+  #view-projects.grid-mode{bottom:calc(var(--footer-size) - 1px);}
   .index-row{
     display:flex; align-items:center; justify-content:space-between;
     flex:0 0 25%;
@@ -226,7 +246,7 @@
     background:rgba(10,10,10,0.6);
     padding:52px;
     opacity:0; pointer-events:none;
-    transition:opacity .15s ease;
+    transition:opacity var(--t-hover) var(--ease);
   }
   .mobile-row-preview.active{opacity:1;}
   .mobile-row-preview img{
@@ -274,7 +294,7 @@
     position:absolute; top:var(--edge); right:var(--edge);
     z-index:10;
     color:var(--accent);
-    transition:transform .15s ease;
+    transition:transform var(--t-hover) var(--ease);
   }
   .lightbox-close:active{transform:scale(0.85);}
   .lightbox-close .icon-svg{width:1.1rem; height:1.1rem;}
@@ -338,6 +358,11 @@
     color:var(--accent); /* blu anche a riposo, non solo al tocco */
   }
   .more-info-prefix{display:none;} /* "More " nascosto: resta solo "Info" */
+  /* la copia più pesante della scritta (vedi style.css, "hover delle
+     scritte") qui usa il testo corto, e non compare all'hover — che su
+     touch non esiste — ma quando Info è aperto: vedi sezione 8 */
+  .more-info-label{--hover-weight:700;}
+  .more-info-label::after{content:attr(data-label-short);}
 
   /* niente cover né "View Project" qui: il progetto è già visibile per
      intero nella scheda stessa, foto comprese (vedi .project-row-gallery
@@ -420,34 +445,37 @@
     padding:0 40px; /* spazio di sicurezza attorno al pulsante indietro */
   }
 
-  /* ---------- 8. HOVER/TAP: pulsanti cliccabili aumentano di spessore ---------- */
-  .project-row-more-toggle:hover,
-  .project-row-more-toggle:active,
-  .project-row-more-toggle:focus-visible,
-  .project-row-more-toggle.open{
-    font-weight:700;
+  /* ---------- 8. TAP: "Info" in Bold finché è aperto ----------
+     Stessa tecnica dell'hover desktop (vedi style.css, "hover delle
+     scritte"): il Bold è una copia sovrapposta che sale in dissolvenza,
+     larga quanto la scritta normale — "Info" si ispessisce sul posto,
+     senza scattare di peso né spostare la freccetta accanto */
+  .project-row-more-toggle.open .more-info-label{
+    color:transparent;
+    transition:color 0s linear var(--t-hover);
   }
+  .project-row-more-toggle.open .more-info-label::after{opacity:1;}
 
-  /* ---------- 9. ANIMAZIONI più fluide e curate (Info, View Project, frecce indietro) ---------- */
+  /* ---------- 9. ANIMAZIONI: stessa curva e stesse durate del resto del sito
+     (--ease, --t-hover, --t-fade in style.css) ---------- */
   /* cambio pagina: dissolvenza pura (solo opacità, niente traslazione/scala)
      invece dello slide-up ereditato da style.css — più fluida e senza lag percepito */
   .view{
     transform:none;
-    transition:opacity .3s ease-out;
+    transition:opacity var(--t-fade) var(--ease);
   }
   .view.active.visible{
     transform:none;
   }
   .project-row-more-collapse{
-    transition:grid-template-rows .4s cubic-bezier(.16,1,.3,1), opacity .3s ease, margin-top .4s cubic-bezier(.16,1,.3,1);
+    transition:grid-template-rows .4s var(--ease), opacity var(--t-fade) var(--ease), margin-top .4s var(--ease);
   }
-  .project-row-more-toggle{
-    transition:color .2s ease, transform .15s cubic-bezier(.16,1,.3,1);
+  /* risposta al tocco: pulsanti che si stringono appena sotto il dito e
+     tornano, tutti con lo stesso ritmo */
+  .project-row-more-toggle, .back-btn-inline{
+    transition:transform var(--t-hover) var(--ease);
   }
   .project-row-more-toggle:active{transform:scale(0.96);}
-  .back-btn-inline{
-    transition:color .2s ease, transform .2s cubic-bezier(.16,1,.3,1);
-  }
   .back-btn-inline:active{transform:scale(0.82);}
 }
 
@@ -464,7 +492,7 @@
 
   .site-header img{height:12px;}
   .site-header .logo-placeholder{font-size:0.58rem; padding:4px 10px;}
-  .site-footer span, .intro-footer-text{font-size:0.62rem;}
+  .site-footer span{font-size:0.62rem;}
 
   #view-home{--home-tabs-size:72px;}
   .tab{gap:8px;}

@@ -4,11 +4,12 @@
    dipende dalla larghezza dello schermo: è la base condivisa
    da tutti i dispositivi. mobile.css sovrascrive queste regole
    solo sotto gli 800px di larghezza.
-   Unica eccezione voluta: il media query in fondo al file, sezione
-   "GRIGLIA INDICE — transizione desktop stretto" (sotto i 1000px ma
-   sopra gli 800px di mobile.css), che alleggerisce i riquadri della
-   griglia indice progetti prima che si arrivi al layout mobile vero
-   e proprio.
+   Eccezioni volute, entrambe in fondo al file: la sezione "GRIGLIA
+   INDICE — transizione desktop stretto" (sotto i 1000px ma sopra gli
+   800px di mobile.css), che alleggerisce i riquadri della griglia indice
+   progetti prima che si arrivi al layout mobile vero e proprio, e la
+   sezione "SOLO LAPTOP / TABLET" (sopra gli 800px), per le rifiniture
+   che non devono toccare la versione mobile.
    ============================================================ */
 
 /* ============================================================
@@ -40,6 +41,15 @@
   --arrow-size:1.6rem;
 
   --font-body:'Neue Haas Grotesk', 'Helvetica Neue', Arial, sans-serif;
+
+  /* un solo ritmo per tutto il sito: stessa curva ovunque, due durate —
+     --t-hover per le risposte al cursore, --t-fade per ciò che entra/esce */
+  --ease:cubic-bezier(.4,0,.2,1);
+  --t-hover:.25s;
+  --t-fade:.35s;
+  /* spessore del contorno con cui le icone (frecce, X) si ispessiscono
+     all'hover, accanto alle scritte che salgono di un peso */
+  --hover-stroke:0.035em;
 
   --cursor-brand:url("../img/svg/cursore.svg") 7 7, auto;
   --cursor-brand-white:url("../img/svg/cursore-white.svg") 7 7, auto;
@@ -118,7 +128,7 @@ img, video{
   position:fixed; inset:0; z-index:100;
   background:var(--accent);
   display:flex; align-items:center; justify-content:center;
-  transition:opacity 0.6s ease;
+  transition:opacity 0.6s var(--ease);
   cursor:var(--cursor-brand-white);
   will-change:opacity;
   transform:translateZ(0);
@@ -162,14 +172,6 @@ img, video{
   opacity:0.85;
 }
 
-.intro-footer-text{
-  position:absolute; left:0; right:0; bottom:48px;
-  text-align:center;
-  color:#ffffff;
-  font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
-  opacity:0.7;
-}
-
 @media (prefers-reduced-motion:reduce){
   #intro-logo, .intro-logo-placeholder{ animation:none; }
 }
@@ -210,9 +212,8 @@ img, video{
   color:var(--text-secondary);
   text-align:center;
 }
-/* separatore "|" tra nome/Portfolio/anno, sia nel footer che nella
-   scritta della schermata di caricamento: margine invece di spazi nel
-   testo, che verrebbero collassati a uno solo dal browser */
+/* separatore "|" tra nome/Portfolio/anno nel footer: margine invece di
+   spazi nel testo, che verrebbero collassati a uno solo dal browser */
 .footer-sep{margin:0 12px; display:inline-block;}
 /* contatti nel footer: solo mobile, solo nella pagina About (vedi mobile.css) */
 .footer-contacts{display:none;}
@@ -296,7 +297,7 @@ img, video{
   padding:0 var(--home-inset);
   border-top:1px solid var(--accent);
   color:var(--text);
-  transition:background-color .15s ease;
+  transition:background-color var(--t-hover) var(--ease);
 }
 .tab-about{justify-content:flex-end; border-left:1px solid var(--accent);}
 .tab-label{
@@ -323,6 +324,68 @@ img, video{
 
 .icon-svg{width:1em; height:1em; display:block; fill:currentColor;}
 
+/* hover delle scritte: salgono di un peso del font, niente contorni
+   aggiunti — Roman → Medium, Medium → Bold (--hover-weight: Bold di
+   default, Medium dove la scritta a riposo è in Roman). I font sono file
+   statici, uno per peso: cambiare font-weight sull'elemento farebbe
+   scattare la scritta da un peso all'altro e, essendo il peso maggiore
+   più largo, la allargherebbe spostando ciò che le sta accanto.
+   Qui la versione più pesante è una copia sovrapposta alla scritta
+   (::after, testo preso da data-label), invisibile a riposo. La sua
+   spaziatura tra le lettere è stretta di quel tanto che basta a farle
+   occupare esattamente la stessa larghezza della scritta normale
+   (--hover-tighten, misurato via JS per ogni scritta, vedi
+   fitHoverLabels): le lettere restano una sopra l'altra, quindi la
+   scritta non si allarga e non si sposta, si ispessisce sul posto.
+   All'hover la copia pesante sale in dissolvenza SOPRA la scritta
+   normale, che resta piena per tutta la durata (niente calo di
+   intensità a metà) e sparisce solo a dissolvenza finita; al ritorno
+   ricompare subito sotto, e la copia pesante sfuma via.
+   --label-spacing ripete il letter-spacing della scritta: serve alla
+   copia per partire dalla stessa spaziatura prima di stringerla */
+.filter-label, .contact-link, .btn-label, .more-info-label{
+  position:relative;
+  --hover-weight:700;
+  transition:color 0s;
+}
+.filter-label{display:block; --label-spacing:0.08em;}
+.contact-link, .btn-label{--label-spacing:0.05em;}
+.more-info-label{--label-spacing:0.06em; --hover-weight:500;}
+.filter-label::after, .contact-link::after, .btn-label::after, .more-info-label::after{
+  content:attr(data-label);
+  position:absolute; top:0; left:0;
+  white-space:nowrap;
+  font-weight:var(--hover-weight);
+  letter-spacing:calc(var(--label-spacing) + var(--hover-tighten, 0em));
+  color:var(--text);
+  opacity:0; pointer-events:none;
+  transition:opacity var(--t-hover) var(--ease);
+}
+@media (hover:hover){
+  .filter-btn:hover .filter-label, .contact-link:hover,
+  .btn:hover .btn-label, .project-row-more-toggle:hover .more-info-label{
+    color:transparent;
+    transition:color 0s linear var(--t-hover);
+  }
+  .filter-btn:hover .filter-label::after, .contact-link:hover::after,
+  .btn:hover .btn-label::after, .project-row-more-toggle:hover .more-info-label::after{opacity:1;}
+}
+
+/* icone che si ispessiscono all'hover insieme alla loro scritta: un contorno dello stesso colore che cresce da 0,
+   senza spostare né ridimensionare nulla. vector-effect tiene lo spessore
+   in pixel reali, uguale per tutte le icone qualunque sia il loro viewBox;
+   overflow:visible perché il contorno sporge di poco dal riquadro dell'svg */
+.btn .icon-svg, .back-btn-inline .icon-svg,
+.project-row-more-toggle .icon-svg, .lightbox-close .icon-svg{
+  overflow:visible;
+  stroke:currentColor; stroke-width:0;
+  transition:stroke-width var(--t-hover) var(--ease);
+}
+.btn .icon-svg path, .back-btn-inline .icon-svg path,
+.project-row-more-toggle .icon-svg path, .lightbox-close .icon-svg path{
+  vector-effect:non-scaling-stroke;
+}
+
 /* ============================================================
    TITLE ROW — condivisa tra About / Projects / Detail
    ============================================================ */
@@ -336,11 +399,9 @@ img, video{
   padding:6px 0;
   display:flex; align-items:center;
   color:var(--text);
-  font-weight:400;
-  transition:font-weight .15s ease, transform .15s ease;
 }
 @media (hover:hover){
-  .back-btn-inline:hover{font-weight:700; transform:scale(1.15);}
+  .back-btn-inline:hover .icon-svg{stroke-width:var(--hover-stroke);}
 }
 .title-row h1{
   font-weight:400;
@@ -395,33 +456,23 @@ img, video{
 .contact-link{
   font-size:0.9rem; font-weight:500; letter-spacing:0.05em; text-transform:none;
   color:var(--text);
-  /* hover: vedi nota su .filter-label, stessa tecnica */
-  -webkit-text-stroke:0 currentColor;
-  transition:-webkit-text-stroke-width .2s ease;
   overflow-wrap:break-word; /* email/indirizzi lunghi vanno a capo invece di traboccare fuori dalla colonna sugli schermi più stretti */
-}
-@media (hover:hover){
-  .contact-link:hover{-webkit-text-stroke-width:0.04em;}
 }
 .btn-row{display:flex; flex-wrap:wrap; gap:24px;}
 .btn{
   display:inline-flex; align-items:center; gap:8px;
   border:none; background:none; padding:0;
-  font-size:0.78rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
+  /* Medium a riposo, Bold all'hover (vedi "hover delle scritte") */
+  font-size:0.78rem; font-weight:500; letter-spacing:0.05em; text-transform:uppercase;
   /* blu sempre, non nero-con-hover come le altre frecce: View Project e i
      Download sono i tre pulsanti più importanti del sito, restano i più
      riconoscibili a colpo d'occhio */
   color:var(--accent);
-  transform-origin:left center;
-  transition:transform .15s ease;
 }
-.btn .icon-svg{transition:transform .15s ease;}
 .btn-forward .icon-svg{width:0.85em; height:0.85em;}
 .btn-download .icon-svg{width:0.8em; height:0.47em;}
 @media (hover:hover){
-  .btn:hover{transform:scale(1.06);}
-  .btn-forward:hover .icon-svg{transform:translateX(4px);}
-  .btn-download:hover .icon-svg{transform:translateY(1.5px);}
+  .btn:hover .icon-svg{stroke-width:var(--hover-stroke);}
 }
 
 .about-photo{width:50%; flex-shrink:0; height:100%; background:var(--surface);}
@@ -451,31 +502,13 @@ img, video{
   height:2px;
   background:var(--accent);
   opacity:0;
-  transition:opacity .15s ease;
+  transition:opacity var(--t-hover) var(--ease);
 }
-/* hover: la scritta si ispessisce con un contorno dello stesso colore
-   invece che cambiando font-weight. I font sono file statici (uno per
-   peso), quindi una transition su font-weight non sfuma: scatta da un
-   peso all'altro, e in più cambia la larghezza della parola. Il contorno
-   cresce invece in modo continuo e non sposta nulla */
-.filter-label{
-  display:grid;
-  -webkit-text-stroke:0 currentColor;
-  transition:-webkit-text-stroke-width .2s ease;
-}
-.filter-label::after{
-  content:attr(data-label);
-  grid-area:1/1;
-  font-weight:700;
-  visibility:hidden;
-  height:0;
-  overflow:hidden;
-}
-@media (hover:hover){
-  .filter-btn:hover .filter-label{-webkit-text-stroke-width:0.045em;}
-}
+/* hover di .filter-label: vedi "hover delle scritte" */
 .filter-btn.active{color:var(--text); font-weight:600;}
-.filter-btn.active::before{opacity:1;}
+/* i filtri vengono ricostruiti a ogni cambio (vedi renderFilters): la
+   barretta del filtro attivo entra in dissolvenza invece di comparire di colpo */
+.filter-btn.active::before{opacity:1; animation:soft-in var(--t-fade) var(--ease);}
 
 /* ============================================================
    PROJECTS — indice a griglia (prima tappa entrando in Projects)
@@ -541,7 +574,7 @@ img, video{
 .index-tile-cover{
   position:absolute; inset:0; z-index:0;
   opacity:0;
-  transition:opacity .3s ease;
+  transition:opacity var(--t-fade) var(--ease);
 }
 .index-tile-cover img{width:100%; height:100%; object-fit:cover; display:block;}
 /* .hover-ready (aggiunta via JS solo al primo movimento reale del mouse
@@ -566,26 +599,30 @@ img, video{
   display:flex; flex-direction:column; gap:8px;
   max-width:100%;
 }
+/* contenuto dei riquadri in dissolvenza a ogni comparsa della griglia
+   (ingresso in Projects, cambio filtro, ritorno da una scheda): i bordi
+   della griglia restano fermi, entra solo il testo */
+.index-tile-info, .index-tile-tags{animation:soft-in var(--t-fade) var(--ease);}
 .index-tile-title{
   position:relative;
   display:block;
   font-size:1.35rem; font-weight:400;
   text-transform:uppercase; letter-spacing:-0.01em;
   line-height:1.1;
-  transition:opacity .2s ease;
+  transition:opacity var(--t-hover) var(--ease);
   /* nomi lunghi e senza spazi (es. "CONFARTIGIANATO") vanno a capo invece
      di sforare il riquadro: con overflow:hidden sul riquadro (vedi
      .index-tile) uno sforamento verrebbe tagliato a metà parola */
   overflow-wrap:break-word; word-break:break-word;
 }
 .index-tile-blurb{
-  font-size:0.95rem; color:var(--text-secondary);
+  font-size:0.95rem; font-weight:350; color:var(--text-secondary);
   margin:0;
   /* al massimo 2 righe: i riquadri hanno un'altezza fissa (2 righe della
      griglia), un testo troppo lungo non deve sforare */
   display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical;
   overflow:hidden;
-  transition:opacity .2s ease;
+  transition:opacity var(--t-hover) var(--ease);
 }
 /* elenco tag, staccato dal blocco titolo/frasetta e ancorato in fondo al
    riquadro (margin-top:auto lo spinge in fondo allo spazio verticale
@@ -599,7 +636,7 @@ img, video{
 .index-tile-tag{
   font-size:0.7rem; letter-spacing:0.04em; text-transform:uppercase;
   color:var(--text-secondary);
-  transition:opacity .2s ease;
+  transition:opacity var(--t-hover) var(--ease);
 }
 /* al passaggio del cursore resta visibile solo la copertina: titolo,
    frasetta e tag scompaiono tutti (stesso gate .hover-ready e stesso
@@ -614,6 +651,10 @@ img, video{
    sola fascia progetto), non sull'intera view (che include anche
    titolo/filtri sopra) */
 .projects-list-wrap{position:relative; flex:1; min-height:0; display:flex; flex-direction:column;}
+/* passaggio griglia → scheda: la scheda entra in dissolvenza invece di
+   sostituire la griglia di colpo. Niente fill-mode: finita l'animazione
+   l'opacità torna quella normale dell'elemento */
+#view-projects.list-mode .projects-list-wrap{animation:soft-in var(--t-fade) var(--ease);}
 .projects-list{flex:1; overflow-y:auto; overscroll-behavior-y:contain; scroll-snap-type:y mandatory; scroll-behavior:smooth; scrollbar-width:none;}
 .projects-list::-webkit-scrollbar{display:none;}
 
@@ -669,11 +710,13 @@ img, video{
   white-space:nowrap;
   font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase;
   color:var(--accent);
-  background:#ffffff;
+  /* bianco all'80%: lascia intravedere la copertina sotto. Sullo sfondo e
+     non con "opacity", che attenuerebbe anche la scritta */
+  background:rgba(255,255,255,0.8);
   padding:7px 14px;
   box-shadow:0 10px 24px rgba(10,10,10,0.14);
   opacity:0; pointer-events:none;
-  transition:opacity .2s ease, transform .2s ease;
+  transition:opacity var(--t-hover) var(--ease), transform var(--t-hover) var(--ease);
 }
 @media (hover:hover){
   .project-dot:hover::after{opacity:1; transform:translateY(-50%) translateX(0);}
@@ -741,12 +784,14 @@ img, video{
   font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase;
   color:var(--text);
   font-weight:400;
-  transition:font-weight .15s ease;
 }
 @media (hover:hover){
-  .project-row-more-toggle:hover{font-weight:700;}
+  .project-row-more-toggle:hover .icon-svg{stroke-width:var(--hover-stroke);}
 }
-.project-row-more-toggle .icon-svg{width:0.85em; height:0.5em; transition:transform .2s ease;}
+.project-row-more-toggle .icon-svg{
+  width:0.85em; height:0.5em;
+  transition:transform var(--t-fade) var(--ease), stroke-width var(--t-hover) var(--ease);
+}
 .project-row-more-toggle.open .icon-svg{transform:rotate(180deg);}
 /* wrapper che si apre/chiude: grid-template-rows 0fr->1fr invece di
    max-height misurato via JS (vedi index.html) — l'animazione copre
@@ -757,7 +802,7 @@ img, video{
   display:grid;
   grid-template-rows:0fr;
   opacity:0;
-  transition:grid-template-rows .35s ease, opacity .25s ease, margin-top .35s ease;
+  transition:grid-template-rows var(--t-fade) var(--ease), opacity var(--t-fade) var(--ease), margin-top var(--t-fade) var(--ease);
   /* grid-template-rows anima un valore di layout (non è compositor-only
      come transform/opacity): "contain:layout" dice al browser che questo
      ricalcolo non deve mai propagarsi oltre questo elemento, così il costo
@@ -825,6 +870,14 @@ img, video{
   padding:0 var(--edge) 0;
 }
 
+/* cambio Scroll ↔ Grid: la galleria rientra in dissolvenza. Due keyframe
+   identici con nomi diversi, perché un'animazione riparte solo se cambia
+   il suo nome — così ogni cambio di vista la fa ripartire */
+.detail-gallery.scroll-view{animation:soft-in var(--t-fade) var(--ease);}
+.detail-gallery.grid-view{animation:soft-in-alt var(--t-fade) var(--ease);}
+@keyframes soft-in{ from{opacity:0;} }
+@keyframes soft-in-alt{ from{opacity:0;} }
+
 .detail-gallery.scroll-view{display:flex; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; cursor:var(--cursor-image);}
 /* in Scroll view i gruppi-riga sono trasparenti: le foto restano una fila
    piatta, nell'ordine originale */
@@ -881,14 +934,27 @@ img, video{
 .lightbox{
   position:fixed; inset:0; z-index:90;
   background:var(--bg);
-  display:none; align-items:center; justify-content:center;
+  display:flex; align-items:center; justify-content:center;
   flex-direction:column; gap:16px;
   padding:var(--edge);
   cursor:var(--cursor-close);
+  /* apertura/chiusura in dissolvenza: sempre nel layout, ma invisibile e
+     fuori dall'hit-test finché non è .active (visibility:hidden lo toglie
+     anche da tastiera e rotellina). In chiusura visibility aspetta la fine
+     della dissolvenza prima di scattare */
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity var(--t-fade) var(--ease), visibility 0s linear var(--t-fade);
 }
-.lightbox.active{display:flex;}
-/* X di chiusura: solo mobile (vedi mobile.css), su desktop basta il
-   cursore --cursor-close, niente pulsante visibile */
+.lightbox.active{
+  opacity:1; visibility:visible; pointer-events:auto;
+  transition:opacity var(--t-fade) var(--ease), visibility 0s;
+}
+/* passaggio da una foto all'altra: quella corrente sfuma, il JS cambia
+   sorgente mentre è invisibile, la nuova risale (vedi openLightbox) */
+.lightbox img, .lightbox video, .lightbox-caption{transition:opacity var(--t-hover) var(--ease);}
+.lightbox.switching img, .lightbox.switching video, .lightbox.switching .lightbox-caption{opacity:0;}
+/* X di chiusura: stile laptop/tablet in fondo al file ("SOLO LAPTOP /
+   TABLET"), quello mobile in mobile.css */
 .lightbox-close{display:none;}
 .lightbox img{max-width:70vw; max-height:65vh; object-fit:contain; box-shadow:0 8px 24px rgba(0,0,0,0.15);}
 .lightbox video{max-width:70vw; max-height:65vh; object-fit:contain; box-shadow:0 8px 24px rgba(0,0,0,0.15); display:none;}
@@ -911,7 +977,7 @@ img, video{
   width:16px; height:3px; border-radius:2px;
   background:var(--surface);
   cursor:var(--cursor-brand);
-  transition:background .2s ease, width .2s ease;
+  transition:background var(--t-fade) var(--ease), width var(--t-fade) var(--ease);
 }
 /* stessa coerenza degli altri pallini (project-dot/detail-dot): hover
    azzurrino sui non selezionati, mai sul blu pieno già "attivo" */
@@ -940,4 +1006,41 @@ img, video{
    ============================================================ */
 @media (max-width:1000px){
   .index-tile-blurb, .index-tile-tags{display:none;}
+}
+
+/* ============================================================
+   SOLO LAPTOP / TABLET
+   Rifiniture che non devono toccare la versione mobile (sotto gli 800px
+   resta tutto com'è, vedi mobile.css).
+   ============================================================ */
+@media (min-width:801px){
+  /* didascalie delle foto scritte normalmente, non tutte in maiuscolo:
+     Roman e corpo un po' più grande */
+  .lightbox-caption{
+    font-size:0.9rem; font-weight:400;
+    text-transform:none; letter-spacing:0.03em;
+  }
+
+  /* X di chiusura nell'angolo in alto a destra: il click ovunque continua
+     a chiudere, ma qui c'è anche un pulsante esplicito. padding + margine
+     negativo allargano l'area cliccabile senza spostare l'icona dal margine */
+  .lightbox-close{
+    display:flex; align-items:center; justify-content:center;
+    position:absolute; top:var(--edge); right:var(--edge);
+    z-index:10;
+    padding:8px; margin:-8px;
+    font-size:1.5rem; line-height:1;
+    color:var(--accent);
+  }
+}
+@media (min-width:801px) and (hover:hover){
+  .lightbox-close:hover .icon-svg{stroke-width:var(--hover-stroke);}
+}
+
+/* ============================================================
+   MOVIMENTO RIDOTTO — chi lo chiede nelle impostazioni di sistema vede
+   gli stessi cambi di stato, ma senza dissolvenze né animazioni
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  *, *::before, *::after{animation:none !important; transition:none !important;}
 }

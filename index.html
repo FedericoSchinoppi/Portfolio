@@ -20,7 +20,7 @@
 <!-- il logo orizzontale non è leggibile in una scheda del browser: serve
      un quadrato con il marchio dentro. SVG per i browser moderni, PNG/ICO
      per quelli che non supportano le favicon SVG (Safari) e per iOS -->
-<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" href="img/favicon.ico" sizes="48x48">
 <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
@@ -53,7 +53,6 @@
       <span class="intro-logo-placeholder" id="intro-logo-placeholder">Image — replace with yours<br>(fs-white.svg)</span>
     </button>
     <span class="intro-enter-label">click to enter</span>
-    <span class="intro-footer-text" id="intro-footer-text"></span>
   </div>
 
   <!-- HEADER GLOBALE -->
@@ -70,9 +69,9 @@
 
   <!-- LIGHTBOX — apertura immagine a schermo intero (visualizzazione grid) -->
   <div class="lightbox" id="lightbox">
-    <!-- solo mobile (vedi mobile.css): su desktop la chiusura è già
-         segnalata dal cursore --cursor-close, qui invece serve una X
-         visibile e toccabile, alla stessa altezza dei titoli di pagina -->
+    <!-- X visibile e cliccabile in alto a destra, alla stessa altezza dei
+         titoli di pagina: il click ovunque chiude comunque, ma qui c'è
+         anche un pulsante esplicito (stile in style.css e mobile.css) -->
     <button class="lightbox-close" id="lightbox-close" aria-label="Close"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></button>
     <img src="" alt="" id="lightbox-img">
     <video id="lightbox-video" autoplay loop muted playsinline></video>
@@ -446,6 +445,38 @@
     });
   }
 
+  /* hover delle scritte (vedi CSS, "hover delle scritte"): la copia più
+     pesante che compare all'hover deve occupare esattamente la larghezza
+     della scritta normale, così le lettere restano sovrapposte e nulla si
+     allarga. Per ogni scritta si misurano le due larghezze (canvas, senza
+     toccare il layout) e la differenza, divisa per il numero di lettere,
+     diventa quanto stringere la spaziatura della copia (--hover-tighten,
+     in em). Va richiamata dopo ogni render che crea scritte di questo tipo
+     e quando finiscono di caricarsi i font: prima le misure sono fatte sul
+     font di ripiego */
+  const HOVER_LABEL_SELECTOR = ".filter-label, .contact-link, .btn-label, .more-info-label";
+  const hoverMeasureCtx = document.createElement("canvas").getContext("2d");
+  function fitHoverLabels(root = document){
+    root.querySelectorAll(HOVER_LABEL_SELECTOR).forEach(el=>{
+      const cs = getComputedStyle(el);
+      /* su mobile alcune scritte sono accorciate (es. "Info" al posto di
+         "More Info", vedi mobile.css): va misurata quella che si vede */
+      let text = (isMobileViewport() && el.dataset.labelShort) || el.dataset.label || "";
+      if(!text) return;
+      if(cs.textTransform === "uppercase") text = text.toUpperCase();
+      const size = parseFloat(cs.fontSize);
+      const width = weight => {
+        hoverMeasureCtx.font = `${weight} ${size}px ${cs.fontFamily}`;
+        return hoverMeasureCtx.measureText(text).width;
+      };
+      const heavier = cs.getPropertyValue("--hover-weight").trim() || "700";
+      const tighten = (width(cs.fontWeight) - width(heavier)) / text.length / size;
+      el.style.setProperty("--hover-tighten", tighten.toFixed(4) + "em");
+    });
+  }
+  document.fonts.ready.then(()=> fitHoverLabels());
+  document.fonts.addEventListener("loadingdone", ()=> fitHoverLabels());
+
   /* click su un pallino: dissolvenza invece di uno scorrimento visibile —
      il contenuto sfuma a 0, lo scroll salta di scatto alla nuova posizione
      mentre è invisibile, poi risfuma a 1. L'assegnazione a scrollTop va
@@ -786,7 +817,6 @@
     const sep = `<span class="footer-sep">|</span>`;
     const footerLine = `FSR${sep}Personal Website${sep}2026`;
     document.getElementById("footer-text").innerHTML = footerLine;
-    document.getElementById("intro-footer-text").innerHTML = footerLine;
 
     document.getElementById("footer-contacts").innerHTML = `
       <a class="footer-contact-link" href="mailto:${CONFIG.email}">${CONFIG.email}</a>
@@ -808,15 +838,16 @@
 
     document.getElementById("about-contacts").innerHTML = `
       <div class="contact-list">
-        <a class="contact-link" href="mailto:${CONFIG.email}">${CONFIG.email}</a>
-        <a class="contact-link" href="tel:${CONFIG.phone.replace(/\s+/g,'')}">${CONFIG.phone}</a>
-        <a class="contact-link" href="${CONFIG.instagramUrl}" target="_blank" rel="noopener">${CONFIG.instagramHandle}</a>
+        <a class="contact-link" data-label="${CONFIG.email}" href="mailto:${CONFIG.email}">${CONFIG.email}</a>
+        <a class="contact-link" data-label="${CONFIG.phone}" href="tel:${CONFIG.phone.replace(/\s+/g,'')}">${CONFIG.phone}</a>
+        <a class="contact-link" data-label="${CONFIG.instagramHandle}" href="${CONFIG.instagramUrl}" target="_blank" rel="noopener">${CONFIG.instagramHandle}</a>
       </div>
       <div class="btn-row">
-        <a class="btn btn-download" href="${encodePath(CONFIG.cvPath)}" target="_blank" rel="noopener">Download CV<svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg></a>
-        <a class="btn btn-download" href="${encodePath(CONFIG.portfolioPath)}" target="_blank" rel="noopener">Download Portfolio<svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg></a>
+        <a class="btn btn-download" href="${encodePath(CONFIG.cvPath)}" target="_blank" rel="noopener"><span class="btn-label" data-label="Download CV">Download CV</span><svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg></a>
+        <a class="btn btn-download" href="${encodePath(CONFIG.portfolioPath)}" target="_blank" rel="noopener"><span class="btn-label" data-label="Download Portfolio">Download Portfolio</span><svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg></a>
       </div>
     `;
+    fitHoverLabels(document.getElementById("about-contacts"));
   }
 
   /* ============================================================
@@ -834,6 +865,7 @@
         </div>`;
     }).join("");
 
+    fitHoverLabels(container);
     container.querySelectorAll(".filter-btn").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         activeFilter = btn.dataset.filter;
@@ -1008,7 +1040,7 @@
             <ul class="project-row-tags">${p.tags.map(t => `<li>${t}</li>`).join("")}</ul>
             <div class="project-row-more">
               <button class="project-row-more-toggle">
-                <span class="more-info-label"><span class="more-info-prefix">More </span>Info</span>
+                <span class="more-info-label" data-label="More Info" data-label-short="Info"><span><span class="more-info-prefix">More </span>Info</span></span>
                 <svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg>
               </button>
               <div class="project-row-more-collapse">
@@ -1029,12 +1061,14 @@
                  costruito per tutti gli 8 progetti a ogni render, sprecato -->
             <div class="project-row-gallery" data-project="${p.id}"></div>
           </div>
-          <button class="btn btn-forward project-row-view-btn" data-project="${p.id}">View Project<svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></button>
+          <button class="btn btn-forward project-row-view-btn" data-project="${p.id}"><span class="btn-label" data-label="View Project">View Project</span><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></button>
         </div>
         <div class="project-row-image" data-project="${p.id}">Image — replace with yours<br>(${p.name})</div>
       </div>
     `;
     }).join("");
+
+    fitHoverLabels(container);
 
     list.forEach(p=>{
       if(p.cover){
@@ -1140,6 +1174,7 @@
       <button class="filter-btn ${galleryViewMode === "scroll" ? "active" : ""}" data-mode="scroll"><span class="filter-label" data-label="Scroll">Scroll</span></button>
       <button class="filter-btn ${galleryViewMode === "grid" ? "active" : ""}" data-mode="grid"><span class="filter-label" data-label="Grid">Grid</span></button>
     `;
+    fitHoverLabels(container);
     container.querySelectorAll("[data-mode]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         galleryViewMode = btn.dataset.mode;
@@ -1261,6 +1296,7 @@
       const bucket = viewportBucket();
       if(bucket === lastViewportBucket) return;
       lastViewportBucket = bucket;
+      fitHoverLabels(); /* dimensioni e testi delle scritte cambiano tra mobile e desktop */
       if(projectsListReady && document.getElementById("view-projects").classList.contains("grid-mode")){
         const list = PROJECTS.filter(p => activeFilter === "all" || p.categories.includes(activeFilter));
         renderProjectsIndexGrid(list);
@@ -1288,6 +1324,14 @@
      .project-dots nella lista progetti ma con classi proprie (colori e
      dimensioni diversi, vedi mobile.css) */
   function renderLightboxDots(){
+    /* stessa galleria, cambia solo la foto: si sposta la classe .active
+       invece di ricostruire le barrette, così la loro transizione
+       (larghezza/colore, vedi CSS) si vede davvero */
+    const existing = lightboxDots.querySelectorAll(".lightbox-dot");
+    if(existing.length === lightboxItems.length){
+      existing.forEach((dot, i)=> dot.classList.toggle("active", i === lightboxIndex));
+      return;
+    }
     lightboxDots.innerHTML = lightboxItems.map((_, i) =>
       `<span class="lightbox-dot${i === lightboxIndex ? " active" : ""}"></span>`
     ).join("");
@@ -1301,17 +1345,19 @@
     });
   }
 
-  function openLightbox(index){
-    const item = lightboxItems[index];
-    if(!item) return;
-    lightboxIndex = index;
-    const { src, caption } = item;
+  /* durate allineate al CSS (--t-fade e --t-hover in style.css) */
+  const LIGHTBOX_FADE_MS = 350;
+  const LIGHTBOX_SWAP_MS = 200;
+  let lightboxCloseTimer = null;
+  let lightboxSwapTimer = null;
+
+  function setLightboxMedia({ src, caption }){
     if(isVideo(src)){
       lightboxImg.style.display = "none";
       lightboxImg.src = "";
       lightboxVideo.style.display = "block";
       lightboxVideo.src = encodePath(src);
-      lightboxVideo.play();
+      lightboxVideo.play().catch(()=>{});
     } else {
       lightboxVideo.style.display = "none";
       lightboxVideo.pause();
@@ -1321,14 +1367,46 @@
       lightboxImg.alt = caption;
     }
     lightboxCaption.textContent = caption;
+  }
+
+  function openLightbox(index){
+    const item = lightboxItems[index];
+    if(!item) return;
+    const wasOpen = lightbox.classList.contains("active");
+    lightboxIndex = index;
+    clearTimeout(lightboxCloseTimer);
+    clearTimeout(lightboxSwapTimer);
     renderLightboxDots();
-    lightbox.classList.add("active");
+    if(!wasOpen){
+      lightbox.classList.remove("switching");
+      setLightboxMedia(item);
+      lightbox.classList.add("active");
+      return;
+    }
+    /* già aperto: la foto corrente sfuma, si cambia sorgente mentre è
+       invisibile e la nuova risale solo quando è pronta da disegnare —
+       niente foto che appare a metà caricamento. Il controllo sull'indice
+       copre i cambi rapidi (frecce/rotellina): conta solo l'ultima richiesta */
+    lightbox.classList.add("switching");
+    lightboxSwapTimer = setTimeout(()=>{
+      setLightboxMedia(item);
+      const reveal = ()=>{ if(lightboxIndex === index) lightbox.classList.remove("switching"); };
+      if(isVideo(item.src)) requestAnimationFrame(reveal);
+      else lightboxImg.decode().then(reveal, reveal);
+    }, LIGHTBOX_SWAP_MS);
   }
   function closeLightbox(){
     lightbox.classList.remove("active");
-    lightboxImg.src = "";
+    clearTimeout(lightboxSwapTimer);
     lightboxVideo.pause();
-    lightboxVideo.src = "";
+    /* le sorgenti si svuotano solo a dissolvenza finita: farlo subito
+       farebbe sparire la foto di colpo mentre il lightbox sta ancora sfumando */
+    clearTimeout(lightboxCloseTimer);
+    lightboxCloseTimer = setTimeout(()=>{
+      lightboxImg.src = "";
+      lightboxVideo.src = "";
+      lightbox.classList.remove("switching");
+    }, LIGHTBOX_FADE_MS);
   }
   lightboxClose.addEventListener("click", (e)=>{
     /* senza stopPropagation il click risalirebbe fino a .lightbox, che
@@ -1352,9 +1430,10 @@
   /* rotella del mouse (o trackpad): avanti/indietro tra le foto come le
      frecce, non uno scorrimento continuo — non c'è nulla da scorrere qui,
      è una foto alla volta. L'ascoltatore è su .lightbox stesso (non su
-     window): mentre il lightbox è chiuso è display:none e non riceve mai
-     l'evento, quindi non serve nemmeno controllare "active" a mano né si
-     rischia di bloccare lo scroll della pagina sotto */
+     window): mentre il lightbox è chiuso è visibility:hidden e fuori
+     dall'hit-test, non riceve mai l'evento, quindi non serve nemmeno
+     controllare "active" a mano né si rischia di bloccare lo scroll della
+     pagina sotto */
   let lightboxWheelLock = false;
   lightbox.addEventListener("wheel", (e)=>{
     e.preventDefault();

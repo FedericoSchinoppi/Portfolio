@@ -14,7 +14,6 @@
    vero), che mantiene il menu Scroll/Grid.
 
    Indice:
-   0. Intro: scritta in fondo allineata a quella del footer
    1. About: skills a elenco verticale (una sotto l'altra)
    2. Projects — indice a griglia: tag di nuovo visibile (era nascosto
       sotto i 1000px in style.css); righe/colonne gestite lato JS
@@ -28,17 +27,6 @@
 
   :root{
     --edge:32px;
-  }
-
-  /* ---------- 0. INTRO: scritta in fondo nella stessa posizione del footer ----------
-     Il footer centra la sua scritta nella fascia alta --footer-size (meno
-     1px di border-top): una riga alta quanto quella fascia, appoggiata al
-     fondo dello schermo, la centra nello stesso identico punto. Stessa
-     dimensione del testo del footer, così entrando nel sito non si sposta */
-  .intro-footer-text{
-    bottom:0;
-    line-height:calc(var(--footer-size) - 1px);
-    font-size:0.7rem;
   }
 
   /* ---------- 1. ABOUT: skills a elenco verticale ---------- */
