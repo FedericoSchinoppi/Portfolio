@@ -244,13 +244,15 @@ img, video{
    Projects a sinistra, About a destra.
    --home-inset: margine laterale della home, condiviso da nome e fascia,
    così "Projects" parte dove inizia il nome e "About" finisce dove finisce.
+   È lo stesso --edge delle altre schermate (title-row, About, schede
+   progetto): tutto il sito poggia sulla stessa linea di margine.
    --home-name-size: il nome occupa esattamente la larghezza tra i due
    margini — 13 è la sua larghezza in em (Neue Haas Thin, maiuscolo,
    letter-spacing 0.03em), da ricalcolare se cambia il testo o il peso.
    Il tetto in vh evita che su finestre larghe ma molto basse il nome
    sfori in altezza */
 #view-home{
-  --home-inset:max(var(--edge), 6.6vw);
+  --home-inset:var(--edge);
   --home-tabs-size:100px;
   --home-name-size:min(calc((100vw - 2 * var(--home-inset)) / 13), 20vh);
 }

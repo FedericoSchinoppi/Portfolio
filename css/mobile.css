@@ -9,8 +9,8 @@
    1bis. Home: nome e tab "Projects"/"About" blu, fascia tab più bassa
    2. About: due colonne, foto verticale a destra, titolo/bio/contatti a
       sinistra (niente skills), download staccati in fondo
-   3. Footer: visibile solo in Home/About, contenuto leggermente più in
-      basso, sempre con la scritta "Nome | Portfolio | anno"
+   3. Footer: visibile in Home/About e nell'elenco Projects, contenuto
+      leggermente più in basso, sempre con la scritta "Nome | Portfolio | anno"
    4. Filtri nascosti (lista progetti + toggle Scroll/Grid)
    4bis. Indice: niente griglia, fasce semplici (titolo + tag), una per
       progetto — al posto della griglia pensata per il mouse
@@ -52,11 +52,12 @@
   .home-role{color:var(--accent-light);}
   .tab{color:var(--accent);}
 
-  /* ---------- 1ter. INTRO: posizioni invariate rispetto al laptop
-     (lì "click to enter" si è spostato più in alto per fare spazio alla
-     scritta del footer) ---------- */
+  /* ---------- 1ter. INTRO: la scritta in fondo sta esattamente dove sta
+     quella del footer (vedi sezione 3: scritta appoggiata in basso nella
+     fascia, a 8px dal bordo), stessa dimensione del testo — entrando nel
+     sito la scritta non si sposta ---------- */
   .intro-enter-label{bottom:48px;}
-  .intro-footer-text{bottom:18px;}
+  .intro-footer-text{bottom:8px; font-size:0.7rem;}
 
   /* ---------- 2. ABOUT: due colonne, foto verticale a destra ---------- */
   /* le skills sono state tolte: al loro posto, nella colonna sinistra,
@@ -142,11 +143,14 @@
     padding:0 var(--edge); margin:0 0 18px;
   }
 
-  /* ---------- 3. FOOTER: visibile solo in Home e About ---------- */
+  /* ---------- 3. FOOTER: visibile in Home, About e nell'elenco Projects ----------
+     Dentro un progetto aperto (scheda con galleria, .list-mode) resta
+     nascosto: lì tutta l'altezza serve alle foto */
   .site-footer{display:none;}
   body:has(#view-home.active) .site-footer,
-  body:has(#view-about.active) .site-footer{display:flex;}
-  #view-projects, #view-detail{bottom:0;}
+  body:has(#view-about.active) .site-footer,
+  body:has(#view-projects.active.grid-mode) .site-footer{display:flex;}
+  #view-projects.list-mode, #view-detail{bottom:0;}
 
   /* scritte leggermente più in basso nella fascia del footer */
   .site-footer{align-items:flex-end; padding-bottom:8px;}
@@ -173,9 +177,9 @@
   /* la griglia (pensata per il mouse: hover per l'anteprima, più colonne)
      lascia il posto a un elenco verticale di fasce, una per progetto, con
      titolo, tag sotto e freccetta a destra — vedi renderProjectsIndexList
-     in index.html. Ogni fascia occupa lo spazio di due fasce "originali"
-     (flex-basis:25% invece di divise in parti uguali tra tutte e 8): con
-     8 progetti se ne vedono 4 per volta, il resto scorre */
+     in index.html. Ogni fascia è alta un quarto dello spazio tra title-row
+     e footer (flex-basis:25%): all'apertura se ne vedono esattamente 4,
+     il resto scorre */
   #view-projects.grid-mode .projects-index-grid{display:none;}
   #view-projects.grid-mode .projects-index-list{
     display:flex; flex-direction:column;
@@ -191,9 +195,12 @@
     flex:0 0 25%;
     gap:16px;
     padding:0 var(--edge);
-    border-bottom:1px solid var(--accent);
     cursor:var(--cursor-brand);
   }
+  /* linea sopra ogni fascia tranne la prima (lì c'è già quella del
+     title-row), non sotto: la fascia in fondo tocca il footer, che ha già
+     la sua linea — una seconda linea attaccata si leggerebbe più spessa */
+  .index-row + .index-row{border-top:1px solid var(--accent);}
   .index-row-text{display:flex; flex-direction:column; gap:6px;}
   .index-row-title{
     font-size:1.05rem; font-weight:400;
@@ -457,7 +464,7 @@
 
   .site-header img{height:12px;}
   .site-header .logo-placeholder{font-size:0.58rem; padding:4px 10px;}
-  .site-footer span{font-size:0.62rem;}
+  .site-footer span, .intro-footer-text{font-size:0.62rem;}
 
   #view-home{--home-tabs-size:72px;}
   .tab{gap:8px;}

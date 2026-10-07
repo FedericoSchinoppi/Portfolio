@@ -470,6 +470,21 @@
     }, fadeDuration);
   }
 
+  /* riporta un contenitore scorrevole all'inizio, in modo che ci resti:
+     su iOS lo scroll momentum del touch può restare "in volo" e
+     sovrascrivere un semplice scrollTop = 0 un istante dopo. overflow
+     hidden per un frame ferma quell'inerzia, il secondo reset al frame
+     successivo copre comunque il caso in cui sia già ripartita */
+  function resetScroll(el){
+    if(!el) return;
+    el.style.overflow = "hidden";
+    el.scrollTo({top:0, left:0, behavior:"instant"});
+    requestAnimationFrame(()=>{
+      el.style.overflow = "";
+      el.scrollTop = 0; el.scrollLeft = 0;
+    });
+  }
+
   /* ============================================================
      INTRO SPLASH
      ============================================================ */
@@ -596,10 +611,14 @@
     /* la galleria inline serve solo su mobile (su desktop .project-row-gallery
        è sempre display:none): costruirla anche su desktop sarebbe lavoro
        sprecato ad ogni apertura di scheda */
-    if(window.matchMedia("(max-width:800px)").matches){
-      populateProjectRowGallery(id);
-    }
+    const mobile = isMobileViewport();
+    if(mobile) populateProjectRowGallery(id);
     row?.scrollIntoView({ behavior:"instant", block:"start", inline:"start" });
+    /* su mobile la scheda scorre al suo interno (testo + foto) e resta
+       "corrente" anche dopo essere tornati all'elenco: senza questo reset,
+       rientrando nello stesso progetto ci si ritroverebbe al punto in cui
+       lo si era lasciato invece che all'inizio */
+    if(mobile) resetScroll(row);
     if(pushState) pushNavState("projects");
   }
 
@@ -1469,11 +1488,7 @@
        #view-detail è ancora display:none, e scrollLeft/scrollTop su un
        elemento nascosto non hanno alcun effetto (la vecchia posizione di
        scroll resterebbe) */
-    gallery.scrollTo({top:0, left:0, behavior:"instant"});
-    /* su iOS lo scroll momentum del touch può restare "in volo" e sovrascrivere
-       questo reset un istante dopo: un secondo reset al frame successivo lo
-       annulla comunque */
-    requestAnimationFrame(()=>{ gallery.scrollTop = 0; gallery.scrollLeft = 0; });
+    resetScroll(gallery);
   }
 
   /* niente salvataggio/copia delle foto: blocca il menu contestuale (tasto
