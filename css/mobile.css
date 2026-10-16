@@ -178,15 +178,14 @@
     margin-top:0.05em;
   }
   /* "Projects" ↔ nome del progetto mentre si scorrono le foto (vedi
-     updateMobileProjectsTitle in index.html): il testo vecchio sfuma e sale
-     di poco, il nuovo arriva dal basso e si assesta — un piccolo
-     "rotolamento" invece di uno spegni/accendi */
+     updateMobileProjectsTitle in index.html): dissolvenza ferma sul posto,
+     il testo vecchio sfuma via e il nuovo compare, senza movimento */
   #view-projects .title-row h1{
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    transition:opacity .28s var(--ease), transform .36s cubic-bezier(.2,.7,.2,1);
+    transition:opacity .3s var(--ease);
   }
-  #view-projects .title-row h1.swapping{opacity:0; transform:translateY(-8px);}
-  #view-projects .title-row h1.entering{opacity:0; transform:translateY(8px); transition:none;}
+  #view-projects .title-row h1.swapping{opacity:0;}
+  #view-projects .title-row h1.entering{opacity:0; transition:none;}
 
   /* ---------- 4. FILTRI nascosti (lista progetti + toggle Scroll/Grid) ---------- */
   .filters{display:none;}
@@ -206,12 +205,14 @@
      usa barre sovrapposte non personalizzabili (iOS Safari, gran parte di
      Android) resta quella di sistema */
   .projects-index-grid, .project-row{
+    --scroll-thumb:rgba(25,27,223,0.3); /* blu del sito, tenue e trasparente */
     scrollbar-width:thin;
-    scrollbar-color:var(--accent) transparent;
+    scrollbar-color:var(--scroll-thumb) transparent;
   }
   .projects-index-grid::-webkit-scrollbar, .project-row::-webkit-scrollbar{width:3px;}
+  .projects-index-grid::-webkit-scrollbar{width:2px;} /* griglia: ancora più sottile */
   .projects-index-grid::-webkit-scrollbar-track, .project-row::-webkit-scrollbar-track{background:transparent;}
-  .projects-index-grid::-webkit-scrollbar-thumb, .project-row::-webkit-scrollbar-thumb{background:var(--accent); border-radius:2px;}
+  .projects-index-grid::-webkit-scrollbar-thumb, .project-row::-webkit-scrollbar-thumb{background:var(--scroll-thumb); border-radius:2px;}
   #view-projects.grid-mode .projects-index-grid{
     display:block;
     overflow-y:auto; overscroll-behavior-y:none;
@@ -224,7 +225,9 @@
   .index-tile:nth-child(2n){border-right:none;}
   /* riquadri stretti: testo più piccolo e padding ridotto; i nomi lunghi
      vanno a capo invece di uscire dal riquadro */
-  .index-tile-info{padding:0 14px;}
+  /* testo un po' più vicino alla linea in alto invece che centrato in
+     verticale nella fascia */
+  .index-tile-info{padding:14px 14px 0; align-items:flex-start;}
   .index-tile-head{gap:8px;}
   .index-tile-title{font-size:0.78rem; line-height:1.15;}
   .index-tile-tag{font-size:0.62rem;}
