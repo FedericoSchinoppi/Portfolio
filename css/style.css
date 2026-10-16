@@ -37,6 +37,10 @@
 
   --header-size:72px;
   --footer-size:44px;
+  /* altezza unica di tutti i "tasti a fascia": Projects/About in home,
+     View Project, Download CV/Portfolio, fascia testo delle caselle
+     nella griglia progetti (vedi .tab / .tab-box) */
+  --tab-h:100px;
   --edge:40px;
   --arrow-size:1.6rem;
 
@@ -221,18 +225,29 @@ img, video{
 /* ============================================================
    VIEW SWITCHING
    ============================================================ */
+/* cambio pagina: la pagina che esce (.leaving) sfuma via in fretta, senza
+   muoversi, e resta sotto; quella che entra parte un attimo dopo e sale di
+   pochi pixel mentre compare. Niente scale(): a metà animazione rendeva
+   sfocate le linee da 1px e il testo. Spostamento in px interi per lo
+   stesso motivo */
 .view{
   display:none;
   position:fixed;
   top:var(--header-size); left:0; right:0; bottom:var(--footer-size);
   overflow:hidden;
+  z-index:1;
   opacity:0;
-  transform:translateY(16px) scale(0.99);
-  transition:opacity .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1);
+  transform:translateY(10px);
+  transition:opacity .4s var(--ease) .1s, transform .5s cubic-bezier(.2,.7,.2,1) .1s;
   pointer-events:none;
 }
 .view.active{display:block;}
-.view.active.visible{opacity:1; transform:translateY(0) scale(1); pointer-events:auto;}
+.view.active.visible{opacity:1; transform:none; pointer-events:auto;}
+.view.leaving{
+  z-index:0;
+  transform:none;
+  transition:opacity .2s var(--ease);
+}
 
 @media (prefers-reduced-motion:reduce){
   .view{transition:none;}
@@ -254,7 +269,7 @@ img, video{
    sfori in altezza */
 #view-home{
   --home-inset:var(--edge);
-  --home-tabs-size:100px;
+  --home-tabs-size:var(--tab-h);
   --home-name-size:min(calc((100vw - 2 * var(--home-inset)) / 13), 20vh);
 }
 #view-home.active{
@@ -294,25 +309,37 @@ img, video{
 .tab{
   min-width:0; min-height:0;
   display:flex; align-items:center; gap:10px;
-  padding:0 var(--home-inset);
+  padding:0 var(--edge);
   border-top:1px solid var(--accent);
   color:var(--text);
   transition:background-color var(--t-hover) var(--ease);
 }
 .tab-about{justify-content:flex-end; border-left:1px solid var(--accent);}
-.tab-label{
+.tab-label, .index-tile-title{
   font-weight:350;
   font-size:clamp(0.85rem,1.1vw,1.05rem);
   line-height:1;
   letter-spacing:0.02em;
   text-transform:uppercase;
 }
-.tab-arrow{
+.tab-arrow, .index-tile-arrow{
   font-size:0.7rem; line-height:1;
   display:flex; align-items:center;
 }
 /* stessa freccia di Projects, specchiata: i due lati restano simmetrici */
 .tab-about .tab-arrow .icon-svg{transform:scaleX(-1);}
+/* freccia verso il basso dei download: stesso ingombro della freccia
+   laterale, più larga che alta */
+.tab-arrow-down .icon-svg{width:1.1em; height:0.65em;}
+/* stessa fascia dei tab della home (font, freccia, hover), usata fuori
+   dalla home come tasto a sé: View Project e Download CV/Portfolio.
+   Altezza fissa --tab-h, linea sopra come in home */
+.tab-box{
+  flex:0 0 auto;
+  height:var(--tab-h);
+  width:100%;
+  background:none; text-align:left;
+}
 /* (hover:hover): solo su dispositivi con un vero puntatore (mouse/trackpad).
    Su touch un tap può altrimenti "restare" nello stato :hover finché non si
    tocca altrove (sticky hover), lasciando fasce/pulsanti colorati appesi.
@@ -320,6 +347,8 @@ img, video{
    metà della fascia */
 @media (hover:hover){
   .tab:hover{background-color:var(--accent-tint);}
+  /* stesso hover anche sulle caselle della griglia progetti */
+  .projects-index-grid.hover-ready .index-tile:hover{background-color:var(--accent-tint);}
 }
 
 .icon-svg{width:1em; height:1em; display:block; fill:currentColor;}
@@ -343,15 +372,15 @@ img, video{
    ricompare subito sotto, e la copia pesante sfuma via.
    --label-spacing ripete il letter-spacing della scritta: serve alla
    copia per partire dalla stessa spaziatura prima di stringerla */
-.filter-label, .contact-link, .btn-label, .more-info-label{
+.filter-label, .contact-link, .more-info-label{
   position:relative;
   --hover-weight:700;
   transition:color 0s;
 }
 .filter-label{display:block; --label-spacing:0.08em;}
-.contact-link, .btn-label{--label-spacing:0.05em;}
+.contact-link{--label-spacing:0.05em;}
 .more-info-label{--label-spacing:0.06em; --hover-weight:500;}
-.filter-label::after, .contact-link::after, .btn-label::after, .more-info-label::after{
+.filter-label::after, .contact-link::after, .more-info-label::after{
   content:attr(data-label);
   position:absolute; top:0; left:0;
   white-space:nowrap;
@@ -363,25 +392,25 @@ img, video{
 }
 @media (hover:hover){
   .filter-btn:hover .filter-label, .contact-link:hover,
-  .btn:hover .btn-label, .project-row-more-toggle:hover .more-info-label{
+  .project-row-more-toggle:hover .more-info-label{
     color:transparent;
     transition:color 0s linear var(--t-hover);
   }
   .filter-btn:hover .filter-label::after, .contact-link:hover::after,
-  .btn:hover .btn-label::after, .project-row-more-toggle:hover .more-info-label::after{opacity:1;}
+  .project-row-more-toggle:hover .more-info-label::after{opacity:1;}
 }
 
 /* icone che si ispessiscono all'hover insieme alla loro scritta: un contorno dello stesso colore che cresce da 0,
    senza spostare né ridimensionare nulla. vector-effect tiene lo spessore
    in pixel reali, uguale per tutte le icone qualunque sia il loro viewBox;
    overflow:visible perché il contorno sporge di poco dal riquadro dell'svg */
-.btn .icon-svg, .back-btn-inline .icon-svg,
+.back-btn-inline .icon-svg,
 .project-row-more-toggle .icon-svg, .lightbox-close .icon-svg{
   overflow:visible;
   stroke:currentColor; stroke-width:0;
   transition:stroke-width var(--t-hover) var(--ease);
 }
-.btn .icon-svg path, .back-btn-inline .icon-svg path,
+.back-btn-inline .icon-svg path,
 .project-row-more-toggle .icon-svg path, .lightbox-close .icon-svg path{
   vector-effect:non-scaling-stroke;
 }
@@ -458,24 +487,22 @@ img, video{
   color:var(--text);
   overflow-wrap:break-word; /* email/indirizzi lunghi vanno a capo invece di traboccare fuori dalla colonna sugli schermi più stretti */
 }
-.btn-row{display:flex; flex-wrap:wrap; gap:24px;}
-.btn{
-  display:inline-flex; align-items:center; gap:8px;
-  border:none; background:none; padding:0;
-  /* Medium a riposo, Bold all'hover (vedi "hover delle scritte") */
-  font-size:0.78rem; font-weight:500; letter-spacing:0.05em; text-transform:uppercase;
-  /* blu sempre, non nero-con-hover come le altre frecce: View Project e i
-     Download sono i tre pulsanti più importanti del sito, restano i più
-     riconoscibili a colpo d'occhio */
-  color:var(--accent);
+/* Download CV/Portfolio: due fasce affiancate a tutta larghezza della
+   colonna, appoggiate al footer come Projects/About in home (i margini
+   negativi annullano il padding di .about-contacts) */
+.btn-row{
+  display:grid; grid-template-columns:1fr 1fr;
+  align-self:stretch;
+  margin:16px calc(-1 * var(--edge)) calc(-1 * var(--edge));
 }
-.btn-forward .icon-svg{width:0.85em; height:0.85em;}
-.btn-download .icon-svg{width:0.8em; height:0.47em;}
-@media (hover:hover){
-  .btn:hover .icon-svg{stroke-width:var(--hover-stroke);}
-}
+.btn-row .tab + .tab{border-left:1px solid var(--accent);}
 
 .about-photo{width:50%; flex-shrink:0; height:100%; background:var(--surface);}
+/* linea blu verticale tra la foto e la colonna testo (come nelle schede
+   progetto); su mobile la foto è staccata dal testo, niente linea */
+@media (min-width:801px){
+  .about-photo{border-left:1px solid var(--accent);}
+}
 .about-photo img{width:100%; height:100%; object-fit:cover; display:block;}
 .about-photo-placeholder{
   width:100%; height:100%;
@@ -515,136 +542,98 @@ img, video{
    ============================================================ */
 /* nascosta di default: #view-projects.grid-mode la mostra, .list-mode
    mostra invece .projects-list-wrap sotto (vedi JS: projectsMode).
-   Desktop: sempre 2 righe, le colonne (--index-grid-cols, impostata via JS
-   in renderProjectsIndexGrid) si adattano al numero di progetti del filtro
-   corrente — 8 progetti in "All" = 4 colonne.
-   Tablet (vedi tablet.css + JS): il rapporto si inverte, sempre 2 colonne
-   e sono le righe (--index-grid-rows) ad adattarsi al numero di progetti. */
+   Desktop: griglia fissa 4 colonne x 2 righe, con gli stessi margini
+   laterali della home (--edge) e alta esattamente quanto lo spazio tra
+   filtri e footer. Con un filtro attivo i riquadri non cambiano
+   dimensione: le caselle mancanti restano vuote.
+   Tablet (vedi tablet.css): 2 colonne, righe a seguire, scroll verticale. */
 .projects-index-grid{display:none;}
 /* versione mobile dell'indice (fasce titolo+tag invece della griglia):
    nascosta di default, la mostra solo mobile.css sotto gli 800px */
 .projects-index-list{display:none;}
 #view-projects.grid-mode .projects-index-grid{
-  display:grid;
-  grid-template-columns:repeat(var(--index-grid-cols, 4), 1fr);
-  /* --index-grid-rows: 2 su desktop (righe fisse, colonne variabili, vedi
-     JS renderProjectsIndexGrid); su tablet è invece --index-grid-cols
-     fisso a 2 e --index-grid-rows a variare col numero di progetti — la
-     stessa proprietà CSS serve entrambi i casi, cambia solo chi la JS
-     tiene fissa e chi tiene variabile */
-  grid-template-rows:repeat(var(--index-grid-rows, 2), 1fr);
-  /* niente border-left qui: si vedrebbe la linea blu attaccata al bordo
-     sinistro dello schermo. La prima colonna di riquadri non ha comunque
-     un proprio bordo sinistro (vedi .index-tile, usa solo border-right),
-     quindi il vero bordo sinistro dello schermo resta sempre libero */
+  display:block;
   flex:1; min-height:0;
-  overflow:hidden; /* mai scrollabile: le righe si dividono lo spazio disponibile */
+  overflow:hidden;
+  /* container query: la larghezza della griglia si calcola dall'altezza
+     disponibile (cqh) e dalla larghezza (cqw) del contenitore */
+  container-type:size;
   cursor:var(--cursor-brand);
 }
 #view-projects.grid-mode .projects-list-wrap{display:none;}
 
-/* righe/colonne separate da bordi sui singoli riquadri (non da gap +
-   sfondo del contenitore): con un numero di progetti che non riempie
-   l'ultima riga, un gap colorato lascerebbe le celle vuote di un blu
-   pieno invece di restare trasparenti sullo sfondo della pagina.
-   border-right su tutti tranne l'ultima colonna VERA della griglia
-   (classe messa via JS, in base a --index-grid-cols): quella tocca
-   sempre il bordo destro dello schermo. Un progetto che invece è
-   l'ultimo di una riga incompleta (es. 5 progetti su 3 colonne: il
-   secondo progetto della riga 2 non arriva alla 3ª colonna) NON è in
-   questa colonna e mantiene il bordo, perché a destra ha solo spazio
-   vuoto, non il bordo dello schermo. border-bottom solo sulla prima
-   riga (classe messa via JS): sulla seconda si sovrapporrebbe al
-   border-top del footer subito sotto, leggendosi come una riga più
-   spessa delle altre */
+.projects-index-grid{
+  --index-cols:4;
+  --index-side:var(--edge);
+}
+/* ogni riga è metà dell'altezza disponibile (cqh), sempre — anche con un
+   filtro che lascia una sola riga, che resta della stessa altezza.
+   +0.5px per riga: il bordo inferiore della seconda riga finisce sotto al
+   bordo del footer invece di raddoppiarlo */
+.index-grid-inner{
+  --index-grid-w:calc(100cqw - 2 * var(--index-side));
+  --index-row-h:calc(50cqh + 0.5px);
+  width:var(--index-grid-w);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(var(--index-cols), 1fr);
+  grid-auto-rows:var(--index-row-h);
+  align-content:start;
+}
+
+/* bordi sui singoli riquadri (destra + sotto, sinistra solo per la prima
+   colonna): le caselle vuote di un filtro restano senza linee, sullo
+   sfondo della pagina. Il bordo superiore è quello dei filtri */
 .index-tile{
   position:relative; overflow:hidden;
+  min-width:0;
+  display:flex; flex-direction:column;
   background:var(--bg);
   border-right:1px solid var(--accent);
-  display:flex; flex-direction:column; justify-content:flex-start; align-items:flex-start;
-  padding:32px;
+  border-bottom:1px solid var(--accent);
   cursor:var(--cursor-brand);
+  transition:background-color var(--t-hover) var(--ease);
 }
-.index-tile.index-tile-last-col{border-right:none;}
-.index-tile.index-tile-top-row{border-bottom:1px solid var(--accent);}
+.index-tile:nth-child(4n+1){border-left:1px solid var(--accent);}
 
-/* copertina che riempie l'intero riquadro al passaggio del cursore (al
-   posto della vecchia anteprima fluttuante che seguiva il cursore):
-   position:absolute dentro .index-tile stesso, che ha già overflow:hidden */
+/* copertina: tutto lo spazio della riga sopra la fascia testo, che è
+   alta --tab-h come i tasti della home. L'immagine riempie il riquadro
+   (object-fit:cover): la proporzione segue lo schermo, vicina al 16:9 su
+   un laptop. Altezza uguale in tutti i riquadri di una riga, quindi le
+   linee sotto le copertine restano allineate */
 .index-tile-cover{
-  position:absolute; inset:0; z-index:0;
-  opacity:0;
-  transition:opacity var(--t-fade) var(--ease);
+  flex:1 1 auto; min-height:0;
+  background:var(--surface);
+  border-bottom:1px solid var(--accent);
 }
 .index-tile-cover img{width:100%; height:100%; object-fit:cover; display:block;}
-/* .hover-ready (aggiunta via JS solo al primo movimento reale del mouse
-   dentro la griglia, vedi armGridHoverGate): senza, se il cursore si trova
-   già fermo su un riquadro appena la pagina appare, l'hover CSS scatta
-   comunque subito, rivelando l'anteprima senza che l'utente abbia mosso
-   nulla.
-   @media(hover:hover): questa griglia è pensata per il mouse ed è nascosta
-   sotto gli 800px (vedi mobile.css), ma resta quella attiva su schermi
-   touch più larghi di 800px (tablet, telefoni in orizzontale, foldable) —
-   lì, senza questo guard, un tocco prolungato sul riquadro fa scattare lo
-   stesso lo stato :hover (comportamento noto di WebKit/Chrome su touch) e
-   la copertina appare come se fosse stata "premuta apposta". Stessa
-   protezione già usata per tutti gli altri :hover del sito (tab, bottoni,
-   pallini, ecc.) */
-@media (hover:hover){
-  .projects-index-grid.hover-ready .index-tile:hover .index-tile-cover{opacity:1;}
-}
 
+/* fascia testo: stessa altezza, font, freccia e hover dei tab della home
+   (vedi .tab) — titolo con la freccia subito accanto, tag sotto, centrati
+   in verticale */
 .index-tile-info{
-  position:relative; z-index:1;
-  display:flex; flex-direction:column; gap:8px;
-  max-width:100%;
+  flex:0 0 var(--tab-h);
+  display:flex; align-items:center;
+  padding:0 24px;
 }
 /* contenuto dei riquadri in dissolvenza a ogni comparsa della griglia
-   (ingresso in Projects, cambio filtro, ritorno da una scheda): i bordi
-   della griglia restano fermi, entra solo il testo */
-.index-tile-info, .index-tile-tags{animation:soft-in var(--t-fade) var(--ease);}
+   (ingresso in Projects, cambio filtro, ritorno da una scheda) */
+.index-tile{animation:soft-in var(--t-fade) var(--ease);}
+.index-tile-text{display:flex; flex-direction:column; gap:6px; min-width:0;}
+/* titolo + freccia: stessa distanza dei tab della home (gap di .tab) */
+/* align-items:baseline: la freccia (alta come le maiuscole) poggia sulla
+   linea di base del titolo, quindi è centrata sulle lettere maiuscole e
+   non sulla riga intera — con "center" lo spazio dei discendenti sotto la
+   riga la faceva sembrare più bassa, a seconda dell'arrotondamento */
+.index-tile-head{display:flex; align-items:baseline; gap:10px; min-width:0;}
+.index-tile-arrow{flex-shrink:0;}
 .index-tile-title{
-  position:relative;
   display:block;
-  font-size:1.35rem; font-weight:400;
-  text-transform:uppercase; letter-spacing:-0.01em;
-  line-height:1.1;
-  transition:opacity var(--t-hover) var(--ease);
-  /* nomi lunghi e senza spazi (es. "CONFARTIGIANATO") vanno a capo invece
-     di sforare il riquadro: con overflow:hidden sul riquadro (vedi
-     .index-tile) uno sforamento verrebbe tagliato a metà parola */
   overflow-wrap:break-word; word-break:break-word;
 }
-.index-tile-blurb{
-  font-size:0.95rem; font-weight:350; color:var(--text-secondary);
-  margin:0;
-  /* al massimo 2 righe: i riquadri hanno un'altezza fissa (2 righe della
-     griglia), un testo troppo lungo non deve sforare */
-  display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical;
-  overflow:hidden;
-  transition:opacity var(--t-hover) var(--ease);
-}
-/* elenco tag, staccato dal blocco titolo/frasetta e ancorato in fondo al
-   riquadro (margin-top:auto lo spinge in fondo allo spazio verticale
-   disponibile, qualunque sia la lunghezza della frasetta sopra) */
-.index-tile-tags{
-  position:relative; z-index:1;
-  display:flex; flex-direction:column; gap:6px;
-  margin-top:auto;
-  max-width:100%;
-}
 .index-tile-tag{
-  font-size:0.7rem; letter-spacing:0.04em; text-transform:uppercase;
+  font-size:0.75rem; font-weight:350; line-height:1.2;
   color:var(--text-secondary);
-  transition:opacity var(--t-hover) var(--ease);
-}
-/* al passaggio del cursore resta visibile solo la copertina: titolo,
-   frasetta e tag scompaiono tutti (stesso gate .hover-ready e stesso
-   guard hover:hover di cui sopra) */
-@media (hover:hover){
-  .projects-index-grid.hover-ready .index-tile:hover .index-tile-title,
-  .projects-index-grid.hover-ready .index-tile:hover .index-tile-blurb,
-  .projects-index-grid.hover-ready .index-tile:hover .index-tile-tag{opacity:0;}
 }
 
 /* wrapper attorno a lista + pallini: i pallini si centrano su questo (la
@@ -840,7 +829,29 @@ img, video{
 /* frase riassuntiva breve: solo mobile (vedi mobile.css), qui la
    descrizione completa e i tag sono già visibili nella scheda */
 .project-row-blurb{display:none;}
-.project-row-view-btn{align-self:flex-start;}
+/* View Project: fascia dal bordo sinistro dello schermo fino alla foto,
+   appoggiata al footer — i margini negativi annullano il padding sinistro
+   e inferiore di .project-row-text. Lo spazio tra testo e foto, che prima
+   era il gap di .project-row, sopra gli 800px diventa padding-right della
+   colonna testo, così la fascia può attraversarlo e toccare la foto
+   (.project-row-text ha overflow-y:auto: un margine negativo verso destra
+   verrebbe tagliato). Sotto gli 800px il bottone è nascosto (mobile.css) */
+.project-row-view-btn{
+  margin:0 0 -56px calc(-1 * var(--edge));
+  width:calc(100% + var(--edge));
+}
+@media (min-width:801px){
+  /* linea di divisione tra una scheda progetto e l'altra mentre si scorre.
+     La scheda è alta 1px in più della lista: quando è agganciata (scroll
+     snap) la sua linea finisce appena sotto il bordo visibile, nascosta,
+     invece di raddoppiare quella del footer */
+  .project-row{gap:0; height:calc(100% + 1px); border-bottom:1px solid var(--accent);}
+  .project-row-text{padding-right:32px;}
+  .project-row-view-btn{
+    margin-right:-32px;
+    width:calc(100% + var(--edge) + 32px);
+  }
+}
 
 .project-row-image{
   width:50%; flex-shrink:0; align-self:stretch;
@@ -851,7 +862,8 @@ img, video{
   font-size:0.8rem; text-align:center; padding:16px;
   cursor:var(--cursor-brand);
 }
-.project-row-image:has(img){border:none; padding:0; background:none;}
+/* linea blu verticale tra la foto e la colonna testo */
+.project-row-image:has(img){border:none; border-left:1px solid var(--accent); padding:0; background:none;}
 .project-row-image img{width:100%; height:100%; object-fit:cover; display:block;}
 /* galleria inline dentro la scheda: solo mobile (vedi mobile.css), al
    posto della cover + View Project — su desktop resta il flusso attuale
@@ -886,6 +898,32 @@ img, video{
   flex:0 0 auto; height:100%; aspect-ratio:16/9;
 }
 .detail-gallery.scroll-view .gallery-item{width:100%; height:100%;}
+/* foto attaccate una all'altra, divise da una linea blu (niente gap).
+   La linea è un ::after SOPRA la foto (z-index), non un bordo accanto:
+   con larghezze decimali la foto vicina, arrotondata al pixel, poteva
+   coprire un bordo da 1px e far sparire la linea.
+   Ogni foto ha la sua cornice (sinistra + destra) e le foto si
+   sovrappongono di 1px (margin-right:-1px su tutte: ogni foto sta in un
+   suo .gallery-row, quindi non sono sorelle tra loro), così tra due foto resta una
+   sola linea e ci sono anche quella a sinistra della prima e a destra
+   dell'ultima. Sopra e sotto niente: ci sono già filtri e footer */
+.detail-gallery.scroll-view{gap:0;}
+.detail-gallery.scroll-view .gallery-item::after,
+.project-row-gallery .gallery-item::after{
+  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  border:0 solid var(--accent);
+}
+.detail-gallery.scroll-view .gallery-item::after{border-left-width:1px; border-right-width:1px;}
+.detail-gallery.scroll-view .gallery-item-wrap{margin-right:-1px;}
+/* prima e ultima foto toccano i bordi dello schermo: niente linea sul lato
+   esterno (classi messe in openProject) */
+.detail-gallery.scroll-view .gallery-first .gallery-item::after{border-left-width:0;}
+.detail-gallery.scroll-view .gallery-last .gallery-item::after{border-right-width:0;}
+/* desktop: foto da bordo a bordo dello schermo, senza margini laterali
+   (tablet e mobile hanno la colonna di foto con i loro margini) */
+@media (min-width:801px){
+  .detail-gallery.scroll-view{padding-left:0; padding-right:0;}
+}
 
 /* Grid view: 3 righe (vedi threeRowCounts in JS, es. 3/4/3 per 10 foto).
    Tutte le foto hanno la stessa dimensione e mantengono le proporzioni
@@ -913,6 +951,26 @@ img, video{
   width:var(--tile-w, 200px); flex:0 0 auto;
   aspect-ratio:16/9;
 }
+/* Grid: righe alte esattamente 1/3 (1/2 su tablet) dello spazio tra
+   filtri e footer, foto attaccate e incorniciate da una linea blu.
+   Larghezze/altezze calcolate in JS (layoutGridView): --tile-w/--tile-h
+   per tutte le foto, larghezza propria (style inline) per le due foto
+   esterne delle righe più lunghe, ritagliate perché la riga vada
+   esattamente da margine a margine come il resto del sito.
+   Cornice = ::after SOPRA la foto (vedi nota sulla Scroll view): i margini
+   negativi sovrappongono le cornici vicine, così tra due foto resta una
+   sola linea da 1px. Niente linea sopra la prima riga e sotto l'ultima:
+   ci sono già quella dei filtri e quella del footer */
+.detail-gallery.grid-view, .detail-gallery.grid-view .gallery-row{gap:0;}
+.detail-gallery.grid-view .gallery-item{height:var(--tile-h, 112px); aspect-ratio:auto;}
+.detail-gallery.grid-view .gallery-item::after{
+  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  border:1px solid var(--accent);
+}
+.detail-gallery.grid-view .gallery-row.first-row .gallery-item::after{border-top:none;}
+.detail-gallery.grid-view .gallery-row.last-row .gallery-item::after{border-bottom:none;}
+.detail-gallery.grid-view .gallery-item-wrap + .gallery-item-wrap .gallery-item{margin-left:-1px;}
+.detail-gallery.grid-view .gallery-row + .gallery-row{margin-top:-1px;}
 .gallery-item[data-src]{cursor:var(--cursor-image);}
 
 .gallery-item{
@@ -994,19 +1052,6 @@ img, video{
    tenere premuto — nascosta di default, l'unica versione che la usa è
    quella sotto gli 800px */
 .mobile-row-preview{display:none;}
-
-/* ============================================================
-   GRIGLIA INDICE — transizione desktop stretto
-   Unica regola di questo file legata alla larghezza dello schermo (vedi
-   nota in cima al file): sotto i 1000px i riquadri della griglia indice
-   iniziano a stare stretti (frasetta che va a capo, poco spazio per i
-   tag) ma non siamo ancora nel layout mobile vero e proprio (sotto gli
-   800px, vedi mobile.css) — qui si toglie solo la frasetta e il tag,
-   lasciando il riquadro con il solo titolo, più pulito e leggibile.
-   ============================================================ */
-@media (max-width:1000px){
-  .index-tile-blurb, .index-tile-tags{display:none;}
-}
 
 /* ============================================================
    SOLO LAPTOP / TABLET

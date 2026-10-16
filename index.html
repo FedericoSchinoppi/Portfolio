@@ -454,7 +454,7 @@
      in em). Va richiamata dopo ogni render che crea scritte di questo tipo
      e quando finiscono di caricarsi i font: prima le misure sono fatte sul
      font di ripiego */
-  const HOVER_LABEL_SELECTOR = ".filter-label, .contact-link, .btn-label, .more-info-label";
+  const HOVER_LABEL_SELECTOR = ".filter-label, .contact-link, .more-info-label";
   const hoverMeasureCtx = document.createElement("canvas").getContext("2d");
   function fitHoverLabels(root = document){
     root.querySelectorAll(HOVER_LABEL_SELECTOR).forEach(el=>{
@@ -660,7 +660,10 @@
   }
 
   function showView(name, keepProjectsState = false){
-    const current = document.querySelector(".view.active");
+    /* "corrente" = quella visibile, non la prima con .active: con clic
+       rapidi una pagina che sta ancora uscendo è ancora .active, e prima
+       veniva presa per sbaglio come corrente, lasciando due pagine visibili */
+    const current = document.querySelector(".view.visible");
     const next = document.querySelector(`.view[data-view="${name}"]`);
     if(!next || next === current) return;
 
@@ -688,25 +691,27 @@
       document.getElementById("projects-list").scrollTo({top:0, left:0, behavior:"instant"});
     }
 
+    next.classList.remove("leaving");
     void next.offsetWidth;
     next.classList.add("visible");
 
-    if(current){
-      current.classList.remove("visible");
-      current.addEventListener("transitionend", function cleanup(e){
-        if(e.propertyName !== "opacity") return;
-        current.removeEventListener("transitionend", cleanup);
-        /* le view sono riusate per ogni progetto (un solo #view-detail):
-           se nel frattempo current è stata riattivata (es. utente tornato
-           qui prima che questa dissolvenza in uscita finisse), "visible"
-           è già stata rimessa — in quel caso NON va tolta "active",
-           altrimenti la view resterebbe display:none pur essendo quella
-           corrente (clientWidth/Height a 0, griglia rotta) */
-        if(!current.classList.contains("visible")){
-          current.classList.remove("active");
-        }
-      });
-    }
+    /* tutte le altre pagine ancora visibili (di norma solo una) escono: la
+       pagina che esce sfuma via più in fretta e resta sotto quella che
+       entra (vedi CSS .view.leaving), niente due pagine mezze visibili una
+       sopra l'altra a metà transizione. Pulizia a tempo invece che su
+       transitionend, che non scatta se la transizione viene interrotta.
+       Le view sono riusate (un solo #view-detail): se nel frattempo una è
+       tornata visibile, NON va tolta "active", altrimenti resterebbe
+       display:none pur essendo quella corrente (griglia rotta) */
+    document.querySelectorAll(".view.visible").forEach(v=>{
+      if(v === next) return;
+      v.classList.add("leaving");
+      v.classList.remove("visible");
+      clearTimeout(v.__leaveTimer);
+      v.__leaveTimer = setTimeout(()=>{
+        if(!v.classList.contains("visible")) v.classList.remove("active", "leaving");
+      }, 260);
+    });
   }
 
   /* stato completo da salvare nella cronologia del browser: non solo quale
@@ -843,8 +848,8 @@
         <a class="contact-link" data-label="${CONFIG.instagramHandle}" href="${CONFIG.instagramUrl}" target="_blank" rel="noopener">${CONFIG.instagramHandle}</a>
       </div>
       <div class="btn-row">
-        <a class="btn btn-download" href="${encodePath(CONFIG.cvPath)}" target="_blank" rel="noopener"><span class="btn-label" data-label="Download CV">Download CV</span><svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg></a>
-        <a class="btn btn-download" href="${encodePath(CONFIG.portfolioPath)}" target="_blank" rel="noopener"><span class="btn-label" data-label="Download Portfolio">Download Portfolio</span><svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg></a>
+        <a class="tab tab-box" href="${encodePath(CONFIG.cvPath)}" target="_blank" rel="noopener"><span class="tab-label">Download CV</span><span class="tab-arrow tab-arrow-down"><svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg></span></a>
+        <a class="tab tab-box" href="${encodePath(CONFIG.portfolioPath)}" target="_blank" rel="noopener"><span class="tab-label">Download Portfolio</span><span class="tab-arrow tab-arrow-down"><svg class="icon-svg" viewBox="0 0 20 11.8" aria-hidden="true"><path d="M20,1.8l-10,10L0,1.8,1.8,0l8.2,8.2L18.2,0l1.8,1.8Z"/></svg></span></a>
       </div>
     `;
     fitHoverLabels(document.getElementById("about-contacts"));
@@ -890,54 +895,30 @@
     });
   }
 
-  /* indice a griglia: sempre 2 righe, le colonne si adattano al numero di
-     progetti del filtro corrente (in "All" con 8 progetti: 4 colonne).
-     Titolo in alto a sinistra, frase riassuntiva sotto (la stessa usata
-     in mobile al posto dei tag) e un solo tag, ancorato in fondo al
-     riquadro (vedi CSS, .index-tile-tags{margin-top:auto}) e staccato dal
-     blocco titolo/frasetta. La copertina riempie tutto il riquadro al
-     passaggio del cursore (vedi CSS, .index-tile:hover .index-tile-cover),
-     momento in cui titolo, frasetta e tag scompaiono tutti e resta
-     visibile solo la copertina. Un click apre la scheda già esistente su
-     quel progetto specifico */
+  /* indice a griglia: riquadri con copertina 16:9 in alto e, sotto,
+     titolo + primo tag con freccetta a destra. Ordine dei progetti quello
+     di PROJECTS; al passaggio del cursore il riquadro si colora di
+     azzurro chiaro (vedi CSS .index-tile:hover). Un click apre la scheda
+     già esistente su quel progetto specifico */
   function renderProjectsIndexGrid(list){
     const grid = document.getElementById("projects-index-grid");
-    /* Desktop: righe fisse a 2, colonne che si adattano (comportamento
-       originale). Tablet: rapporto invertito — colonne fisse a 2, righe
-       che si adattano (es. "All" con 8 progetti = 4 righe x 2 colonne;
-       un filtro con 3 progetti = 2 righe x 2 colonne, l'ultima incompleta) */
-    const tablet = isTabletViewport();
-    const rows = tablet ? Math.max(1, Math.ceil(list.length / 2)) : 2;
-    const cols = tablet ? 2 : Math.max(1, Math.ceil(list.length / rows));
-    grid.style.setProperty("--index-grid-cols", cols);
-    grid.style.setProperty("--index-grid-rows", rows);
-    grid.innerHTML = list.map((p, i) => {
-      const classes = ["index-tile"];
-      const rowIndex = Math.floor(i / cols);
-      /* riga interna (non l'ultima): le separa dalla riga sotto — sulla
-         riga finale non serve, non c'è nulla sotto con cui confondersi
-         (vedi CSS .index-tile-top-row) */
-      if(rowIndex < rows - 1) classes.push("index-tile-top-row");
-      /* ultima colonna vera (indice di colonna cols-1): è l'unica che
-         tocca sempre il bordo destro dello schermo, quindi niente
-         border-right lì (vedi CSS). Se una riga è incompleta (l'ultimo
-         progetto non arriva fino all'ultima colonna, es. 5 progetti su
-         3 colonne) quel progetto NON è in questa colonna e mantiene il
-         bordo, perché a destra ha spazio vuoto, non il bordo schermo */
-      if(i % cols === cols - 1) classes.push("index-tile-last-col");
-      return `
-      <div class="${classes.join(" ")}" data-project="${p.id}">
-        ${p.cover ? `<div class="index-tile-cover"><img src="${encodePath(p.cover)}" alt="" loading="lazy"></div>` : ""}
+    /* colonne fisse (4 su desktop, 2 su tablet — vedi CSS --index-cols):
+       con un filtro attivo i riquadri restano della stessa dimensione e
+       nello stesso ordine, le caselle mancanti restano semplicemente vuote */
+    grid.innerHTML = `<div class="index-grid-inner">${list.map(p => `
+      <div class="index-tile" data-project="${p.id}">
+        <div class="index-tile-cover">${p.cover ? `<img src="${encodePath(p.cover)}" alt="" loading="lazy">` : ""}</div>
         <div class="index-tile-info">
-          <span class="index-tile-title">${p.name}</span>
-          <p class="index-tile-blurb">${p.blurb}</p>
-        </div>
-        <div class="index-tile-tags">
-          <span class="index-tile-tag">${p.tags[0] || ""}</span>
+          <div class="index-tile-text">
+            <span class="index-tile-head">
+              <span class="index-tile-title">${p.name}</span>
+              <span class="index-tile-arrow"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></span>
+            </span>
+            <span class="index-tile-tag">${p.tags[0] || ""}</span>
+          </div>
         </div>
       </div>
-    `;
-    }).join("");
+    `).join("")}</div>`;
     grid.querySelectorAll(".index-tile").forEach(tile=>{
       tile.addEventListener("click", ()=>{
         /* Tablet: niente scheda intermedia con "View Project" — si apre
@@ -1061,7 +1042,7 @@
                  costruito per tutti gli 8 progetti a ogni render, sprecato -->
             <div class="project-row-gallery" data-project="${p.id}"></div>
           </div>
-          <button class="btn btn-forward project-row-view-btn" data-project="${p.id}"><span class="btn-label" data-label="View Project">View Project</span><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></button>
+          <button class="tab tab-box project-row-view-btn" data-project="${p.id}"><span class="tab-label">View Project</span><span class="tab-arrow"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></span></button>
         </div>
         <div class="project-row-image" data-project="${p.id}">Image — replace with yours<br>(${p.name})</div>
       </div>
@@ -1141,7 +1122,9 @@
         const isMobile = window.matchMedia("(max-width:800px)").matches;
         const idx = isMobile
           ? (list.clientWidth ? Math.round(list.scrollLeft / list.clientWidth) : 0)
-          : (list.clientHeight ? Math.round(list.scrollTop / list.clientHeight) : 0);
+          /* +1: su desktop ogni scheda è alta 1px più della lista, per la
+             linea di divisione sotto (vedi CSS .project-row) */
+          : (list.clientHeight ? Math.round(list.scrollTop / (list.clientHeight + 1)) : 0);
         dots.forEach((d,i)=> d.classList.toggle("active", i === idx));
       }
       projectDotsTicking = false;
@@ -1153,14 +1136,14 @@
   window.addEventListener("keydown", (e)=>{
     if(window.matchMedia("(max-width:800px)").matches) return;
     if(lightbox.classList.contains("active")) return;
-    if(!document.querySelector('.view[data-view="projects"]').classList.contains("active")) return;
+    if(!document.querySelector('.view[data-view="projects"]').classList.contains("visible")) return;
     if(projectsMode !== "list") return;
     const deltaMap = { ArrowDown:1, ArrowRight:1, ArrowUp:-1, ArrowLeft:-1 };
     const delta = deltaMap[e.key];
     if(delta === undefined) return;
     e.preventDefault();
     const list = document.getElementById("projects-list");
-    list.scrollBy({ top: delta * list.clientHeight, behavior:"smooth" });
+    list.scrollBy({ top: delta * (list.clientHeight + 1), behavior:"smooth" });
   });
 
   /* ============================================================
@@ -1257,38 +1240,57 @@
     return isTabletViewport() ? twoRowCounts(n) : threeRowCounts(n);
   }
 
-  /* Grid statica, senza scorrimento, su 3 righe: stessa dimensione per
-     tutte le foto (proporzioni reali 16:9), calcolata per riempire tutto
-     lo spazio disponibile tra il menu e il footer. Le righe più corte
-     restano centrate invece di stirarsi. */
+  /* Grid statica, senza scorrimento, su 3 righe (2 su tablet): le righe
+     riempiono esattamente lo spazio tra filtri e footer, foto 16:9 tutte
+     della stessa dimensione. Le righe più lunghe (e qualunque riga che
+     sforerebbe) vanno esattamente da margine a margine: la differenza la
+     assorbono le due foto esterne, ritagliate (object-fit:cover). Le
+     righe più corte restano centrate. Foto e righe vicine si sovrappongono
+     di 1px, cornice su cornice (vedi CSS .detail-gallery.grid-view) */
   function layoutGridView(){
     const gallery = document.getElementById("detail-gallery");
     if(!gallery.classList.contains("grid-view")) return;
-    const rows = [...gallery.querySelectorAll(".gallery-row")].filter(r => r.querySelectorAll(".gallery-item-wrap").length);
+    const allRows = [...gallery.querySelectorAll(".gallery-row")];
+    const rows = allRows.filter(r => r.querySelectorAll(".gallery-item-wrap").length);
     if(!rows.length) return;
-    const gap = 6;
-    const Wc = gallery.clientWidth;
-    const Hc = gallery.clientHeight;
-    const counts = rows.map(r => r.querySelectorAll(".gallery-item-wrap").length);
+    const OVERLAP = 1;
+    const cs = getComputedStyle(gallery);
+    const Wc = gallery.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const Hc = gallery.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    const R = rows.length;
+    const counts = rows.map(r => r.querySelectorAll(".gallery-item").length);
     const maxCount = Math.max(...counts);
 
-    const widthCap = (Wc - (maxCount - 1) * gap) / maxCount;
-    const heightCap = ((Hc - (rows.length - 1) * gap) / rows.length) * 16 / 9;
-    const tileW = Math.max(0, Math.min(widthCap, heightCap));
-
+    const tileH = (Hc + (R - 1) * OVERLAP) / R;
+    const tileW = tileH * 16 / 9;
     gallery.style.setProperty("--tile-w", tileW + "px");
+    gallery.style.setProperty("--tile-h", tileH + "px");
+
+    allRows.forEach(r => r.classList.remove("first-row", "last-row"));
+    rows[0].classList.add("first-row");
+    rows[R - 1].classList.add("last-row");
+
+    rows.forEach((row, i) => {
+      const items = [...row.querySelectorAll(".gallery-item")];
+      items.forEach(it => it.style.width = "");
+      const n = items.length;
+      const natural = n * tileW - (n - 1) * OVERLAP;
+      if(n !== maxCount && natural <= Wc) return;
+      if(n === 1){ items[0].style.width = Wc + "px"; return; }
+      const outer = Math.max(tileW * 0.25, tileW + (Wc - natural) / 2);
+      items[0].style.width = outer + "px";
+      items[n - 1].style.width = outer + "px";
+    });
   }
   window.addEventListener("resize", ()=>{
     clearTimeout(window.__gridResizeTimer);
     window.__gridResizeTimer = setTimeout(layoutGridView, 120);
   });
 
-  /* ricostruisce l'indice a griglia dei progetti quando si passa da un
-     "bucket" di larghezza all'altro (mobile/tablet/desktop) — capita
-     soprattutto ruotando un iPad tra portrait e landscape a sito già
-     aperto sull'indice progetti: senza questo, --index-grid-cols/rows
-     resterebbero quelli calcolati all'apertura, sbagliati per il nuovo
-     orientamento */
+  /* ricalcola le scritte con hover quando si passa da un "bucket" di
+     larghezza all'altro (mobile/tablet/desktop) — capita soprattutto
+     ruotando un iPad tra portrait e landscape. La griglia indice non va
+     ricostruita: colonne e dimensioni sono tutte in CSS */
   let lastViewportBucket = viewportBucket();
   window.addEventListener("resize", ()=>{
     clearTimeout(window.__bucketResizeTimer);
@@ -1297,10 +1299,6 @@
       if(bucket === lastViewportBucket) return;
       lastViewportBucket = bucket;
       fitHoverLabels(); /* dimensioni e testi delle scritte cambiano tra mobile e desktop */
-      if(projectsListReady && document.getElementById("view-projects").classList.contains("grid-mode")){
-        const list = PROJECTS.filter(p => activeFilter === "all" || p.categories.includes(activeFilter));
-        renderProjectsIndexGrid(list);
-      }
     }, 150);
   });
 
@@ -1534,6 +1532,14 @@
       cursor += count;
       return `<div class="gallery-row">${rowHtml}</div>`;
     }).join("");
+    /* prima e ultima foto: in Scroll view niente linea sul lato esterno
+       (vedi CSS). Marcate qui perché le righe possono essere vuote e le
+       foto non sono tutte sorelle tra loro */
+    const wraps = gallery.querySelectorAll(".gallery-item-wrap");
+    if(wraps.length){
+      wraps[0].classList.add("gallery-first");
+      wraps[wraps.length - 1].classList.add("gallery-last");
+    }
 
     observeLazyVideos(gallery);
 

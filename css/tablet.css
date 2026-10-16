@@ -15,9 +15,7 @@
 
    Indice:
    1. About: skills a elenco verticale (una sotto l'altra)
-   2. Projects — indice a griglia: tag di nuovo visibile (era nascosto
-      sotto i 1000px in style.css); righe/colonne gestite lato JS
-      (isTabletViewport in index.html), qui solo le dimensioni dei riquadri
+   2. Projects — indice a griglia: 2 colonne, scroll verticale
    3. Project detail: Scroll view verticale (come mobile) invece che
       orizzontale, Grid view su 2 righe invece di 3 (righe scelte via JS,
       rowCountsForGallery)
@@ -43,20 +41,19 @@
   .about-skills li:last-child{border-bottom:none; padding-bottom:0;}
 
   /* ---------- 2. PROJECTS — indice a griglia ---------- */
-  /* il tag torna visibile (era nascosto sotto i 1000px in style.css, vedi
-     ".index-tile-blurb, .index-tile-tags{display:none}"): stessa
-     specificità della regola che lo nasconde, ma questo foglio è caricato
-     dopo style.css nel <head>, quindi vince a parità di specificità.
-     La frasetta (.index-tile-blurb) resta invece nascosta sotto i 1000px
-     come su desktop stretto — qui si è chiesto di far riapparire solo il tag */
-  .index-tile-tags{display:flex;}
-
-  /* riquadri un po' più compatti: con 2 colonne fisse e righe che
-     crescono col numero di progetti (fino a 4 righe in "All") lo spazio
-     verticale per riquadro è minore che su desktop */
-  .index-tile{padding:22px 24px;}
-  .index-tile-title{font-size:1.15rem;}
-  .index-tile-blurb{font-size:0.85rem; -webkit-line-clamp:1; line-clamp:1;}
+  /* 2 colonne a tutta larghezza (meno i margini), righe a seguire con
+     scroll verticale: 4 righe con copertine 16:9 non starebbero in altezza */
+  #view-projects.grid-mode .projects-index-grid{
+    overflow-y:auto; overscroll-behavior-y:contain;
+    scrollbar-width:none;
+  }
+  #view-projects.grid-mode .projects-index-grid::-webkit-scrollbar{display:none;}
+  .projects-index-grid{--index-cols:2;}
+  /* qui la riga si calcola dalla larghezza (copertina 16:9 + fascia testo),
+     non dall'altezza: le righe sono più di 2 e si scorre */
+  .index-grid-inner{--index-row-h:calc(var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h));}
+  .index-tile:nth-child(4n+1){border-left:none;}
+  .index-tile:nth-child(2n+1){border-left:1px solid var(--accent);}
 
   /* ---------- 3. PROJECT DETAIL ---------- */
   /* Scroll view verticale, come su mobile: più naturale del trascinamento
@@ -67,9 +64,13 @@
     overscroll-behavior:contain;
     scroll-snap-type:y mandatory;
     -webkit-overflow-scrolling:touch;
-    gap:20px;
+    gap:0;
     padding-bottom:28px;
   }
+  /* foto in colonna: la linea blu che le divide è orizzontale */
+  /* foto in colonna: cornice sopra + sotto (sovrapposte di 1px) */
+  .detail-gallery.scroll-view .gallery-item::after{border-width:1px 0;}
+  .detail-gallery.scroll-view .gallery-item-wrap{margin-right:0; margin-bottom:-1px;}
   .detail-gallery.scroll-view .gallery-row{display:contents;}
   .detail-gallery.scroll-view .gallery-item-wrap{
     width:100%; height:auto; flex-shrink:0;
@@ -94,8 +95,6 @@
 
   /* Grid view: stessa logica di layoutGridView (JS) ma nutrita con 2 righe
      invece di 3 (vedi rowCountsForGallery), quindi riquadri già più grandi
-     di default — qui solo un gap leggermente più ampio per arieggiarli */
-  .detail-gallery.grid-view{gap:10px;}
-  .detail-gallery.grid-view .gallery-row{gap:10px;}
+     di default. Foto attaccate e divise da linee blu, come su desktop */
 
 }

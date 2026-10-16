@@ -38,6 +38,7 @@
     --header-size:58px;
     --arrow-size:1.45rem;
     --cover-ratio:1080/900; /* proporzioni reali del file di copertina, da non alterare */
+    --tab-h:84px;
   }
 
   /* ---------- 1. HEADER più compatto ---------- */
@@ -47,7 +48,6 @@
   /* ---------- 1bis. HOME: nome e tab blu, fascia Projects/About più bassa ----------
      (la dimensione del nome segue già la larghezza dello schermo, vedi
      --home-name-size in style.css) */
-  #view-home{--home-tabs-size:84px;}
   .home-name-line{color:var(--accent);}
   .home-role{color:var(--accent-light);}
   .tab{color:var(--accent);}
@@ -132,14 +132,14 @@
   /* contatti: elenco verticale al posto delle skills, in regular invece che bold */
   .contact-link{font-size:0.72rem; font-weight:400;}
 
-  /* download: staccati dai contatti (la riga vuota elastica sopra li
-     spinge verso il fondo), affiancati per non occupare troppa altezza */
+  /* download: le stesse fasce di desktop (vedi .tab-box), qui una sotto
+     l'altra — affiancate non ci starebbero nella colonna stretta accanto
+     alla foto */
   .about-layout .btn-row{
-    display:flex; flex-direction:row; flex-wrap:wrap;
-    align-items:center;
-    column-gap:20px; row-gap:6px; /* i due bottoni vanno quasi sempre a capo (poco spazio orizzontale): riga più stretta per tenerli vicini */
-    padding:0 var(--edge); margin:0 0 18px;
+    grid-template-columns:1fr;
+    margin:0;
   }
+  .btn-row .tab + .tab{border-left:none;}
 
   /* ---------- 3. FOOTER: visibile in Home, About e nell'elenco Projects ----------
      Dentro un progetto aperto (scheda con galleria, .list-mode) resta
@@ -378,10 +378,13 @@
   .project-row-gallery{
     order:4;
     display:flex; flex-direction:column;
-    gap:14px;
+    gap:0;
     margin-top:10px;
     width:100%;
   }
+  /* foto attaccate, divise da una linea blu */
+  .project-row-gallery .gallery-item::after{border-width:1px 0;}
+  .project-row-gallery .gallery-item-wrap{margin-bottom:-1px;}
   .project-row-gallery .gallery-item-wrap{width:100%; aspect-ratio:16/9;}
   .project-row-gallery .gallery-item{width:100%; height:100%;}
 
@@ -401,8 +404,11 @@
     scroll-snap-type:y mandatory;
     -webkit-overflow-scrolling:touch;
     padding-bottom:24px;
-    gap:16px;
+    gap:0;
   }
+  /* foto in colonna: cornice sopra + sotto (sovrapposte di 1px) */
+  .detail-gallery.scroll-view .gallery-item::after{border-width:1px 0;}
+  .detail-gallery.scroll-view .gallery-item-wrap{margin-right:0; margin-bottom:-1px;}
   /* scroll-snap-stop:always: ogni swipe si ferma sempre sulla foto
      successiva/precedente, non può saltarne più di una anche con uno
      swipe veloce — è quello che rende lo scorrimento "fluido" ma
@@ -494,7 +500,7 @@
   .site-header .logo-placeholder{font-size:0.58rem; padding:4px 10px;}
   .site-footer span{font-size:0.62rem;}
 
-  #view-home{--home-tabs-size:72px;}
+  :root{--tab-h:72px;}
   .tab{gap:8px;}
   .tab-label{font-size:0.8rem;}
   .tab-arrow{font-size:0.62rem;}
