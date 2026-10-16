@@ -1,0 +1,9 @@
+# file di sistema macOS
+.DS_Store
+
+# materiale di lavoro: resta sul computer, non va pubblicato sul sito
+extra/
+download/qrcode.ai
+
+# impostazioni locali di Claude Code
+.claude/settings.local.json

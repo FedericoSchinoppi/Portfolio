@@ -414,7 +414,6 @@
      e i download in About), 2 colonne da bordo a bordo dello schermo,
      scorrimento verticale con barra blu. Tap su un riquadro: apre la
      scheda del progetto (vedi renderProjectsIndexGrid) */
-  #view-projects.grid-mode .projects-index-list{display:none;}
   #view-projects.grid-mode .projects-index-grid{
     display:block;
     overflow-y:auto; overscroll-behavior-y:none;
@@ -422,6 +421,12 @@
   }
   .projects-index-grid{--index-cols:2; --index-side:0px;}
   .index-grid-inner{--index-row-h:round(down, var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h), 1px);}
+  /* browser senza round() (es. Chrome per Android prima di metà 2024): la
+     regola sopra verrebbe scartata e le righe perderebbero l'altezza —
+     qui la stessa formula senza arrotondamento */
+  @supports not (width:round(down, 1px, 1px)){
+    .index-grid-inner{--index-row-h:calc(var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h));}
+  }
   /* niente linee sui bordi dello schermo: solo quella tra le due colonne */
   .index-tile:nth-child(4n+1){border-left:none;}
   .index-tile:nth-child(2n){border-right:none;}

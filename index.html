@@ -34,20 +34,20 @@
      cache ai browser per 10 minuti (e Safari su iPad spesso di più):
      cambiando questo numero a ogni pubblicazione il browser è costretto a
      scaricare i CSS nuovi invece di usare quelli vecchi -->
-<link rel="stylesheet" href="css/style.css?v=20261016-3">
+<link rel="stylesheet" href="css/style.css?v=20261016-4">
 <!-- versione TABLET/IPAD: 801px–1279px, tra il layout mobile (≤800px) e
      quello laptop/desktop (≥1280px). Copre la maggior parte degli iPad in
      entrambi gli orientamenti (portrait e landscape), tranne l'iPad Pro
      12.9" in landscape (1366px) che ricade nel layout desktop — soglia
      comunque facile da spostare in un secondo momento se serve -->
-<link rel="stylesheet" href="css/tablet.css?v=20261016-3" media="(min-width:801px) and (max-width:1279px)">
+<link rel="stylesheet" href="css/tablet.css?v=20261016-4" media="(min-width:801px) and (max-width:1279px)">
 <!-- caricato fino a 1279px (mobile + tablet, vedi blocco iniziale di
      mobile.css): oltre quella soglia il browser lo
      scarica comunque (in background, per averlo pronto se la finestra si
      restringe) ma NON lo considera bloccante per il primo render su
      desktop/tablet larghi, dove tutte le regole al suo interno sono
      comunque inapplicabili -->
-<link rel="stylesheet" href="css/mobile.css?v=20261016-3" media="(max-width:1279px)">
+<link rel="stylesheet" href="css/mobile.css?v=20261016-4" media="(max-width:1279px)">
 </head>
 <body>
 
@@ -84,14 +84,6 @@
     <div class="lightbox-dots" id="lightbox-dots"></div>
   </div>
 
-  <!-- anteprima a pressione prolungata sull'elenco progetti mobile (vedi
-       setupIndexRowLongPress): fixed e fuori da .view per lo stesso motivo
-       del lightbox e della vecchia anteprima al passaggio del cursore —
-       un antenato con transform (.view) creerebbe un containing block
-       sbagliato per un elemento position:fixed -->
-  <div class="mobile-row-preview" id="mobile-row-preview">
-    <img id="mobile-row-preview-img" src="" alt="">
-  </div>
 
 
   <!-- ============================================================
@@ -153,9 +145,6 @@
     </div>
     <div class="filters" id="filters"></div>
     <div class="projects-index-grid" id="projects-index-grid"></div>
-    <!-- versione mobile dell'indice: fasce semplici (titolo + tag) invece
-         della griglia, vedi CSS mobile.css e renderProjectsIndexList -->
-    <div class="projects-index-list" id="projects-index-list"></div>
     <div class="projects-list-wrap">
       <div class="projects-list" id="projects-list"></div>
       <div class="project-dots" id="project-dots"></div>
@@ -639,7 +628,6 @@
       /* si torna sempre all'elenco con lo scorrimento in cima, non dove
          l'utente l'aveva eventualmente lasciato l'ultima volta (solo
          mobile, l'indice a griglia desktop non scorre) */
-      document.getElementById("projects-index-list").scrollTop = 0;
       document.getElementById("projects-index-grid").scrollTop = 0; /* mobile/tablet: la griglia scorre */
     }
   }
@@ -950,7 +938,7 @@
        con un filtro attivo i riquadri restano della stessa dimensione e
        nello stesso ordine, le caselle mancanti restano semplicemente vuote */
     grid.innerHTML = `<div class="index-grid-inner">${list.map(p => `
-      <div class="index-tile" data-project="${p.id}">
+      <div class="index-tile" data-project="${p.id}" tabindex="0" role="link" aria-label="${p.name}">
         <div class="index-tile-cover">${p.cover ? `<img src="${encodePath(p.cover)}" alt="" loading="lazy">` : ""}</div>
         <div class="index-tile-info">
           <div class="index-tile-text">
@@ -969,68 +957,11 @@
            una sotto l'altra), su desktop quella con View Project */
         enterProjectRow(tile.dataset.project);
       });
-    });
-  }
-
-  /* versione mobile dell'indice progetti: fasce semplici (titolo, tag
-     sotto e freccetta a destra) invece della griglia — vedi mobile.css,
-     che nasconde .projects-index-grid e mostra questa sotto gli 800px.
-     Stesso comportamento al click: apre direttamente la scheda del
-     progetto */
-  function renderProjectsIndexList(list){
-    const wrap = document.getElementById("projects-index-list");
-    wrap.innerHTML = list.map(p => `
-      <div class="index-row" data-project="${p.id}" data-cover="${p.cover || ""}">
-        <div class="index-row-text">
-          <span class="index-row-title">${p.name}</span>
-          <span class="index-row-tag">${p.tags[0] || ""}</span>
-        </div>
-        <span class="index-row-arrow"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></span>
-      </div>
-    `).join("");
-    wrap.querySelectorAll(".index-row").forEach(row=>{
-      row.addEventListener("click", ()=>{
-        /* la pressione prolungata apre solo l'anteprima (vedi
-           setupIndexRowLongPress): non deve anche far scattare la
-           navigazione quando il dito si solleva */
-        if(row.dataset.longPressed){ delete row.dataset.longPressed; return; }
-        enterProjectRow(row.dataset.project);
+      /* da tastiera: Invio o spazio aprono il progetto come un click */
+      tile.addEventListener("keydown", (e)=>{
+        if(e.key === "Enter" || e.key === " "){ e.preventDefault(); tile.click(); }
       });
-      setupIndexRowLongPress(row);
     });
-  }
-
-  /* tenere premuto su una fascia dell'elenco (mobile): mostra un'anteprima
-     della copertina del progetto, stesso spirito dell'anteprima al passaggio
-     del mouse nella griglia desktop ma adattata al touch (che non ha hover).
-     Un tap rapido continua a navigare come prima; solo se il dito resta
-     fermo abbastanza a lungo scatta l'anteprima, e in quel caso il tap
-     successivo NON deve anche navigare (vedi flag row.dataset.longPressed) */
-  const LONG_PRESS_MS = 380;
-  function setupIndexRowLongPress(row){
-    let timer = null;
-    const preview = document.getElementById("mobile-row-preview");
-    const previewImg = document.getElementById("mobile-row-preview-img");
-    const clearTimer = () => { clearTimeout(timer); timer = null; };
-    const hide = () => preview.classList.remove("active");
-    row.addEventListener("touchstart", (e)=>{
-      if(e.touches.length !== 1) return;
-      const cover = row.dataset.cover;
-      if(!cover) return;
-      clearTimer();
-      timer = setTimeout(()=>{
-        row.dataset.longPressed = "1";
-        previewImg.src = encodePath(cover);
-        preview.classList.add("active");
-        /* feedback tattile leggero, se il dispositivo lo supporta */
-        if(navigator.vibrate) navigator.vibrate(12);
-      }, LONG_PRESS_MS);
-    }, { passive:true });
-    /* un dito che si muove è uno scroll della lista, non una pressione
-       ferma: annulla il timer prima che scatti l'anteprima */
-    row.addEventListener("touchmove", clearTimer, { passive:true });
-    row.addEventListener("touchend", ()=>{ clearTimer(); hide(); });
-    row.addEventListener("touchcancel", ()=>{ clearTimer(); hide(); });
   }
 
   function renderProjectsList(){
@@ -1038,7 +969,6 @@
     const container = document.getElementById("projects-list");
 
     renderProjectsIndexGrid(list);
-    renderProjectsIndexList(list);
 
     document.getElementById("project-dots").innerHTML =
       list.map((p, i) => `<span class="project-dot${i === 0 ? " active" : ""}" data-title="${p.name}"></span>`).join("");
@@ -1266,19 +1196,10 @@
     return [base + 1, base, base + 1];
   }
 
-  /* stessa idea di threeRowCounts ma su 2 righe: su tablet lo schermo è
-     più stretto, 3 righe (quindi più colonne per riga) darebbe riquadri
-     piccoli e poco leggibili — 2 righe più alte restano chiare */
-  function twoRowCounts(n){
-    const base = Math.floor(n / 2);
-    const rem = n - base * 2;
-    return rem === 0 ? [base, base] : [base + 1, base];
-  }
-
-  /* sceglie il numero di righe della Grid view di dettaglio in base al
-     dispositivo: 2 su tablet, 3 su desktop (vedi twoRowCounts/threeRowCounts) */
+  /* righe della Grid view di dettaglio (solo desktop: su tablet e mobile
+     ogni progetto si apre nella scheda a colonna) */
   function rowCountsForGallery(n){
-    return isTabletViewport() ? twoRowCounts(n) : threeRowCounts(n);
+    return threeRowCounts(n);
   }
 
   /* Grid statica, senza scorrimento, su 3 righe (2 su tablet): le righe
@@ -1340,6 +1261,12 @@
       if(bucket === lastViewportBucket) return;
       lastViewportBucket = bucket;
       fitHoverLabels(); /* dimensioni e testi delle scritte cambiano tra mobile e desktop */
+      /* scheda aperta e finestra ristretta sotto i 1280px: si passa alla
+         scheda a colonna, che ha bisogno della galleria inline (costruita
+         di norma solo all'apertura su mobile/tablet) */
+      const row = document.querySelector("#projects-list .project-row.current");
+      if(isCardViewport() && projectsMode === "list" && row) populateProjectRowGallery(row.dataset.project);
+      updateMobileProjectsTitle();
     }, 150);
   });
 
@@ -1474,6 +1401,16 @@
     const next = (lightboxIndex + delta + lightboxItems.length) % lightboxItems.length;
     openLightbox(next);
   }
+  /* da tastiera: Invio o spazio su una foto (raggiunta con Tab) aprono il
+     lightbox come un click */
+  document.addEventListener("keydown", (e)=>{
+    if(e.key !== "Enter" && e.key !== " ") return;
+    const item = e.target.closest && e.target.closest(".gallery-item[data-src]");
+    if(!item) return;
+    e.preventDefault();
+    item.click();
+  });
+
   window.addEventListener("keydown", (e)=>{
     if(!lightbox.classList.contains("active")) return;
     if(e.key === "Escape") closeLightbox();
@@ -1506,22 +1443,33 @@
      lightbox, che resta chiudibile con un tap semplice (senza spostamento) */
   const SWIPE_THRESHOLD = 40; // px
   let touchStartX = 0, touchStartY = 0, wasSwipe = false;
+  /* true se durante il gesto ci sono state due o più dita: è un pizzico
+     per ingrandire, non uno swipe né un tap */
+  let multiTouch = false;
 
   lightbox.addEventListener("touchstart", (e)=>{
-    if(e.touches.length !== 1) return;
+    if(e.touches.length > 1){ multiTouch = true; return; }
+    multiTouch = false;
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
     wasSwipe = false;
   }, { passive:true });
 
   lightbox.addEventListener("touchmove", (e)=>{
-    /* evita che lo swipe venga interpretato anche come scroll/gesture di
-       navigazione del browser sotto al lightbox (che è comunque a schermo
-       intero e non ha nulla da scorrere) */
+    /* un dito: evita che lo swipe diventi anche scroll/gesture del browser
+       sotto al lightbox. Due dita: si lascia passare il pizzico, così la
+       foto si può ingrandire */
+    if(e.touches.length > 1 || multiTouch) return;
     e.preventDefault();
   }, { passive:false });
 
   lightbox.addEventListener("touchend", (e)=>{
+    if(multiTouch){
+      /* fine di un pizzico: niente cambio foto e niente chiusura al click
+         sintetico che segue */
+      if(e.touches.length === 0) wasSwipe = true;
+      return;
+    }
     if(e.changedTouches.length !== 1) return;
     const dx = e.changedTouches[0].clientX - touchStartX;
     const dy = e.changedTouches[0].clientY - touchStartY;
@@ -1552,7 +1500,7 @@
           : `<img src="${encodePath(image.src)}" alt="${project.name} — ${caption || ("image " + (i+1))}" loading="lazy" decoding="async">`;
         return `
           <div class="gallery-item-wrap">
-            <div class="gallery-item" data-src="${image.src}" data-caption="${caption}">
+            <div class="gallery-item" data-src="${image.src}" data-caption="${caption}" tabindex="0" role="button" aria-label="${caption || "Open image"}">
               ${media}
             </div>
           </div>`;

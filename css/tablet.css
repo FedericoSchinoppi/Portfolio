@@ -17,10 +17,8 @@
    1. About: skills a elenco verticale (una sotto l'altra)
    2. Projects — indice a griglia: 2 colonne, scroll verticale con barra,
       testo in alto nella fascia; download in About solo "CV"/"Portfolio".
-      La scheda di ogni progetto è quella a colonna del mobile (mobile.css)
-   3. Project detail: Scroll view verticale (come mobile) invece che
-      orizzontale, Grid view su 2 righe invece di 3 (righe scelte via JS,
-      rowCountsForGallery)
+      La scheda di ogni progetto è quella a colonna del mobile (mobile.css):
+      la pagina di dettaglio Scroll/Grid su tablet non si apre più
    ============================================================ */
 
 @media (min-width:801px) and (max-width:1279px){
@@ -58,6 +56,12 @@
   /* altezza riga arrotondata al pixel: con i decimali l'ultima riga finiva
      mezzo pixel sopra il footer e la sua linea si leggeva doppia */
   .index-grid-inner{--index-row-h:round(down, var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h), 1px);}
+  /* browser senza round() (es. Chrome per Android prima di metà 2024): la
+     regola sopra verrebbe scartata e le righe perderebbero l'altezza —
+     qui la stessa formula senza arrotondamento */
+  @supports not (width:round(down, 1px, 1px)){
+    .index-grid-inner{--index-row-h:calc(var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h));}
+  }
   /* la view arriva 1px sotto il bordo del footer (come su mobile): a fine
      scorrimento la linea in fondo all'ultima riga finisce esattamente sotto
      quella del footer, la griglia si appoggia al footer senza spazio */
@@ -68,48 +72,5 @@
   /* ---------- 2bis. ABOUT: download solo "CV" / "Portfolio" ---------- */
   .dl-prefix{display:none;}
 
-  /* ---------- 3. PROJECT DETAIL ----------
-     (non più raggiungibile dalla griglia: su tablet ogni progetto si apre
-     nella scheda a colonna come su mobile, vedi mobile.css) */
-  /* Scroll view verticale, come su mobile: più naturale del trascinamento
-     orizzontale su un touchscreen tenuto in verticale o orizzontale */
-  .detail-gallery.scroll-view{
-    flex-direction:column;
-    overflow-x:hidden; overflow-y:auto;
-    overscroll-behavior:contain;
-    scroll-snap-type:y mandatory;
-    -webkit-overflow-scrolling:touch;
-    gap:0;
-    padding-bottom:28px;
-  }
-  /* foto in colonna: la linea blu che le divide è orizzontale */
-  /* foto in colonna: cornice sopra + sotto (sovrapposte di 1px) */
-  .detail-gallery.scroll-view .gallery-item::after{border-width:1px 0;}
-  .detail-gallery.scroll-view .gallery-item-wrap{margin-right:0; margin-bottom:-1px;}
-  .detail-gallery.scroll-view .gallery-row{display:contents;}
-  .detail-gallery.scroll-view .gallery-item-wrap{
-    width:100%; height:auto; flex-shrink:0;
-    /* le foto restano alla loro proporzione reale (16:9), ma non più
-       larghe del necessario perché restino ben leggibili anche su schermi
-       stretti in portrait */
-    max-width:720px;
-    aspect-ratio:16/9;
-    align-self:center;
-    scroll-snap-align:start;
-    scroll-snap-stop:always;
-  }
-  .detail-gallery.scroll-view .gallery-item-wrap:last-child{
-    scroll-snap-align:end;
-  }
-
-  /* i pallini orizzontali in basso indicavano la posizione dello scroll
-     ORIZZONTALE (vedi updateDetailDots in index.html, basato su
-     scrollLeft): con lo scroll verticale qui sopra non avrebbero più
-     alcun significato, si nascondono come su mobile */
-  .detail-gallery-dots{display:none;}
-
-  /* Grid view: stessa logica di layoutGridView (JS) ma nutrita con 2 righe
-     invece di 3 (vedi rowCountsForGallery), quindi riquadri già più grandi
-     di default. Foto attaccate e divise da linee blu, come su desktop */
 
 }

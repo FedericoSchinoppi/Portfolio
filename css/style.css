@@ -92,7 +92,7 @@ button, a{cursor:var(--cursor-brand);}
    l'azione. La maggior parte dei browser lo fa già di default sui
    <button>, ma non è garantito ovunque: esplicito qui per sicurezza */
 button,
-.index-tile, .index-row, .project-dot, .detail-dot, .lightbox-dot,
+.index-tile, .project-dot, .detail-dot, .lightbox-dot,
 .gallery-item[data-src], .project-row-image{
   -webkit-user-select:none; user-select:none;
 }
@@ -115,6 +115,9 @@ img, video{
 #header-logo{pointer-events:auto;}
 
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+/* caselle della griglia e foto: contorno di focus all'interno, sennò
+   verrebbe coperto dai riquadri accanto */
+.index-tile:focus-visible, .gallery-item:focus-visible{outline-offset:-3px;}
 
 .eyebrow{
   display:block;
@@ -548,9 +551,6 @@ img, video{
    dimensione: le caselle mancanti restano vuote.
    Tablet (vedi tablet.css): 2 colonne, righe a seguire, scroll verticale. */
 .projects-index-grid{display:none;}
-/* versione mobile dell'indice (fasce titolo+tag invece della griglia):
-   nascosta di default, la mostra solo mobile.css sotto gli 800px */
-.projects-index-list{display:none;}
 #view-projects.grid-mode .projects-index-grid{
   display:block;
   flex:1; min-height:0;
@@ -1048,11 +1048,6 @@ img, video{
   width:24px;
 }
 
-/* anteprima a pressione prolungata sull'elenco progetti (solo mobile,
-   vedi mobile.css): niente hover reale sul touch, l'equivalente qui è
-   tenere premuto — nascosta di default, l'unica versione che la usa è
-   quella sotto gli 800px */
-.mobile-row-preview{display:none;}
 
 /* ============================================================
    SOLO LAPTOP / TABLET
