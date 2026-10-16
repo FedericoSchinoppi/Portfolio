@@ -1,8 +1,8 @@
 /* ============================================================
    MOBILE.CSS — versione MOBILE
-   Va caricato DOPO style.css: le regole qui dentro sovrascrivono
-   quelle di base solo sotto gli 800px (tablet/telefono grande) e
-   sotto i 640px (telefono).
+   Va caricato DOPO style.css e tablet.css. Il blocco iniziale vale fino a
+   1279px (mobile + tablet: scheda progetto a colonna, lightbox touch);
+   tutto il resto solo sotto gli 800px e sotto i 640px (telefono).
 
    Indice:
    1. Header più compatto
@@ -30,6 +30,236 @@
       altezza misurata via JS, frecce indietro)
    10. Breakpoint telefono (≤640px): rifinitura dimensioni testo
    ============================================================ */
+
+/* ============================================================
+   MOBILE + TABLET (fino a 1279px) — scheda progetto "a colonna"
+   Su tablet la scheda di ogni progetto è la stessa del mobile: titolo,
+   frase, Info apribile e le foto una sotto l'altra, solo scroll (niente
+   pagina di dettaglio con Scroll/Grid). Questo file è caricato fino a
+   1279px (vedi <link> in index.html); il resto delle regole qui sotto
+   resta limitato a ≤800px / ≤640px dai rispettivi @media.
+   ============================================================ */
+@media (max-width:1279px){
+
+  /* ---------- 3. FOOTER: visibile in Home, About e nell'elenco Projects ----------
+     Dentro un progetto aperto (scheda con galleria, .list-mode) resta
+     nascosto: lì tutta l'altezza serve alle foto */
+  /* nascosto/mostrato in dissolvenza (opacity + visibility), non con
+     display: entrando o uscendo da un progetto il footer sfuma insieme
+     al resto invece di comparire/sparire di colpo */
+  .site-footer{
+    opacity:0; visibility:hidden;
+    transition:opacity var(--t-fade) var(--ease), visibility 0s linear var(--t-fade);
+  }
+  body:has(#view-home.active) .site-footer,
+  body:has(#view-about.active) .site-footer,
+  body:has(#view-projects.active.grid-mode) .site-footer{
+    opacity:1; visibility:visible;
+    transition:opacity var(--t-fade) var(--ease), visibility 0s;
+  }
+  #view-projects.list-mode, #view-detail{bottom:0;}
+
+  /* "Projects" ↔ nome del progetto mentre si scorrono le foto (vedi
+     updateMobileProjectsTitle in index.html): dissolvenza ferma sul posto,
+     il testo vecchio sfuma via e il nuovo compare, senza movimento */
+  #view-projects .title-row h1{
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    transition:opacity .3s var(--ease);
+  }
+  #view-projects .title-row h1.swapping{opacity:0;}
+  #view-projects .title-row h1.entering{opacity:0; transition:none;}
+
+  /* barra di scorrimento blu (griglia e scheda progetto). Dove il sistema
+     usa barre sovrapposte non personalizzabili (iOS Safari, gran parte di
+     Android) resta quella di sistema */
+  .projects-index-grid, .project-row{
+    --scroll-thumb:rgba(25,27,223,0.3); /* blu del sito, tenue e trasparente */
+    scrollbar-width:thin;
+    scrollbar-color:var(--scroll-thumb) transparent;
+  }
+  .projects-index-grid::-webkit-scrollbar, .project-row::-webkit-scrollbar{width:3px;}
+  .projects-index-grid::-webkit-scrollbar{width:2px;} /* griglia: ancora più sottile */
+  .projects-index-grid::-webkit-scrollbar-track, .project-row::-webkit-scrollbar-track{background:transparent;}
+  .projects-index-grid::-webkit-scrollbar-thumb, .project-row::-webkit-scrollbar-thumb{background:var(--scroll-thumb); border-radius:2px;}
+
+  /* ---------- 5. LISTA PROGETTI ---------- */
+  /* niente scorrimento orizzontale tra un progetto e l'altro: si vede solo
+     la scheda corrente (classe .current, messa via JS in enterProjectRow),
+     tutte le altre restano fuori dal flusso. Per cambiare progetto si torna
+     all'elenco (freccia indietro) e se ne sceglie un altro — niente più
+     swipe laterale né pallini di paginazione orizzontali */
+  .projects-list{
+    display:flex; flex-direction:row;
+    overflow:hidden;
+  }
+  .project-row{display:none;}
+  .project-row.current{display:flex;}
+  .project-dots{display:none;}
+
+  .project-row{
+    flex:0 0 100%; width:100%; height:100%;
+    flex-direction:column; flex-wrap:nowrap;
+    /* la scheda ora contiene anche tutte le foto del progetto (vedi
+       .project-row-gallery), quindi è quasi sempre più alta dello schermo:
+       scorre in verticale al suo interno, mentre .projects-list scorre in
+       orizzontale tra un progetto e l'altro (scroll annidati indipendenti) */
+    overflow-y:auto; overflow-x:hidden;
+    /* "none" invece di "contain": "contain" impedisce solo che il rimbalzo
+       elastico si propaghi alla pagina sotto, ma l'elemento può ancora
+       rimbalzare per conto suo oltre l'inizio/la fine del contenuto (sopra
+       il titolo, sotto l'ultima immagine) — "none" disattiva anche quello */
+    overscroll-behavior-y:none;
+    scroll-snap-align:start; scroll-snap-stop:always;
+    /* qui la barra di scorrimento resta visibile (a differenza del resto
+       del sito, dove è sempre nascosta a favore dei pallini): la scheda è
+       lunga (testo + 10 foto) e la barra aiuta a capire a che punto si è */
+    /* --row-top: spazio tra la linea sotto "Projects" e il titolo del
+       progetto, riusato tra Info e la prima foto (vedi .project-row-gallery).
+       Niente padding sotto: lo scorrimento si ferma sulla linea finale
+       dell'ultima foto */
+    --row-top:44px; --row-gap:10px;
+    gap:var(--row-gap);
+    padding:var(--row-top) var(--edge) 1px; /* 1px: con altezze decimali la linea finale non viene mai tagliata a metà */
+    /* niente content-visibility qui (l'avevo aggiunto in una modifica
+       precedente pensando alle altre schede come "fuori schermo" da
+       ottimizzare): con .project-row.current sotto, le schede non correnti
+       sono già display:none, quindi il browser le salta del tutto da solo
+       — content-visibility non avrebbe avuto nulla in più da ottimizzare */
+  }
+
+  /* la card diventa un contenitore flessibile "piatto": titolo, Info,
+     cover e View Project diventano fratelli diretti, così possiamo
+     riordinarli liberamente con "order" */
+  .project-row-text{display:contents;}
+  .project-row-main{display:contents;}
+
+  .project-row-title{order:1; text-align:center;}
+  .project-row-more-desc{display:none;} /* la descrizione si sposta dentro More Info */
+  .project-row-tags{display:none;}      /* i tag tornano dentro More Info */
+
+  /* frase riassuntiva breve: subito sotto il titolo, al posto dei tag */
+  .project-row-blurb{
+    display:block;
+    order:2;
+    text-align:center;
+    font-size:0.85rem;
+    color:var(--text-secondary);
+    margin:0;
+  }
+
+  /* "Info": leggermente più staccato dalla frase, centrato */
+  .project-row-more{
+    order:3;
+    display:flex; flex-direction:column;
+    margin-top:4px; padding-top:0;
+    border-top:none;
+  }
+  .project-row-more-toggle{
+    align-self:center;
+    font-size:0.8rem;
+    color:var(--accent); /* blu anche a riposo, non solo al tocco */
+  }
+  .more-info-prefix{display:none;} /* "More " nascosto: resta solo "Info" */
+  /* la copia più pesante della scritta (vedi style.css, "hover delle
+     scritte") qui usa il testo corto, e non compare all'hover — che su
+     touch non esiste — ma quando Info è aperto: vedi sezione 8 */
+  .more-info-label{--hover-weight:700;}
+  .more-info-label::after{content:attr(data-label-short);}
+
+  /* niente cover né "View Project" qui: il progetto è già visibile per
+     intero nella scheda stessa, foto comprese (vedi .project-row-gallery
+     sotto) — non serve più un secondo passaggio per vederle */
+  .project-row-image{display:none;}
+  .project-row-view-btn{display:none;}
+
+  /* galleria inline: le foto del progetto (stesse di #view-detail, ma già
+     qui) iniziano subito sotto Info. Semplice colonna, senza scroll-snap
+     proprio: scorre insieme al resto della scheda (.project-row ha già
+     overflow-y:auto). Se Info si apre, cresce e spinge la galleria più in
+     basso — nessun calcolo extra, è il normale flusso del documento */
+  .project-row-gallery{
+    order:4;
+    display:flex; flex-direction:column;
+    gap:0;
+    /* stesso spazio che c'è tra la linea in alto e il titolo del progetto
+       (--row-top, al netto del gap tra gli elementi della scheda) */
+    margin-top:calc(var(--row-top) - var(--row-gap) - 4px); /* -4px: il titolo sale di 0.12em (vedi .project-row-title margin-top), qui si compensa per avere lo stesso spazio visivo */
+    /* a tutta larghezza dello schermo: i margini negativi annullano il
+       padding laterale (--edge) di .project-row */
+    width:calc(100% + 2 * var(--edge));
+    margin-left:calc(-1 * var(--edge));
+    margin-right:calc(-1 * var(--edge));
+  }
+  /* foto attaccate, divise da una linea blu */
+  .project-row-gallery .gallery-item::after{border-width:1px 0;}
+  .project-row-gallery .gallery-item-wrap{margin-bottom:-1px;}
+  /* l'ultima non si sovrappone a niente: la sua linea in basso è quella su
+     cui si ferma lo scorrimento */
+  .project-row-gallery .gallery-item-wrap:last-child{margin-bottom:0;}
+  .project-row-gallery .gallery-item-wrap{width:100%; aspect-ratio:16/9;}
+  .project-row-gallery .gallery-item{width:100%; height:100%;}
+
+  /* dentro More Info tornano descrizione e tag */
+  .project-row-more-list .more-desc-row,
+  .project-row-more-list .more-tags-row{display:flex;}
+  .more-desc-row .more-value{display:block; line-height:1.6; font-size:0.88rem;}
+  .more-tags-row .more-value{line-height:1.5;}
+
+  /* ---------- 8. TAP: "Info" in Bold finché è aperto ----------
+     Stessa tecnica dell'hover desktop (vedi style.css, "hover delle
+     scritte"): il Bold è una copia sovrapposta che sale in dissolvenza,
+     larga quanto la scritta normale — "Info" si ispessisce sul posto,
+     senza scattare di peso né spostare la freccetta accanto */
+  .project-row-more-toggle.open .more-info-label{
+    color:transparent;
+    transition:color 0s linear var(--t-hover);
+  }
+  .project-row-more-toggle.open .more-info-label::after{opacity:1;}
+
+  /* ---------- animazioni scheda ---------- */
+  .project-row-more-collapse{
+    transition:grid-template-rows .4s var(--ease), opacity var(--t-fade) var(--ease), margin-top .4s var(--ease);
+  }
+  /* risposta al tocco: pulsanti che si stringono appena sotto il dito e
+     tornano, tutti con lo stesso ritmo */
+  .project-row-more-toggle, .back-btn-inline{
+    transition:transform var(--t-hover) var(--ease);
+  }
+  .project-row-more-toggle:active{transform:scale(0.96);}
+  .back-btn-inline:active{transform:scale(0.82);}
+
+  /* ---------- LIGHTBOX (touch): niente salti né sovrapposizioni ----------
+     La foto sta sempre in un riquadro di dimensione fissa (object-fit:
+     contain): passando a una foto con proporzioni diverse didascalia e
+     barrette restano ferme dove sono, invece di saltare e accavallarsi.
+     Spazio riservato in fondo per le barrette (padding-bottom) e altezza
+     fissa per la didascalia (max 2 righe) */
+  .lightbox{padding:var(--edge) var(--edge) calc(var(--edge) + 28px); gap:14px;}
+  .lightbox img, .lightbox video{
+    /* riquadro 16:9 (le foto dei progetti lo sono quasi tutte), mai più
+       alto del 62% dello schermo */
+    width:100%;
+    height:min(62vh, (100vw - 2 * var(--edge)) * 9 / 16);
+    height:min(62dvh, (100vw - 2 * var(--edge)) * 9 / 16);
+    max-width:100%; max-height:none;
+    object-fit:contain;
+    box-shadow:none;
+  }
+  .lightbox-caption{
+    min-height:2.6em; line-height:1.3;
+    display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical;
+    overflow:hidden;
+    text-align:center;
+  }
+}
+
+/* ---------- solo TABLET: rifiniture della scheda a colonna ---------- */
+@media (min-width:801px) and (max-width:1279px){
+  /* foto con i margini laterali del sito (non da bordo a bordo come sul
+     telefono) e cornice blu su tutti e quattro i lati */
+  .project-row-gallery{width:100%; margin-left:0; margin-right:0;}
+  .project-row-gallery .gallery-item::after{border-width:1px;}
+}
 
 @media (max-width:800px){
 
@@ -142,23 +372,6 @@
   .about-layout .btn-row{margin:0;}
   .about-layout .btn-row .tab{gap:8px;}
 
-  /* ---------- 3. FOOTER: visibile in Home, About e nell'elenco Projects ----------
-     Dentro un progetto aperto (scheda con galleria, .list-mode) resta
-     nascosto: lì tutta l'altezza serve alle foto */
-  /* nascosto/mostrato in dissolvenza (opacity + visibility), non con
-     display: entrando o uscendo da un progetto il footer sfuma insieme
-     al resto invece di comparire/sparire di colpo */
-  .site-footer{
-    opacity:0; visibility:hidden;
-    transition:opacity var(--t-fade) var(--ease), visibility 0s linear var(--t-fade);
-  }
-  body:has(#view-home.active) .site-footer,
-  body:has(#view-about.active) .site-footer,
-  body:has(#view-projects.active.grid-mode) .site-footer{
-    opacity:1; visibility:visible;
-    transition:opacity var(--t-fade) var(--ease), visibility 0s;
-  }
-  #view-projects.list-mode, #view-detail{bottom:0;}
 
   /* scritte leggermente più in basso nella fascia del footer */
   .site-footer{align-items:flex-end; padding-bottom:8px;}
@@ -177,15 +390,6 @@
     font-size:clamp(1.2rem, 5.5vw, 1.6rem);
     margin-top:0.05em;
   }
-  /* "Projects" ↔ nome del progetto mentre si scorrono le foto (vedi
-     updateMobileProjectsTitle in index.html): dissolvenza ferma sul posto,
-     il testo vecchio sfuma via e il nuovo compare, senza movimento */
-  #view-projects .title-row h1{
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    transition:opacity .3s var(--ease);
-  }
-  #view-projects .title-row h1.swapping{opacity:0;}
-  #view-projects .title-row h1.entering{opacity:0; transition:none;}
 
   /* ---------- 4. FILTRI nascosti (lista progetti + toggle Scroll/Grid) ---------- */
   .filters{display:none;}
@@ -201,18 +405,6 @@
      scorrimento verticale con barra blu. Tap su un riquadro: apre la
      scheda del progetto (vedi renderProjectsIndexGrid) */
   #view-projects.grid-mode .projects-index-list{display:none;}
-  /* barra di scorrimento blu (griglia e scheda progetto). Dove il sistema
-     usa barre sovrapposte non personalizzabili (iOS Safari, gran parte di
-     Android) resta quella di sistema */
-  .projects-index-grid, .project-row{
-    --scroll-thumb:rgba(25,27,223,0.3); /* blu del sito, tenue e trasparente */
-    scrollbar-width:thin;
-    scrollbar-color:var(--scroll-thumb) transparent;
-  }
-  .projects-index-grid::-webkit-scrollbar, .project-row::-webkit-scrollbar{width:3px;}
-  .projects-index-grid::-webkit-scrollbar{width:2px;} /* griglia: ancora più sottile */
-  .projects-index-grid::-webkit-scrollbar-track, .project-row::-webkit-scrollbar-track{background:transparent;}
-  .projects-index-grid::-webkit-scrollbar-thumb, .project-row::-webkit-scrollbar-thumb{background:var(--scroll-thumb); border-radius:2px;}
   #view-projects.grid-mode .projects-index-grid{
     display:block;
     overflow-y:auto; overscroll-behavior-y:none;
@@ -233,19 +425,6 @@
   .index-tile-tag{font-size:0.62rem;}
   .index-tile-arrow{font-size:0.6rem;}
 
-  /* ---------- 5. LISTA PROGETTI ---------- */
-  /* niente scorrimento orizzontale tra un progetto e l'altro: si vede solo
-     la scheda corrente (classe .current, messa via JS in enterProjectRow),
-     tutte le altre restano fuori dal flusso. Per cambiare progetto si torna
-     all'elenco (freccia indietro) e se ne sceglie un altro — niente più
-     swipe laterale né pallini di paginazione orizzontali */
-  .projects-list{
-    display:flex; flex-direction:row;
-    overflow:hidden;
-  }
-  .project-row{display:none;}
-  .project-row.current{display:flex;}
-  .project-dots{display:none;}
 
   /* .lightbox-dot: stile condiviso, vedi style.css. L'immagine aperta e la
      distanza dei pallini dal fondo invece restano quelle di prima anche qui:
@@ -276,114 +455,6 @@
   .lightbox-close:active{transform:scale(0.85);}
   .lightbox-close .icon-svg{width:1.1rem; height:1.1rem;}
 
-  .project-row{
-    flex:0 0 100%; width:100%; height:100%;
-    flex-direction:column; flex-wrap:nowrap;
-    /* la scheda ora contiene anche tutte le foto del progetto (vedi
-       .project-row-gallery), quindi è quasi sempre più alta dello schermo:
-       scorre in verticale al suo interno, mentre .projects-list scorre in
-       orizzontale tra un progetto e l'altro (scroll annidati indipendenti) */
-    overflow-y:auto; overflow-x:hidden;
-    /* "none" invece di "contain": "contain" impedisce solo che il rimbalzo
-       elastico si propaghi alla pagina sotto, ma l'elemento può ancora
-       rimbalzare per conto suo oltre l'inizio/la fine del contenuto (sopra
-       il titolo, sotto l'ultima immagine) — "none" disattiva anche quello */
-    overscroll-behavior-y:none;
-    scroll-snap-align:start; scroll-snap-stop:always;
-    /* qui la barra di scorrimento resta visibile (a differenza del resto
-       del sito, dove è sempre nascosta a favore dei pallini): la scheda è
-       lunga (testo + 10 foto) e la barra aiuta a capire a che punto si è */
-    /* --row-top: spazio tra la linea sotto "Projects" e il titolo del
-       progetto, riusato tra Info e la prima foto (vedi .project-row-gallery).
-       Niente padding sotto: lo scorrimento si ferma sulla linea finale
-       dell'ultima foto */
-    --row-top:44px; --row-gap:10px;
-    gap:var(--row-gap);
-    padding:var(--row-top) var(--edge) 1px; /* 1px: con altezze decimali la linea finale non viene mai tagliata a metà */
-    /* niente content-visibility qui (l'avevo aggiunto in una modifica
-       precedente pensando alle altre schede come "fuori schermo" da
-       ottimizzare): con .project-row.current sotto, le schede non correnti
-       sono già display:none, quindi il browser le salta del tutto da solo
-       — content-visibility non avrebbe avuto nulla in più da ottimizzare */
-  }
-
-  /* la card diventa un contenitore flessibile "piatto": titolo, Info,
-     cover e View Project diventano fratelli diretti, così possiamo
-     riordinarli liberamente con "order" */
-  .project-row-text{display:contents;}
-  .project-row-main{display:contents;}
-
-  .project-row-title{order:1; text-align:center;}
-  .project-row-more-desc{display:none;} /* la descrizione si sposta dentro More Info */
-  .project-row-tags{display:none;}      /* i tag tornano dentro More Info */
-
-  /* frase riassuntiva breve: subito sotto il titolo, al posto dei tag */
-  .project-row-blurb{
-    display:block;
-    order:2;
-    text-align:center;
-    font-size:0.85rem;
-    color:var(--text-secondary);
-    margin:0;
-  }
-
-  /* "Info": leggermente più staccato dalla frase, centrato */
-  .project-row-more{
-    order:3;
-    display:flex; flex-direction:column;
-    margin-top:4px; padding-top:0;
-    border-top:none;
-  }
-  .project-row-more-toggle{
-    align-self:center;
-    font-size:0.8rem;
-    color:var(--accent); /* blu anche a riposo, non solo al tocco */
-  }
-  .more-info-prefix{display:none;} /* "More " nascosto: resta solo "Info" */
-  /* la copia più pesante della scritta (vedi style.css, "hover delle
-     scritte") qui usa il testo corto, e non compare all'hover — che su
-     touch non esiste — ma quando Info è aperto: vedi sezione 8 */
-  .more-info-label{--hover-weight:700;}
-  .more-info-label::after{content:attr(data-label-short);}
-
-  /* niente cover né "View Project" qui: il progetto è già visibile per
-     intero nella scheda stessa, foto comprese (vedi .project-row-gallery
-     sotto) — non serve più un secondo passaggio per vederle */
-  .project-row-image{display:none;}
-  .project-row-view-btn{display:none;}
-
-  /* galleria inline: le foto del progetto (stesse di #view-detail, ma già
-     qui) iniziano subito sotto Info. Semplice colonna, senza scroll-snap
-     proprio: scorre insieme al resto della scheda (.project-row ha già
-     overflow-y:auto). Se Info si apre, cresce e spinge la galleria più in
-     basso — nessun calcolo extra, è il normale flusso del documento */
-  .project-row-gallery{
-    order:4;
-    display:flex; flex-direction:column;
-    gap:0;
-    /* stesso spazio che c'è tra la linea in alto e il titolo del progetto
-       (--row-top, al netto del gap tra gli elementi della scheda) */
-    margin-top:calc(var(--row-top) - var(--row-gap) - 4px); /* -4px: il titolo sale di 0.12em (vedi .project-row-title margin-top), qui si compensa per avere lo stesso spazio visivo */
-    /* a tutta larghezza dello schermo: i margini negativi annullano il
-       padding laterale (--edge) di .project-row */
-    width:calc(100% + 2 * var(--edge));
-    margin-left:calc(-1 * var(--edge));
-    margin-right:calc(-1 * var(--edge));
-  }
-  /* foto attaccate, divise da una linea blu */
-  .project-row-gallery .gallery-item::after{border-width:1px 0;}
-  .project-row-gallery .gallery-item-wrap{margin-bottom:-1px;}
-  /* l'ultima non si sovrappone a niente: la sua linea in basso è quella su
-     cui si ferma lo scorrimento */
-  .project-row-gallery .gallery-item-wrap:last-child{margin-bottom:0;}
-  .project-row-gallery .gallery-item-wrap{width:100%; aspect-ratio:16/9;}
-  .project-row-gallery .gallery-item{width:100%; height:100%;}
-
-  /* dentro More Info tornano descrizione e tag */
-  .project-row-more-list .more-desc-row,
-  .project-row-more-list .more-tags-row{display:flex;}
-  .more-desc-row .more-value{display:block; line-height:1.6; font-size:0.88rem;}
-  .more-tags-row .more-value{line-height:1.5;}
 
   /* ---------- 6. DETTAGLIO PROGETTO: solo scroll verticale, immagini 16:9 ---------- */
   /* scroll-snap: lo scorrimento si blocca sempre su una foto intera, niente
@@ -442,16 +513,6 @@
     padding:0 40px; /* spazio di sicurezza attorno al pulsante indietro */
   }
 
-  /* ---------- 8. TAP: "Info" in Bold finché è aperto ----------
-     Stessa tecnica dell'hover desktop (vedi style.css, "hover delle
-     scritte"): il Bold è una copia sovrapposta che sale in dissolvenza,
-     larga quanto la scritta normale — "Info" si ispessisce sul posto,
-     senza scattare di peso né spostare la freccetta accanto */
-  .project-row-more-toggle.open .more-info-label{
-    color:transparent;
-    transition:color 0s linear var(--t-hover);
-  }
-  .project-row-more-toggle.open .more-info-label::after{opacity:1;}
 
   /* ---------- 9. ANIMAZIONI: stessa curva e stesse durate del resto del sito
      (--ease, --t-hover, --t-fade in style.css) ---------- */
@@ -464,16 +525,6 @@
   .view.active.visible{
     transform:none;
   }
-  .project-row-more-collapse{
-    transition:grid-template-rows .4s var(--ease), opacity var(--t-fade) var(--ease), margin-top .4s var(--ease);
-  }
-  /* risposta al tocco: pulsanti che si stringono appena sotto il dito e
-     tornano, tutti con lo stesso ritmo */
-  .project-row-more-toggle, .back-btn-inline{
-    transition:transform var(--t-hover) var(--ease);
-  }
-  .project-row-more-toggle:active{transform:scale(0.96);}
-  .back-btn-inline:active{transform:scale(0.82);}
 }
 
 /* ============================================================

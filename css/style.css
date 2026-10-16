@@ -835,12 +835,13 @@ img, video{
    era il gap di .project-row, sopra gli 800px diventa padding-right della
    colonna testo, così la fascia può attraversarlo e toccare la foto
    (.project-row-text ha overflow-y:auto: un margine negativo verso destra
-   verrebbe tagliato). Sotto gli 800px il bottone è nascosto (mobile.css) */
+   verrebbe tagliato). Sotto i 1280px (tablet e mobile) la scheda è "a
+   colonna" e il bottone è nascosto (mobile.css) */
 .project-row-view-btn{
   margin:0 0 -56px calc(-1 * var(--edge));
   width:calc(100% + var(--edge));
 }
-@media (min-width:801px){
+@media (min-width:1280px){
   /* linea di divisione tra una scheda progetto e l'altra mentre si scorre.
      La scheda è alta 1px in più della lista: quando è agganciata (scroll
      snap) la sua linea finisce appena sotto il bordo visibile, nascosta,

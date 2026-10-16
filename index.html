@@ -42,7 +42,7 @@
      restringe) ma NON lo considera bloccante per il primo render su
      desktop/tablet larghi, dove tutte le regole al suo interno sono
      comunque inapplicabili -->
-<link rel="stylesheet" href="css/mobile.css" media="(max-width:800px)">
+<link rel="stylesheet" href="css/mobile.css" media="(max-width:1279px)">
 </head>
 <body>
 
@@ -411,6 +411,11 @@
   function isMobileViewport(){
     return window.matchMedia("(max-width:800px)").matches;
   }
+  /* mobile + tablet: la scheda progetto è "a colonna" (titolo, Info, foto
+     una sotto l'altra, solo scroll), vedi blocco ≤1279px in mobile.css */
+  function isCardViewport(){
+    return window.matchMedia("(max-width:1279px)").matches;
+  }
   /* usata per capire, dopo un resize/rotazione, se si è passati da un
      "bucket" all'altro (mobile/tablet/desktop) — vedi il resize handler
      più sotto, che ricostruisce la griglia indice solo quando serve */
@@ -461,7 +466,7 @@
       const cs = getComputedStyle(el);
       /* su mobile alcune scritte sono accorciate (es. "Info" al posto di
          "More Info", vedi mobile.css): va misurata quella che si vede */
-      let text = (isMobileViewport() && el.dataset.labelShort) || el.dataset.label || "";
+      let text = (isCardViewport() && el.dataset.labelShort) || el.dataset.label || "";
       if(!text) return;
       if(cs.textTransform === "uppercase") text = text.toUpperCase();
       const size = parseFloat(cs.fontSize);
@@ -595,7 +600,7 @@
   function updateMobileProjectsTitle(){
     const h1 = document.querySelector("#view-projects .title-row h1");
     let text = "Projects";
-    if(isMobileViewport() && projectsMode === "list"){
+    if(isCardViewport() && projectsMode === "list"){
       const row = document.querySelector("#projects-list .project-row.current");
       const title = row && row.querySelector(".project-row-title");
       if(title && title.getBoundingClientRect().bottom <= row.getBoundingClientRect().top){
@@ -675,7 +680,7 @@
     /* la galleria inline serve solo su mobile (su desktop .project-row-gallery
        è sempre display:none): costruirla anche su desktop sarebbe lavoro
        sprecato ad ogni apertura di scheda */
-    const mobile = isMobileViewport();
+    const mobile = isCardViewport();
     if(mobile) populateProjectRowGallery(id);
     row?.scrollIntoView({ behavior:"instant", block:"start", inline:"start" });
     /* su mobile la scheda scorre al suo interno (testo + foto) e resta
@@ -955,15 +960,9 @@
     `).join("")}</div>`;
     grid.querySelectorAll(".index-tile").forEach(tile=>{
       tile.addEventListener("click", ()=>{
-        /* Tablet: niente scheda intermedia con "View Project" — si apre
-           subito la galleria del progetto, come su smartphone, ma
-           restando nella pagina di dettaglio "vera" (che ha ancora il
-           toggle Scroll/Grid, a differenza della versione mobile) */
-        if(isTabletViewport()){
-          openProject(tile.dataset.project);
-        } else {
-          enterProjectRow(tile.dataset.project);
-        }
+        /* su mobile e tablet la scheda è "a colonna" (titolo, Info, foto
+           una sotto l'altra), su desktop quella con View Project */
+        enterProjectRow(tile.dataset.project);
       });
     });
   }
@@ -1126,7 +1125,7 @@
       dot.addEventListener("click", ()=>{
         const row = rows[i];
         if(!row) return;
-        const isMobile = window.matchMedia("(max-width:800px)").matches;
+        const isMobile = isCardViewport();
         const containerRect = container.getBoundingClientRect();
         const rowRect = row.getBoundingClientRect();
         dissolveScrollTo(container, isMobile
@@ -1156,7 +1155,7 @@
       const list = document.getElementById("projects-list");
       const dots = document.querySelectorAll("#project-dots .project-dot");
       if(dots.length){
-        const isMobile = window.matchMedia("(max-width:800px)").matches;
+        const isMobile = isCardViewport();
         const idx = isMobile
           ? (list.clientWidth ? Math.round(list.scrollLeft / list.clientWidth) : 0)
           /* +1: su desktop ogni scheda è alta 1px più della lista, per la
@@ -1171,7 +1170,7 @@
   /* frecce tastiera: scorrono tra i progetti, solo desktop (mobile usa lo
      swipe/scroll touch nativo) e solo quando il lightbox è chiuso */
   window.addEventListener("keydown", (e)=>{
-    if(window.matchMedia("(max-width:800px)").matches) return;
+    if(isCardViewport()) return;
     if(lightbox.classList.contains("active")) return;
     if(!document.querySelector('.view[data-view="projects"]').classList.contains("visible")) return;
     if(projectsMode !== "list") return;
@@ -1404,9 +1403,24 @@
     lightboxCaption.textContent = caption;
   }
 
+  /* precarica (e decodifica) la foto prima e dopo quella aperta: al cambio
+     la nuova è già pronta, niente attesa né scatto */
+  const lightboxPreloaded = new Map();
+  function preloadLightboxNeighbors(index){
+    [index - 1, index + 1].forEach(i=>{
+      const it = lightboxItems[(i + lightboxItems.length) % lightboxItems.length];
+      if(!it || isVideo(it.src) || lightboxPreloaded.has(it.src)) return;
+      const img = new Image();
+      img.src = encodePath(it.src);
+      img.decode().catch(()=>{});
+      lightboxPreloaded.set(it.src, img);
+    });
+  }
+
   function openLightbox(index){
     const item = lightboxItems[index];
     if(!item) return;
+    preloadLightboxNeighbors(index);
     const wasOpen = lightbox.classList.contains("active");
     lightboxIndex = index;
     clearTimeout(lightboxCloseTimer);

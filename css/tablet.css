@@ -15,7 +15,9 @@
 
    Indice:
    1. About: skills a elenco verticale (una sotto l'altra)
-   2. Projects — indice a griglia: 2 colonne, scroll verticale
+   2. Projects — indice a griglia: 2 colonne, scroll verticale con barra,
+      testo in alto nella fascia; download in About solo "CV"/"Portfolio".
+      La scheda di ogni progetto è quella a colonna del mobile (mobile.css)
    3. Project detail: Scroll view verticale (come mobile) invece che
       orizzontale, Grid view su 2 righe invece di 3 (righe scelte via JS,
       rowCountsForGallery)
@@ -43,11 +45,15 @@
   /* ---------- 2. PROJECTS — indice a griglia ---------- */
   /* 2 colonne a tutta larghezza (meno i margini), righe a seguire con
      scroll verticale: 4 righe con copertine 16:9 non starebbero in altezza */
+  /* overscroll none: lo scorrimento si ferma secco in cima e in fondo,
+     senza rimbalzo. Barra di scorrimento visibile, blu tenue (stile in
+     mobile.css, blocco mobile + tablet) */
   #view-projects.grid-mode .projects-index-grid{
-    overflow-y:auto; overscroll-behavior-y:contain;
-    scrollbar-width:none;
+    overflow-y:auto; overscroll-behavior-y:none;
   }
-  #view-projects.grid-mode .projects-index-grid::-webkit-scrollbar{display:none;}
+  /* testo un po' più vicino alla linea in alto invece che centrato in
+     verticale nella fascia (come su mobile) */
+  .index-tile-info{padding-top:20px; align-items:flex-start;}
   .projects-index-grid{--index-cols:2;}
   /* qui la riga si calcola dalla larghezza (copertina 16:9 + fascia testo),
      non dall'altezza: le righe sono più di 2 e si scorre */
@@ -55,7 +61,12 @@
   .index-tile:nth-child(4n+1){border-left:none;}
   .index-tile:nth-child(2n+1){border-left:1px solid var(--accent);}
 
-  /* ---------- 3. PROJECT DETAIL ---------- */
+  /* ---------- 2bis. ABOUT: download solo "CV" / "Portfolio" ---------- */
+  .dl-prefix{display:none;}
+
+  /* ---------- 3. PROJECT DETAIL ----------
+     (non più raggiungibile dalla griglia: su tablet ogni progetto si apre
+     nella scheda a colonna come su mobile, vedi mobile.css) */
   /* Scroll view verticale, come su mobile: più naturale del trascinamento
      orizzontale su un touchscreen tenuto in verticale o orizzontale */
   .detail-gallery.scroll-view{
