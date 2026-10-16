@@ -67,14 +67,18 @@
        libero da "photo" che attraversa tutte le righe — min-content esce da
        quella distribuzione, così la riga si attacca esattamente al margine
        dichiarato invece di allargarsi in modo imprevedibile */
-    grid-template-rows:auto auto min-content auto auto;
+    /* contacts 1fr: spinge la fascia dei download in fondo, appoggiata al
+       footer come Projects/About in home; la fascia è a tutta larghezza
+       (sotto anche la foto) e alta --tab-h */
+    grid-template-rows:auto auto min-content 1fr var(--tab-h);
+    min-height:100%;
     column-gap:16px;
     grid-template-areas:
       "title     photo"
       "body      photo"
       "clabel    photo"
       "contacts  photo"
-      "downloads photo";
+      "downloads downloads";
     overflow-x:hidden;
     /* di norma il contenuto sta nello schermo e non serve scorrimento;
        overflow-y:auto è solo un fallback per non tagliare mai i bottoni di
@@ -93,9 +97,9 @@
      da quella riga "gonfiata") invece che pari ai margini dichiarati */
   .about-layout .title-row{grid-area:title; min-width:0; align-self:start;}
   .about-layout .about-body{grid-area:body; min-width:0; align-self:start;}
-  .about-layout .about-photo{grid-area:photo; grid-row:1 / -1; height:100%; align-self:stretch;}
+  .about-layout .about-photo{grid-area:photo; height:100%; align-self:stretch;}
   .about-contacts{display:contents;}
-  .about-layout .btn-row{grid-area:downloads; min-width:0; align-self:start;}
+  .about-layout .btn-row{grid-area:downloads; min-width:0; align-self:stretch;}
   .about-layout .contact-list{
     grid-area:contacts; min-width:0; align-self:start;
     padding:0 var(--edge);
@@ -132,14 +136,10 @@
   /* contatti: elenco verticale al posto delle skills, in regular invece che bold */
   .contact-link{font-size:0.72rem; font-weight:400;}
 
-  /* download: le stesse fasce di desktop (vedi .tab-box), qui una sotto
-     l'altra — affiancate non ci starebbero nella colonna stretta accanto
-     alla foto */
-  .about-layout .btn-row{
-    grid-template-columns:1fr;
-    margin:0;
-  }
-  .btn-row .tab + .tab{border-left:none;}
+  /* download: le stesse due fasce affiancate di desktop (vedi .btn-row),
+     qui a tutta larghezza dello schermo */
+  .about-layout .btn-row{margin:0;}
+  .about-layout .btn-row .tab{gap:8px;}
 
   /* ---------- 3. FOOTER: visibile in Home, About e nell'elenco Projects ----------
      Dentro un progetto aperto (scheda con galleria, .list-mode) resta
@@ -380,7 +380,11 @@
     display:flex; flex-direction:column;
     gap:0;
     margin-top:10px;
-    width:100%;
+    /* a tutta larghezza dello schermo: i margini negativi annullano il
+       padding laterale (--edge) di .project-row */
+    width:calc(100% + 2 * var(--edge));
+    margin-left:calc(-1 * var(--edge));
+    margin-right:calc(-1 * var(--edge));
   }
   /* foto attaccate, divise da una linea blu */
   .project-row-gallery .gallery-item::after{border-width:1px 0;}
@@ -503,6 +507,10 @@
   :root{--tab-h:72px;}
   .tab{gap:8px;}
   .tab-label{font-size:0.8rem;}
+  /* download in About: a metà larghezza di un telefono "Download
+     Portfolio" non ci sta — resta solo "CV" / "Portfolio", la freccia in
+     giù dice già che si scarica (stessa scelta di More Info → Info) */
+  .dl-prefix{display:none;}
   .tab-arrow{font-size:0.62rem;}
 
   .title-row{gap:12px;}
