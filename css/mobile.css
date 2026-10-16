@@ -178,12 +178,15 @@
     margin-top:0.05em;
   }
   /* "Projects" ↔ nome del progetto mentre si scorrono le foto (vedi
-     updateMobileProjectsTitle in index.html): cambio in dissolvenza */
+     updateMobileProjectsTitle in index.html): il testo vecchio sfuma e sale
+     di poco, il nuovo arriva dal basso e si assesta — un piccolo
+     "rotolamento" invece di uno spegni/accendi */
   #view-projects .title-row h1{
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    transition:opacity .18s var(--ease);
+    transition:opacity .28s var(--ease), transform .36s cubic-bezier(.2,.7,.2,1);
   }
-  #view-projects .title-row h1.swapping{opacity:0;}
+  #view-projects .title-row h1.swapping{opacity:0; transform:translateY(-8px);}
+  #view-projects .title-row h1.entering{opacity:0; transform:translateY(8px); transition:none;}
 
   /* ---------- 4. FILTRI nascosti (lista progetti + toggle Scroll/Grid) ---------- */
   .filters{display:none;}
@@ -193,42 +196,32 @@
      sotto quella del footer invece di affiancarla e sembrare doppia */
   #view-projects.grid-mode{bottom:calc(var(--footer-size) - 1px);}
 
-  /* anteprima a pressione prolungata su una fascia (vedi
-     setupIndexRowLongPress in index.html): overlay scuro a schermo intero
-     con la copertina al centro, stesse proporzioni reali del file */
-  .mobile-row-preview{
-    display:flex; align-items:center; justify-content:center;
-    position:fixed; inset:0; z-index:96;
-    background:rgba(10,10,10,0.6);
-    padding:52px;
-    opacity:0; pointer-events:none;
-    transition:opacity var(--t-hover) var(--ease);
-  }
-  .mobile-row-preview.active{opacity:1;}
-  .mobile-row-preview img{
-    width:100%; max-width:360px;
-    aspect-ratio:var(--cover-ratio, 1080/900);
-    object-fit:cover;
-    box-shadow:0 20px 48px rgba(0,0,0,0.4);
-  }
-
   /* ---------- 4ter. INDICE: griglia a 2 colonne come tablet/laptop ----------
      Copertina 16:9 + fascia testo alta --tab-h (come Projects/About in home
-     e i download in About), 2 colonne con i margini laterali del sito,
-     scorrimento verticale. Tap su un riquadro: apre la scheda del progetto
-     (vedi renderProjectsIndexGrid) */
+     e i download in About), 2 colonne da bordo a bordo dello schermo,
+     scorrimento verticale con barra blu. Tap su un riquadro: apre la
+     scheda del progetto (vedi renderProjectsIndexGrid) */
   #view-projects.grid-mode .projects-index-list{display:none;}
+  /* barra di scorrimento blu (griglia e scheda progetto). Dove il sistema
+     usa barre sovrapposte non personalizzabili (iOS Safari, gran parte di
+     Android) resta quella di sistema */
+  .projects-index-grid, .project-row{
+    scrollbar-width:thin;
+    scrollbar-color:var(--accent) transparent;
+  }
+  .projects-index-grid::-webkit-scrollbar, .project-row::-webkit-scrollbar{width:3px;}
+  .projects-index-grid::-webkit-scrollbar-track, .project-row::-webkit-scrollbar-track{background:transparent;}
+  .projects-index-grid::-webkit-scrollbar-thumb, .project-row::-webkit-scrollbar-thumb{background:var(--accent); border-radius:2px;}
   #view-projects.grid-mode .projects-index-grid{
     display:block;
     overflow-y:auto; overscroll-behavior-y:none;
     -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
   }
-  #view-projects.grid-mode .projects-index-grid::-webkit-scrollbar{display:none;}
-  .projects-index-grid{--index-cols:2;}
+  .projects-index-grid{--index-cols:2; --index-side:0px;}
   .index-grid-inner{--index-row-h:calc(var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h));}
+  /* niente linee sui bordi dello schermo: solo quella tra le due colonne */
   .index-tile:nth-child(4n+1){border-left:none;}
-  .index-tile:nth-child(2n+1){border-left:1px solid var(--accent);}
+  .index-tile:nth-child(2n){border-right:none;}
   /* riquadri stretti: testo più piccolo e padding ridotto; i nomi lunghi
      vanno a capo invece di uscire dal riquadro */
   .index-tile-info{padding:0 14px;}

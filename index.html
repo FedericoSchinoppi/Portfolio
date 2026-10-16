@@ -606,11 +606,17 @@
     if(h1.dataset.text === text) return;
     h1.dataset.text = text;
     clearTimeout(mobileTitleTimer);
+    h1.classList.remove("entering");
     h1.classList.add("swapping");
     mobileTitleTimer = setTimeout(()=>{
       h1.textContent = text;
+      /* il nuovo testo parte sotto, invisibile (senza transizione), poi
+         sale al suo posto in dissolvenza (vedi mobile.css) */
       h1.classList.remove("swapping");
-    }, 180);
+      h1.classList.add("entering");
+      void h1.offsetWidth;
+      h1.classList.remove("entering");
+    }, 220);
   }
 
   function applyProjectsMode(){
