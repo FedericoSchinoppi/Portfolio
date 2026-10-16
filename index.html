@@ -588,10 +588,36 @@
     grid.addEventListener("mousemove", onMove);
   }
 
+  /* mobile: scorrendo le foto di un progetto, il titolo in alto passa da
+     "Projects" al nome del progetto (appena il titolo della scheda esce
+     dallo schermo), e torna "Projects" risalendo o uscendo dalla scheda */
+  let mobileTitleTimer = null;
+  function updateMobileProjectsTitle(){
+    const h1 = document.querySelector("#view-projects .title-row h1");
+    let text = "Projects";
+    if(isMobileViewport() && projectsMode === "list"){
+      const row = document.querySelector("#projects-list .project-row.current");
+      const title = row && row.querySelector(".project-row-title");
+      if(title && title.getBoundingClientRect().bottom <= row.getBoundingClientRect().top){
+        text = PROJECTS.find(p => p.id === row.dataset.project)?.name || text;
+      }
+    }
+    if(h1.dataset.text === undefined) h1.dataset.text = h1.textContent;
+    if(h1.dataset.text === text) return;
+    h1.dataset.text = text;
+    clearTimeout(mobileTitleTimer);
+    h1.classList.add("swapping");
+    mobileTitleTimer = setTimeout(()=>{
+      h1.textContent = text;
+      h1.classList.remove("swapping");
+    }, 180);
+  }
+
   function applyProjectsMode(){
     const view = document.getElementById("view-projects");
     view.classList.toggle("grid-mode", projectsMode === "grid");
     view.classList.toggle("list-mode", projectsMode === "list");
+    updateMobileProjectsTitle();
     if(projectsMode === "grid"){
       armGridHoverGate();
       /* si torna sempre all'elenco con lo scorrimento in cima, non dove
@@ -650,6 +676,7 @@
        rientrando nello stesso progetto ci si ritroverebbe al punto in cui
        lo si era lasciato invece che all'inizio */
     if(mobile) resetScroll(row);
+    updateMobileProjectsTitle();
     if(pushState) pushNavState("projects");
   }
 
@@ -1112,6 +1139,9 @@
      di un'esecuzione per frame disegnato (via requestAnimationFrame),
      evitando lavoro ridondante proprio mentre l'utente sta scorrendo. */
   let projectDotsTicking = false;
+  document.getElementById("projects-list").addEventListener("scroll", (e)=>{
+    if(e.target.classList && e.target.classList.contains("project-row")) updateMobileProjectsTitle();
+  }, true);
   document.getElementById("projects-list").addEventListener("scroll", ()=>{
     if(projectDotsTicking) return;
     projectDotsTicking = true;

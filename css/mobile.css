@@ -109,12 +109,13 @@
 
   /* "Contacts" in Medium invece del Bold delle altre etichette (.eyebrow):
      sopra a contatti scritti in Roman, il Bold pesava troppo */
-  .about-contacts-label{grid-area:clabel; margin-top:24px; align-self:start; font-weight:500;}
+  .about-contacts-label{grid-area:clabel; margin-top:36px; align-self:start; font-weight:500;}
 
   /* foto: colonna stretta a piena altezza, quindi naturalmente verticale */
   .about-photo{
     width:100%;
     margin:0;
+    border-left:1px solid var(--accent);
   }
   .about-spacer{display:none;}
 
@@ -176,6 +177,13 @@
     font-size:clamp(1.2rem, 5.5vw, 1.6rem);
     margin-top:0.05em;
   }
+  /* "Projects" ↔ nome del progetto mentre si scorrono le foto (vedi
+     updateMobileProjectsTitle in index.html): cambio in dissolvenza */
+  #view-projects .title-row h1{
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    transition:opacity .18s var(--ease);
+  }
+  #view-projects .title-row h1.swapping{opacity:0;}
 
   /* ---------- 4. FILTRI nascosti (lista progetti + toggle Scroll/Grid) ---------- */
   .filters{display:none;}
@@ -316,8 +324,13 @@
     /* qui la barra di scorrimento resta visibile (a differenza del resto
        del sito, dove è sempre nascosta a favore dei pallini): la scheda è
        lunga (testo + 10 foto) e la barra aiuta a capire a che punto si è */
-    gap:10px;
-    padding:44px var(--edge) 32px;
+    /* --row-top: spazio tra la linea sotto "Projects" e il titolo del
+       progetto, riusato tra Info e la prima foto (vedi .project-row-gallery).
+       Niente padding sotto: lo scorrimento si ferma sulla linea finale
+       dell'ultima foto */
+    --row-top:44px; --row-gap:10px;
+    gap:var(--row-gap);
+    padding:var(--row-top) var(--edge) 1px; /* 1px: con altezze decimali la linea finale non viene mai tagliata a metà */
     /* niente content-visibility qui (l'avevo aggiunto in una modifica
        precedente pensando alle altre schede come "fuori schermo" da
        ottimizzare): con .project-row.current sotto, le schede non correnti
@@ -379,7 +392,9 @@
     order:4;
     display:flex; flex-direction:column;
     gap:0;
-    margin-top:10px;
+    /* stesso spazio che c'è tra la linea in alto e il titolo del progetto
+       (--row-top, al netto del gap tra gli elementi della scheda) */
+    margin-top:calc(var(--row-top) - var(--row-gap) - 4px); /* -4px: il titolo sale di 0.12em (vedi .project-row-title margin-top), qui si compensa per avere lo stesso spazio visivo */
     /* a tutta larghezza dello schermo: i margini negativi annullano il
        padding laterale (--edge) di .project-row */
     width:calc(100% + 2 * var(--edge));
@@ -389,6 +404,9 @@
   /* foto attaccate, divise da una linea blu */
   .project-row-gallery .gallery-item::after{border-width:1px 0;}
   .project-row-gallery .gallery-item-wrap{margin-bottom:-1px;}
+  /* l'ultima non si sovrappone a niente: la sua linea in basso è quella su
+     cui si ferma lo scorrimento */
+  .project-row-gallery .gallery-item-wrap:last-child{margin-bottom:0;}
   .project-row-gallery .gallery-item-wrap{width:100%; aspect-ratio:16/9;}
   .project-row-gallery .gallery-item{width:100%; height:100%;}
 
@@ -521,7 +539,7 @@
   .about-name-big{font-size:clamp(1rem,6.5vw,1.6rem);}
   .about-bio{font-size:0.9rem;}
 
-  .project-row{padding:36px var(--edge) 24px; gap:8px;}
+  .project-row{--row-top:36px; --row-gap:8px;}
   .project-row-title{font-size:clamp(1.35rem,6.5vw,2rem);}
 
   .detail-title-big{font-size:clamp(1.7rem,8vw,2.9rem);}
