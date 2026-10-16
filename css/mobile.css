@@ -12,8 +12,8 @@
    3. Footer: visibile in Home/About e nell'elenco Projects, contenuto
       leggermente più in basso, sempre con la scritta "Nome | Portfolio | anno"
    4. Filtri nascosti (lista progetti + toggle Scroll/Grid)
-   4bis. Indice: niente griglia, fasce semplici (titolo + tag), una per
-      progetto — al posto della griglia pensata per il mouse
+   4ter. Indice: griglia a 2 colonne come tablet/laptop (copertina 16:9 +
+      fascia testo alta --tab-h)
    5. Lista progetti: scroll orizzontale tra un progetto e l'altro, frase
       riassuntiva sotto il titolo, descrizione e tag dentro More Info
       (bottone Info più grande e azzurro anche a riposo). Niente cover né
@@ -188,62 +188,10 @@
   /* ---------- 4. FILTRI nascosti (lista progetti + toggle Scroll/Grid) ---------- */
   .filters{display:none;}
 
-  /* ---------- 4bis. INDICE: niente griglia qui, fasce semplici ---------- */
-  /* la griglia (pensata per il mouse: hover per l'anteprima, più colonne)
-     lascia il posto a un elenco verticale di fasce, una per progetto, con
-     titolo, tag sotto e freccetta a destra — vedi renderProjectsIndexList
-     in index.html. Ogni fascia è alta un quarto dello spazio tra title-row
-     e footer (flex-basis:25%): all'apertura se ne vedono esattamente 4,
-     il resto scorre */
-  #view-projects.grid-mode .projects-index-grid{display:none;}
-  #view-projects.grid-mode .projects-index-list{
-    display:flex; flex-direction:column;
-    flex:1; min-height:0;
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-    /* "none" non "contain": niente rimbalzo oltre l'ultimo progetto (vedi
-       stessa scelta su .project-row più sotto) */
-    overscroll-behavior-y:none;
-    /* scorrendo, la linea di una fascia arriva ad affiancarsi a quella
-       sotto "Projects" (o a quella del footer in fondo) e le due insieme
-       si leggono come una linea spessa il doppio. La lista sale quindi di
-       1px sopra la linea del title-row e scende di 1px sotto quella del
-       footer (vedi #view-projects.grid-mode qui sotto): la linea della
-       fascia in arrivo finisce esattamente sopra/sotto quella fissa, sullo
-       stesso pixel, e lo spessore resta sempre uno */
-    margin-top:-1px;
-    /* rientro dall'interno di un progetto: l'elenco torna in dissolvenza */
-    animation:soft-in var(--t-fade) var(--ease);
-  }
   /* la view arriva 1px sotto il bordo del footer (che le sta sopra e la
-     copre): è quel pixel a nascondere la linea della fascia in arrivo */
+     copre): scorrendo la griglia, la linea in fondo ai riquadri finisce
+     sotto quella del footer invece di affiancarla e sembrare doppia */
   #view-projects.grid-mode{bottom:calc(var(--footer-size) - 1px);}
-  .index-row{
-    display:flex; align-items:center; justify-content:space-between;
-    flex:0 0 25%;
-    gap:16px;
-    padding:0 var(--edge);
-    cursor:var(--cursor-brand);
-  }
-  /* linea sopra ogni fascia tranne la prima (lì c'è già quella del
-     title-row), non sotto: la fascia in fondo tocca il footer, che ha già
-     la sua linea — una seconda linea attaccata si leggerebbe più spessa */
-  .index-row + .index-row{border-top:1px solid var(--accent);}
-  .index-row-text{display:flex; flex-direction:column; gap:6px;}
-  .index-row-title{
-    font-size:1.05rem; font-weight:400;
-    text-transform:uppercase; letter-spacing:-0.01em;
-  }
-  .index-row-tag{
-    font-size:0.62rem; letter-spacing:0.04em; text-transform:uppercase;
-    color:var(--text-secondary);
-  }
-  .index-row-arrow{
-    font-size:0.9rem; line-height:1;
-    display:flex; align-items:center;
-    color:var(--accent);
-    flex-shrink:0;
-  }
 
   /* anteprima a pressione prolungata su una fascia (vedi
      setupIndexRowLongPress in index.html): overlay scuro a schermo intero
@@ -263,6 +211,31 @@
     object-fit:cover;
     box-shadow:0 20px 48px rgba(0,0,0,0.4);
   }
+
+  /* ---------- 4ter. INDICE: griglia a 2 colonne come tablet/laptop ----------
+     Copertina 16:9 + fascia testo alta --tab-h (come Projects/About in home
+     e i download in About), 2 colonne con i margini laterali del sito,
+     scorrimento verticale. Tap su un riquadro: apre la scheda del progetto
+     (vedi renderProjectsIndexGrid) */
+  #view-projects.grid-mode .projects-index-list{display:none;}
+  #view-projects.grid-mode .projects-index-grid{
+    display:block;
+    overflow-y:auto; overscroll-behavior-y:none;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  #view-projects.grid-mode .projects-index-grid::-webkit-scrollbar{display:none;}
+  .projects-index-grid{--index-cols:2;}
+  .index-grid-inner{--index-row-h:calc(var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h));}
+  .index-tile:nth-child(4n+1){border-left:none;}
+  .index-tile:nth-child(2n+1){border-left:1px solid var(--accent);}
+  /* riquadri stretti: testo più piccolo e padding ridotto; i nomi lunghi
+     vanno a capo invece di uscire dal riquadro */
+  .index-tile-info{padding:0 14px;}
+  .index-tile-head{gap:8px;}
+  .index-tile-title{font-size:0.78rem; line-height:1.15;}
+  .index-tile-tag{font-size:0.62rem;}
+  .index-tile-arrow{font-size:0.6rem;}
 
   /* ---------- 5. LISTA PROGETTI ---------- */
   /* niente scorrimento orizzontale tra un progetto e l'altro: si vede solo
