@@ -257,8 +257,18 @@
 @media (min-width:801px) and (max-width:1279px){
   /* foto con i margini laterali del sito (non da bordo a bordo come sul
      telefono) e cornice blu su tutti e quattro i lati */
-  .project-row-gallery{width:100%; margin-left:0; margin-right:0;}
+  .project-row-gallery{width:100%; margin-left:0; margin-right:0; position:relative;}
   .project-row-gallery .gallery-item::after{border-width:1px;}
+  /* la linea sopra la prima foto attraversa tutto lo schermo, anche oltre
+     i margini laterali (overflow-x:hidden sulla scheda la taglia ai bordi) */
+  .project-row-gallery::before{
+    content:""; position:absolute; z-index:2; pointer-events:none;
+    top:0; height:1px;
+    left:calc(-1 * var(--edge)); right:calc(-1 * var(--edge));
+    background:var(--accent);
+  }
+  /* l'ultima foto si appoggia al fondo dello schermo, senza spazio sotto */
+  .project-row{padding-bottom:0;}
 }
 
 @media (max-width:800px){
@@ -411,7 +421,7 @@
     -webkit-overflow-scrolling:touch;
   }
   .projects-index-grid{--index-cols:2; --index-side:0px;}
-  .index-grid-inner{--index-row-h:calc(var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h));}
+  .index-grid-inner{--index-row-h:round(down, var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h), 1px);}
   /* niente linee sui bordi dello schermo: solo quella tra le due colonne */
   .index-tile:nth-child(4n+1){border-left:none;}
   .index-tile:nth-child(2n){border-right:none;}

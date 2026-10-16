@@ -35,12 +35,10 @@
     align-items:flex-start;
     gap:12px;
   }
+  /* niente linee tra una skill e l'altra */
   .about-skills li{
     margin-right:0; padding-right:0; border-right:none;
-    padding-bottom:8px;
-    border-bottom:1px solid var(--text);
   }
-  .about-skills li:last-child{border-bottom:none; padding-bottom:0;}
 
   /* ---------- 2. PROJECTS — indice a griglia ---------- */
   /* 2 colonne a tutta larghezza (meno i margini), righe a seguire con
@@ -57,7 +55,13 @@
   .projects-index-grid{--index-cols:2;}
   /* qui la riga si calcola dalla larghezza (copertina 16:9 + fascia testo),
      non dall'altezza: le righe sono più di 2 e si scorre */
-  .index-grid-inner{--index-row-h:calc(var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h));}
+  /* altezza riga arrotondata al pixel: con i decimali l'ultima riga finiva
+     mezzo pixel sopra il footer e la sua linea si leggeva doppia */
+  .index-grid-inner{--index-row-h:round(down, var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h), 1px);}
+  /* la view arriva 1px sotto il bordo del footer (come su mobile): a fine
+     scorrimento la linea in fondo all'ultima riga finisce esattamente sotto
+     quella del footer, la griglia si appoggia al footer senza spazio */
+  #view-projects.grid-mode{bottom:calc(var(--footer-size) - 1px);}
   .index-tile:nth-child(4n+1){border-left:none;}
   .index-tile:nth-child(2n+1){border-left:1px solid var(--accent);}
 
