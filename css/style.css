@@ -849,11 +849,55 @@ img, video{
      snap) la sua linea finisce appena sotto il bordo visibile, nascosta,
      invece di raddoppiare quella del footer */
   .project-row{gap:0; height:calc(100% + 1px); border-bottom:1px solid var(--accent);}
+  /* l'ultima scheda non ha una scheda dopo: lo scorrimento si ferma alla
+     fine del contenuto, e la sua linea resterebbe visibile sopra quella
+     del footer (linea doppia). Niente linea e altezza esatta */
+  .project-row:last-child{height:100%; border-bottom:none;}
   .project-row-text{padding-right:32px;}
   .project-row-view-btn{
     margin-right:-32px;
     width:calc(100% + var(--edge) + 32px);
   }
+}
+
+/* Scheda progetto desktop (≥1280px) impaginata come l'About: la colonna
+   testo è .project-row-about, costruita con le stesse classi dell'About
+   (about-left, about-body, about-bio, about-skills, about-contacts,
+   btn-row), quindi spaziature, grandezze e stili sono gli stessi per
+   costruzione. Mentre si guarda un progetto non c'è la fascia
+   Projects/filtri sopra; lo scorrimento verticale tra le schede e i
+   pallini a destra restano. Sotto i 1280px è nascosta e vale la scheda a
+   colonna di mobile.css (.project-row-main, con More Info).
+   ".project-row .project-row-about" per battere ".about-left{display:contents}"
+   di mobile.css, che viene caricato dopo */
+.project-row .project-row-about{display:none;}
+/* righe Info: come i contatti dell'About ma in Light (non sono link) */
+.project-info-line{
+  font-size:0.9rem; font-weight:350; letter-spacing:0.05em;
+  color:var(--text);
+  overflow-wrap:break-word;
+}
+/* un solo bottone (View Project) a tutta larghezza, al posto dei due download */
+.btn-row-single{grid-template-columns:1fr;}
+@media (min-width:1280px){
+  #view-projects.list-mode > .title-row,
+  #view-projects.list-mode > .filters{display:none;}
+  .project-row-text{padding:0;}
+  .project-row .project-row-about{display:flex;}
+  .project-row-main, .project-row-text > .project-row-view-btn{display:none;}
+  /* #view-projects per battere "#view-projects .title-row" (padding
+     ridotto della fascia Projects): stessa riga titolo dell'About */
+  #view-projects .project-row-head{padding:var(--edge);}
+  /* freccia indietro sempre nello stesso punto, quello dell'About: nelle
+     righe titolo centrate (Projects, dettaglio progetto) il padding sopra
+     è 18px invece di --edge, quindi la freccia scende della differenza
+     (il titolo resta dov'è) */
+  #view-projects .title-row-centered .back-btn-inline,
+  #view-detail .title-row-centered .back-btn-inline{transform:translateY(calc(var(--edge) - 18px));}
+  .project-row-head h1{cursor:var(--cursor-brand);}
+  /* annulla i margini della fascia View Project della scheda a colonna:
+     qui sta dentro .btn-row come i download dell'About */
+  .btn-row .project-row-view-btn{margin:0; width:auto;}
 }
 
 .project-row-image{
@@ -975,16 +1019,19 @@ img, video{
 .detail-gallery.grid-view .gallery-item-wrap + .gallery-item-wrap .gallery-item{margin-left:-1px;}
 .detail-gallery.grid-view .gallery-row + .gallery-row{margin-top:-1px;}
 /* Grid a mosaico (progetti con 10 foto, classe .mosaic messa in
-   layoutGridView): 6 colonne x 3 righe da bordo a bordo, 18 moduli
-   di base. Ogni foto occupa 1, 2 o 4 moduli (1x1, 2x1, 1x2,
-   2x2); le due metà (3x3 moduli, 5 foto ciascuna) hanno lo stesso peso
-   ma forme diverse. Le foto si ritagliano (object-fit:cover) per riempire
-   il proprio riquadro. Le linee blu sono un ::after SOPRA la foto (lato
+   layoutGridView): 6 colonne x 3 righe da bordo a bordo, 18 moduli di
+   base (quasi quadrati su desktop). Ogni foto occupa un rettangolo di
+   moduli scelto in base al suo contenuto: 2x1 / 3x1 / 3x2 per quelle
+   larghe (siti, diagrammi, file di oggetti), 1x2 per un soggetto stretto
+   e alto (telefono, lattina, totem), 1x1 / 2x2 per soggetti compatti.
+   Il layout di ogni progetto è inline (project.mosaic); quello qui sotto
+   è il ripiego di default. Le foto si ritagliano (object-fit:cover)
+   centrate sul soggetto (--focus, da image.focus). Le linee blu sono un ::after SOPRA la foto (lato
    destro + lato inferiore), non un gap: con colonne e righe di larghezza
    decimale le foto, arrotondate al pixel, coprivano il gap da 1px e
-   alcune linee sparivano. Niente linea sui bordi dello schermo (colonna
-   destra: g, j; riga in basso: c, d, e, h, j); sopra c'è già la linea
-   dei filtri */
+   alcune linee sparivano. Niente linea sui bordi dello schermo (ultima
+   colonna e ultima riga, calcolate in JS dal layout: data-edge-right /
+   data-edge-bottom); sopra c'è già la linea dei filtri */
 .detail-gallery.grid-view.mosaic{
   display:grid;
   grid-template-columns:repeat(6, minmax(0,1fr));
@@ -1006,9 +1053,13 @@ img, video{
   border:0 solid var(--accent);
   border-right-width:1px; border-bottom-width:1px;
 }
-.detail-gallery.grid-view.mosaic .gallery-item:is([data-area="g"],[data-area="j"])::after{border-right-width:0;}
-.detail-gallery.grid-view.mosaic .gallery-item:is([data-area="c"],[data-area="d"],[data-area="e"],[data-area="h"],[data-area="j"])::after{border-bottom-width:0;}
-.gallery-item[data-src]{cursor:var(--cursor-image);}
+.detail-gallery.grid-view.mosaic .gallery-item[data-edge-right]::after{border-right-width:0;}
+.detail-gallery.grid-view.mosaic .gallery-item[data-edge-bottom]::after{border-bottom-width:0;}
+.detail-gallery.grid-view.mosaic .gallery-item :is(img,video){object-position:var(--focus, 50% 50%);}
+/* foto rimpicciolite nel riquadro (fitMosaicItem in JS): fasce di sfondo
+   che continuano i bordi della foto, sotto le linee blu (::after) */
+.detail-gallery.grid-view.mosaic .gallery-item{overflow:hidden;}
+.fit-fill{position:absolute; pointer-events:none;}.gallery-item[data-src]{cursor:var(--cursor-image);}
 
 .gallery-item{
   position:relative;

@@ -34,20 +34,20 @@
      cache ai browser per 10 minuti (e Safari su iPad spesso di più):
      cambiando questo numero a ogni pubblicazione il browser è costretto a
      scaricare i CSS nuovi invece di usare quelli vecchi -->
-<link rel="stylesheet" href="css/style.css?v=20261019-7">
+<link rel="stylesheet" href="css/style.css?v=20261019-27">
 <!-- versione TABLET/IPAD: 801px–1279px, tra il layout mobile (≤800px) e
      quello laptop/desktop (≥1280px). Copre la maggior parte degli iPad in
      entrambi gli orientamenti (portrait e landscape), tranne l'iPad Pro
      12.9" in landscape (1366px) che ricade nel layout desktop — soglia
      comunque facile da spostare in un secondo momento se serve -->
-<link rel="stylesheet" href="css/tablet.css?v=20261019-7" media="(min-width:801px) and (max-width:1279px)">
+<link rel="stylesheet" href="css/tablet.css?v=20261019-27" media="(min-width:801px) and (max-width:1279px)">
 <!-- caricato fino a 1279px (mobile + tablet, vedi blocco iniziale di
      mobile.css): oltre quella soglia il browser lo
      scarica comunque (in background, per averlo pronto se la finestra si
      restringe) ma NON lo considera bloccante per il primo render su
      desktop/tablet larghi, dove tutte le regole al suo interno sono
      comunque inapplicabili -->
-<link rel="stylesheet" href="css/mobile.css?v=20261019-7" media="(max-width:1279px)">
+<link rel="stylesheet" href="css/mobile.css?v=20261019-27" media="(max-width:1279px)">
 </head>
 <body>
 
@@ -200,17 +200,22 @@
       blurb: "A collective and connected ritual",
       description: "A group project reimagining the 2028 edition of Kappa Futur Festival through a complex interactive system. The goal was to enrich the attendee experience and connect participants with one another, turning the festival into a collective, connected journey.",
       cover: "img/pj/01-kff/00-cop-kff.jpg",
+      mosaic: [
+        "a b b c c e",
+        "d b b f g g",
+        "d h i f j j"
+      ],
       images: [
         { src: "img/pj/01-kff/01 - affissioni tribù.jpg", caption: "Pre-festival street posters" },
-        { src: "img/pj/01-kff/02 - gate.jpg", caption: "Venue entrance gate" },
-        { src: "img/pj/01-kff/03 - app.jpg", caption: "Mobile app interface" },
-        { src: "img/pj/01-kff/04-app.mp4", caption: "Mobile app — video walkthrough" },
-        { src: "img/pj/01-kff/05 - map.jpg", caption: "Real-time map on LED wall" },
-        { src: "img/pj/01-kff/06 - totem inattivo.jpg", caption: "Interactive totem" },
-        { src: "img/pj/01-kff/07 - collaboration diagram.jpg", caption: "Collaboration diagram" },
-        { src: "img/pj/01-kff/08 - prototipo.jpg", caption: "Prototype demo on laptop" },
-        { src: "img/pj/01-kff/09 - prototipo.jpg", caption: "Prototype demo on mobile" },
-        { src: "img/pj/01-kff/10- video demo.mp4", caption: "Video demo" }
+        { src: "img/pj/01-kff/02 - gate.jpg", caption: "Venue entrance gate", focus: "35% 50%" },
+        { src: "img/pj/01-kff/03 - app.jpg", caption: "Mobile app interface", subject: "0.07 0.93 0.03 0.98", edge: "f0f0f0 eeeeee ededed efefef f9f9f9 f9f9f9 f0f0f0 eeeeee ededed efefef f9f9f9 ebebeb f1f1f1 f2f2f2 f2f2f2 f2f2f2 f2f2f2 f1f1f1 f9f9f9 dddddd dbdbdb d6d6d6 dedede e9e9e9" },
+        { src: "img/pj/01-kff/04-app.mp4", caption: "Mobile app — video walkthrough", subject: "0.38 0.61 0.10 0.92", edge: "191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222" },
+        { src: "img/pj/01-kff/05 - map.jpg", caption: "Real-time map on LED wall", focus: "0% 50%" },
+        { src: "img/pj/01-kff/06 - totem inattivo.jpg", caption: "Interactive totem", focus: "8% 50%" },
+        { src: "img/pj/01-kff/07 - collaboration diagram.jpg", caption: "Collaboration diagram", subject: "0.04 0.96 0.15 0.83", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/01-kff/08 - prototipo.jpg", caption: "Prototype demo on laptop", subject: "0.20 0.78 0.19 0.85", edge: "ececec ededed ededed ededed ededee efefef ebebeb ebebeb eaeaea e8e8e8 e6e6e6 f0f0f0 ececec ebebeb eaebea eaeaea eaeaea eaeaeb efefef efefef efefef efefef efefef efeff0" },
+        { src: "img/pj/01-kff/09 - prototipo.jpg", caption: "Prototype demo on mobile", subject: "0.30 0.68 0.17 0.94", edge: "ececed ececed ececed ececec ececed ececec ececed ededed ededed ececed ededed ededed ededed ededed ededed ededed ededed ededee ededed f0f0f0 f0f0f0 f0f0f0 f0f0f0 eeeeee" },
+        { src: "img/pj/01-kff/10- video demo.mp4", caption: "Video demo", subject: "0.12 0.88 0.07 0.98", edge: "000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000" }
       ]
     },
     {
@@ -224,17 +229,22 @@
       blurb: "Cleopatra reimagined in jewelry",
       description: "A tribute to Cleopatra's hidden facets and mythological presence, translated into a luxury jewelry brand. The identity was built from a deep study of her character, then extended into a full brand experience.",
       cover: "img/pj/02-cleo/00-cop-cleo.jpg",
+      mosaic: [
+        "a b b c d d",
+        "e f f c g g",
+        "e h i j g g"
+      ],
       images: [
-        { src: "img/pj/02-cleo/01-logo animation.mp4", caption: "Logo animation" },
-        { src: "img/pj/02-cleo/02-versione colori.png", caption: "Logo color variations" },
+        { src: "img/pj/02-cleo/01-logo animation.mp4", caption: "Logo animation", subject: "0.28 0.72 0.20 0.85", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/02-cleo/02-versione colori.png", caption: "Logo color variations", focus: "50% 64%" },
         { src: "img/pj/02-cleo/03-logo generativo.jpg", caption: "Generative logo pattern" },
-        { src: "img/pj/02-cleo/04-affissioni.jpg", caption: "Campaign launch posters" },
-        { src: "img/pj/02-cleo/05-instagram.jpg", caption: "Instagram profile feed" },
-        { src: "img/pj/02-cleo/06-brochure gioiello.jpg", caption: "Jewelry brochure" },
-        { src: "img/pj/02-cleo/07-collezione magazine.jpg", caption: "New collection launch in a magazine" },
-        { src: "img/pj/02-cleo/08-contatti magazine.jpg", caption: "Contact page inside the magazine" },
-        { src: "img/pj/02-cleo/09-copertina brandbook.jpg", caption: "Brandbook cover" },
-        { src: "img/pj/02-cleo/10-brandbook.jpg", caption: "Brand mark explained in the brandbook" }
+        { src: "img/pj/02-cleo/04-affissioni.jpg", caption: "Campaign launch posters", focus: "50% 58%" },
+        { src: "img/pj/02-cleo/05-instagram.jpg", caption: "Instagram profile feed", subject: "0.39 0.60 0.02 0.90", edge: "f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6 f6f6f6" },
+        { src: "img/pj/02-cleo/06-brochure gioiello.jpg", caption: "Jewelry brochure", subject: "0.17 0.84 0.15 0.85", edge: "e1dfe0 e1e0e1 e1e0e0 e1e0e0 dfdedf dbd9da cecccd d2d0d1 d3d2d2 d4d2d3 d2d0d1 cdcbcc e4e3e3 ecebe9 eeeded edeceb e5e4e3 d6d5d4 dedddd e6e6e6 e8e7e8 e3e1e2 e2e1e1 d5d4d4" },
+        { src: "img/pj/02-cleo/07-collezione magazine.jpg", caption: "New collection launch in a magazine", subject: "0.20 0.78 0.10 0.88", edge: "dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd dddddd" },
+        { src: "img/pj/02-cleo/08-contatti magazine.jpg", caption: "Contact page inside the magazine", focus: "42% 50%" },
+        { src: "img/pj/02-cleo/09-copertina brandbook.jpg", caption: "Brandbook cover", subject: "0.18 0.82 0.08 0.90", edge: "dedede dedede dedede dedede dedede dedede dedede dedede dedede dedede dedede dedede dddddd dddddd dddddd dddddd dddddd dddddd dcdcdc dbdbdb dbdbdb dbdbdb dbdbdb dcdcdc" },
+        { src: "img/pj/02-cleo/10-brandbook.jpg", caption: "Brand mark explained in the brandbook", subject: "0.20 0.80 0.10 0.88", edge: "e8e8e8 e8e8e8 e8e8e8 e8e8e8 e8e8e8 e9e9e9 e9e9e9 e9e9e9 e9e9e9 e9e9e9 e9e9e9 e9e9e9 e8e8e8 e9e9e9 e9e9e9 e9e9e9 e9e9e9 e9e9e9 e8e8e8 e8e8e8 e8e8e8 e8e8e8 e9e9e9 e9e9e9" }
       ]
     },
     {
@@ -248,17 +258,22 @@
       blurb: "Authentic heritage, refined presence",
       description: "A visual refresh for La Manèga, a winery at the heart of Franciacorta. The brand identity was redesigned to meet the owners' needs, giving the company's image a more authentic, refined presence.",
       cover: "img/pj/03-manega/00-cop-manega.jpg",
+      mosaic: [
+        "a a b b c d",
+        "a a e e c h",
+        "f f g g i j"
+      ],
       images: [
         { src: "img/pj/03-manega/01-logo e marchio.jpg", caption: "Logo" },
-        { src: "img/pj/03-manega/02-versione colori.png", caption: "Logo and mark applications" },
-        { src: "img/pj/03-manega/03-texture.jpg", caption: "Logo on a textured surface" },
-        { src: "img/pj/03-manega/04-business card.jpg", caption: "Business card" },
-        { src: "img/pj/03-manega/05-sito web about.jpg", caption: "Website — experience section" },
-        { src: "img/pj/03-manega/06-sito web bottiglia.jpg", caption: "Website — products section" },
-        { src: "img/pj/03-manega/07-brochure.jpg", caption: "Brochure" },
-        { src: "img/pj/03-manega/08-bottiglie di vino.jpg", caption: "Wine bottles" },
-        { src: "img/pj/03-manega/09-pack singolo.jpg", caption: "Single-bottle packaging" },
-        { src: "img/pj/03-manega/10-pack regalo.jpg", caption: "Gift packaging" }
+        { src: "img/pj/03-manega/02-versione colori.png", caption: "Logo and mark applications", focus: "50% 58%" },
+        { src: "img/pj/03-manega/03-texture.jpg", caption: "Logo on a textured surface", subject: "0.36 0.63 0.35 0.66", edge: "000000 000000 050504 070605 040403 040303 060505 090807 020202 020202 020202 020202 000000 000000 000000 000000 010101 050504 040403 040403 000000 000000 050503 030302" },
+        { src: "img/pj/03-manega/04-business card.jpg", caption: "Business card", focus: "40% 50%" },
+        { src: "img/pj/03-manega/05-sito web about.jpg", caption: "Website — experience section", subject: "0.16 0.82 0.14 0.89", edge: "f1eadf f1eadf f1eadf f1eadf f1eadf f1eae0 f1eadf f1eadf f1eadf f1eadf f1eadf f1eae0 f2ebe0 f2ebe0 f2ebe0 f2ebe0 f2ebe0 f2ebe0 f3ede4 f3ede4 f3ede4 f3ede4 f3ede4 f3ede4" },
+        { src: "img/pj/03-manega/06-sito web bottiglia.jpg", caption: "Website — products section", subject: "0.18 0.82 0.15 0.90", edge: "f2ebe1 f2ebe0 f2ebe0 f2ebe0 f2ebe0 f2ebe1 f1eadf f1eadf f1eadf f1eadf f1eadf f1eae0 f2ebe2 f2ebe2 f2ebe2 f2ebe2 f2ebe2 f2ebe2 f3ede4 f3ede4 f3ede4 f3ede4 f3ede4 f3ede4" },
+        { src: "img/pj/03-manega/07-brochure.jpg", caption: "Brochure", subject: "0.16 0.79 0.19 0.87", edge: "e0ded8 dfdcd6 dcd9d3 dad7d1 d8d5cf d6d2cc d3cec8 d1ccc6 cfcbc2 cdc9c0 cbc7be c9c5bc e0ded8 e0ddd7 dedbd5 dcd9d3 dad7d0 d6d2cb d4cfc9 d3cec8 ccc7c1 cbc6c0 cbc7be c9c5bc" },
+        { src: "img/pj/03-manega/08-bottiglie di vino.jpg", caption: "Wine bottles", subject: "0.29 0.71 0.10 0.90", edge: "f7f7f8 f6f6f8 f4f4f6 eff0f1 ededee e7e7e9 e2e2e4 e1e2e4 e1e2e4 e1e1e3 dcdcde dadbdc f5f5f7 f0f0f0 ebebeb e7e7e7 e5e5e5 e4e4e6 e1e1e3 e0e0e2 dddddf ddddde dddddf dcddde" },
+        { src: "img/pj/03-manega/09-pack singolo.jpg", caption: "Single-bottle packaging", subject: "0.28 0.72 0.12 0.90", edge: "ebe7e1 e5e0da ded9d3 d9d4cc d7d2ca dcd7d0 ebe6e0 eae7e0 eae7e0 eae7e0 eae7e0 ebe6e0 ece7e2 ece7e2 ece7e2 ece7e2 ece7e2 ece7e2 d9d4cd cdc7bf c4beb6 d1cbc3 eae5de ebe6e0" },
+        { src: "img/pj/03-manega/10-pack regalo.jpg", caption: "Gift packaging", subject: "0.17 0.84 0.08 0.92", edge: "4c4c4e 4d4d4f 4f4f51 515152 525252 535353 626264 656567 68686a 6b6b6d 6d6d6f 6e6e70 4d4d4f 515153 565658 5a5a58 5d5d5f 5f5f61 565656 5b5b5c 5f5f61 5c5c5e 68686a 6d6d6f" }
       ]
     },
     {
@@ -272,17 +287,22 @@
       blurb: "Art made accessible",
       description: "A collaboration with the Museo Tattile Statale Omero to make Roberto Papini's artworks accessible to blind, low-vision, and deaf audiences. The project translated the artist's work into tactile experiences, a tactile book, and video content, supported by a descriptive website with audio guides.",
       cover: "img/pj/04-sinfonie/00-cop-sinfonie.jpg",
+      mosaic: [
+        "a a b b c c",
+        "a a d e f g",
+        "h i j j f g"
+      ],
       images: [
-        { src: "img/pj/04-sinfonie/01-sito.jpg", caption: "Browsing the project's dedicated website" },
-        { src: "img/pj/04-sinfonie/02-sito.jpg", caption: "Website — intro section" },
-        { src: "img/pj/04-sinfonie/03-sito.jpg", caption: "Website — artworks section" },
-        { src: "img/pj/04-sinfonie/04-pannello.jpg", caption: "Panel explaining the project and the tactile experience" },
-        { src: "img/pj/04-sinfonie/05-audioguida.jpg", caption: "Scanning the QR code for the mobile audio guide" },
-        { src: "img/pj/04-sinfonie/06-audioguida mobile.jpg", caption: "Mobile audio guide" },
-        { src: "img/pj/04-sinfonie/07-audioguida mobile.mp4", caption: "Mobile audio guide — video" },
-        { src: "img/pj/04-sinfonie/08-book intro.jpg", caption: "Tactile book — intro pages" },
-        { src: "img/pj/04-sinfonie/09-book opere.jpg", caption: "An artwork explained in the tactile book" },
-        { src: "img/pj/04-sinfonie/10-esperienza tattile.jpg", caption: "Tactile boxes that make up the experience" }
+        { src: "img/pj/04-sinfonie/01-sito.jpg", caption: "Browsing the project's dedicated website", focus: "69% 50%" },
+        { src: "img/pj/04-sinfonie/02-sito.jpg", caption: "Website — intro section", subject: "0.16 0.80 0.14 0.92", edge: "ececec ececec ededed ededed ededed eeeeee eaeaea ebebeb e9e9e9 e6e6e6 e4e4e4 eaeaea ebebeb eaeaea eaeaea e9e9e9 e9e9e9 eaeaea eeeeee eeeeee eeeeee eeeeee eeeeee eeeeee" },
+        { src: "img/pj/04-sinfonie/03-sito.jpg", caption: "Website — artworks section", subject: "0.16 0.84 0.14 0.92", edge: "ececec ededed ededed ededed eeeeee eeeeee eaeaea ebebeb e9e9e9 e6e6e6 e4e4e4 eaeaea ebebeb eaeaea eaeaea e9e9e9 e9e9e9 eaeaea eeeeee eeeeee eeeeee eeeeee eeeeee eeeeee" },
+        { src: "img/pj/04-sinfonie/04-pannello.jpg", caption: "Panel explaining the project and the tactile experience", focus: "63% 50%" },
+        { src: "img/pj/04-sinfonie/05-audioguida.jpg", caption: "Scanning the QR code for the mobile audio guide", focus: "88% 50%" },
+        { src: "img/pj/04-sinfonie/06-audioguida mobile.jpg", caption: "Mobile audio guide", subject: "0.38 0.62 0.08 0.94", edge: "ebebec ebebec ebebec ebebeb ebebec ececec ebebeb ebebeb ebebeb ebebeb ebebeb ececec ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb efeff0 efefef efefef efefef efefef efeff0" },
+        { src: "img/pj/04-sinfonie/07-audioguida mobile.mp4", caption: "Mobile audio guide — video", subject: "0.38 0.62 0.08 0.94", edge: "eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea eaebea" },
+        { src: "img/pj/04-sinfonie/08-book intro.jpg", caption: "Tactile book — intro pages", subject: "0.20 0.80 0.10 0.90", edge: "edece0 eeede2 f0eee3 f1f0e7 ebe9de e9e5d8 efeee3 eae8db eceddf ecefe0 ebebdd eeebde eeede2 f0efe3 f3f1e5 f4f1e9 f5f4ea f4f2e9 eeebe0 ede9df efebe1 f1eee4 efede2 efece1" },
+        { src: "img/pj/04-sinfonie/09-book opere.jpg", caption: "An artwork explained in the tactile book", subject: "0.20 0.80 0.10 0.90", edge: "e4e4e2 e8e8e5 e7e6e2 e3e2de dcdbd6 dbdad4 f3f7f6 ebeeeb edf3ef f1f9f4 f1f4f1 eff0ec e6e6e4 f0f0ee f6f6f4 f2f3f1 f3f5f2 f7faf8 e5e5e0 f1f1ee f5f5f3 f6f6f4 f4f4f2 f2f3ef" },
+        { src: "img/pj/04-sinfonie/10-esperienza tattile.jpg", caption: "Tactile boxes that make up the experience", focus: "50% 100%" }
       ]
     },
     {
@@ -296,17 +316,22 @@
       blurb: "Six teams, one voice",
       description: "Social media management and communication for a historic football club in the Brescia football scene, overseeing six different teams under a single society at the same time.",
       cover: "img/pj/05-sale/00-cop-sale.jpg",
+      mosaic: [
+        "a c b d e e",
+        "f f b h e e",
+        "f f g g i j"
+      ],
       images: [
-        { src: "img/pj/05-sale/01-lancio stagione.jpg", caption: "Season launch post" },
-        { src: "img/pj/05-sale/02-profilo.jpg", caption: "Instagram profile" },
-        { src: "img/pj/05-sale/03-feed.jpg", caption: "Instagram feed" },
-        { src: "img/pj/05-sale/04-team.jpg", caption: "Stories for a single team" },
-        { src: "img/pj/05-sale/05-risultati weekend.jpg", caption: "Weekly post with the weekend's match results" },
-        { src: "img/pj/05-sale/06-mvp.jpg", caption: "Stories celebrating each team's MVP" },
-        { src: "img/pj/05-sale/07-torneo open.jpg", caption: "Stories for the Open tournament" },
-        { src: "img/pj/05-sale/08-stand gastronomico.jpg", caption: "Story promoting the food stand" },
-        { src: "img/pj/05-sale/09-torneo top junior.jpg", caption: "Stories for the Top Junior tournament" },
-        { src: "img/pj/05-sale/10-maglia celebrativa.jpg", caption: "Commemorative jersey reveal post" }
+        { src: "img/pj/05-sale/01-lancio stagione.jpg", caption: "Season launch post", subject: "0.20 0.76 0.10 0.92", edge: "dcdcdc dedede dfdfdf e0e0e0 e1e1e1 e2e2e2 eaeaea eaeaea e9eae9 e9e9e9 e9e9e9 e8e8e8 dcdcdc dedede e0e0e0 e2e2e2 e3e3e3 e5e5e5 e3e3e3 e3e3e3 e3e4e3 e3e4e3 e4e4e4 e4e4e4" },
+        { src: "img/pj/05-sale/02-profilo.jpg", caption: "Instagram profile", subject: "0.39 0.60 0.12 0.90", edge: "ececec ececec ececec ececec ececec ececec efefef efefef efefef efefef efefef efefef ececec ebebeb ebebeb ebebeb ebebeb ececec ececec ebebeb ebebeb ebebeb ebebeb ededed" },
+        { src: "img/pj/05-sale/03-feed.jpg", caption: "Instagram feed", subject: "0.29 0.68 0.14 0.92", edge: "ececec ececec ececec ececec ececec ececec ededee ededee ededee ededed ededed ededee ececec ececec ececec ececec ececec ededed ededed ededed ededed ededed ededed eeeeee" },
+        { src: "img/pj/05-sale/04-team.jpg", caption: "Stories for a single team", subject: "0.28 0.71 0.12 0.90", edge: "ececec ececec ececec ececec ececec ececec ededed ededed ededed ededed ededed ededed ececec ececec ececec ececec ececec ececec ececec ebebeb ebebeb ebebeb ebebeb ececec" },
+        { src: "img/pj/05-sale/05-risultati weekend.jpg", caption: "Weekly post with the weekend's match results", subject: "0.18 0.76 0.07 0.92", edge: "dcdcdc dedede dfdfdf e0e0e0 e1e1e1 e2e2e2 e9e9e9 e9e9e9 e9e9e9 e8e8e8 e8e8e8 e8e8e8 dcdcdc dedede e0e0e0 e2e2e2 e3e3e3 e4e4e4 e3e3e3 e3e3e3 e3e4e3 e3e4e3 e4e4e4 e3e3e3" },
+        { src: "img/pj/05-sale/06-mvp.jpg", caption: "Stories celebrating each team's MVP", subject: "0.29 0.71 0.12 0.88", edge: "ececec ececec ececec ececec ececec ececec ededed ededed ededed ededed ededed ededed ececec ebebeb ebebeb ebebeb ebebeb ececec eeeeee eeeeee eeeeee eeeeee eeeeee ececec" },
+        { src: "img/pj/05-sale/07-torneo open.jpg", caption: "Stories for the Open tournament", subject: "0.29 0.71 0.12 0.90", edge: "ececec ececec ececec ececec ececec ececec ededed ededed edecec edecec ededed ededed ececec ebebeb ebebeb ebebeb ececec ececec eeeeee eeeeee eeeeee eeeeee ededed ececec" },
+        { src: "img/pj/05-sale/08-stand gastronomico.jpg", caption: "Story promoting the food stand", subject: "0.29 0.70 0.12 0.90", edge: "ededed ededee ededee ededee ececed ededee ececec ececed ececec ececec ececec ececec ececec ececec ececec ececec ececec ececec efefef efefef efefef efefef efefef efefef" },
+        { src: "img/pj/05-sale/09-torneo top junior.jpg", caption: "Stories for the Top Junior tournament", subject: "0.28 0.71 0.12 0.90", edge: "ececec ececec ececec ececec ececec ececec ececec ececec ececec ececec ececec ededed ececec ebebeb ebebeb ebebeb ebebeb ececec ececec efefef efefef efefef efefef f0f0f0" },
+        { src: "img/pj/05-sale/10-maglia celebrativa.jpg", caption: "Commemorative jersey reveal post", subject: "0.18 0.76 0.08 0.92", edge: "dddddd dfdfdf e0e0e0 e1e1e1 e2e2e2 e3e3e3 e5e5e5 e5e5e5 e5e5e5 e4e5e4 e4e4e4 e4e4e4 dcdcdc dedede e0e0e0 e2e2e2 e3e3e3 e4e4e4 e3e3e3 e3e3e3 e4e4e4 e3e4e3 e4e4e4 e3e3e3" }
       ]
     },
     {
@@ -320,16 +345,21 @@
       blurb: "One drink, new connections",
       description: "A new non-alcoholic drink built to spark the evening among friends at a bar. Market analysis guided the brand's positioning, followed by the visual identity and promotional strategy.",
       cover: "img/pj/06-blesh/00-cop-blesh.jpg",
+      mosaic: [
+        "a a b e d d",
+        "c f g h j j",
+        "c i i h j j"
+      ],
       images: [
-        { src: "img/pj/06-blesh/01-moodboard.jpg", caption: "Moodboard" },
-        { src: "img/pj/06-blesh/02-logo.png", caption: "Logo" },
-        { src: "img/pj/06-blesh/03-lattina.jpg", caption: "Can design" },
-        { src: "img/pj/06-blesh/04-piano editoriale.jpg", caption: "Editorial content plan" },
-        { src: "img/pj/06-blesh/05-instagram.jpg", caption: "Instagram post capturing the brand's mood" },
-        { src: "img/pj/06-blesh/06-instagram.jpg", caption: "Instagram post capturing the brand's style" },
-        { src: "img/pj/06-blesh/07-instagram.jpg", caption: "Instagram post featuring the three can designs" },
-        { src: "img/pj/06-blesh/08-affissioni.jpg", caption: "Product launch poster" },
-        { src: "img/pj/06-blesh/09-affissioni.jpg", caption: "Product launch poster — alternate version" },
+        { src: "img/pj/06-blesh/01-moodboard.jpg", caption: "Moodboard", subject: "0.02 0.98 0.03 0.97", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/02-logo.png", caption: "Logo", subject: "0.34 0.65 0.42 0.58", edge: "ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e" },
+        { src: "img/pj/06-blesh/03-lattina.jpg", caption: "Can design", subject: "0.40 0.59 0.14 0.84", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/04-piano editoriale.jpg", caption: "Editorial content plan", subject: "0.02 0.98 0.05 0.95", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/05-instagram.jpg", caption: "Instagram post capturing the brand's mood", subject: "0.30 0.70 0.12 0.90", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/06-instagram.jpg", caption: "Instagram post capturing the brand's style", subject: "0.30 0.70 0.12 0.90", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/07-instagram.jpg", caption: "Instagram post featuring the three can designs", subject: "0.30 0.70 0.12 0.90", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/08-affissioni.jpg", caption: "Product launch poster", focus: "38% 50%" },
+        { src: "img/pj/06-blesh/09-affissioni.jpg", caption: "Product launch poster — alternate version", focus: "50% 61%" },
         { src: "img/pj/06-blesh/10-spot.jpg", caption: "Illustration for the ad spot" }
       ]
     },
@@ -344,17 +374,22 @@
       blurb: "New identity, same community",
       description: "A personal project, developed with a friend, giving new visual form to the Gussago oratory. The identity was rebuilt to reflect the community's spirit, alongside redesigned and consistent communication channels.",
       cover: "img/pj/07-oratorio/00-cop-oraz.png",
+      mosaic: [
+        "a a b b c c",
+        "d e f f i i",
+        "g h h j i i"
+      ],
       images: [
-        { src: "img/pj/07-oratorio/01-logo e marchio.png", caption: "Logo and brand mark" },
-        { src: "img/pj/07-oratorio/02-logo e marchio.png", caption: "Logo and brand mark — alternate version" },
+        { src: "img/pj/07-oratorio/01-logo e marchio.png", caption: "Logo and brand mark", subject: "0.13 0.87 0.40 0.60", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/07-oratorio/02-logo e marchio.png", caption: "Logo and brand mark — alternate version", subject: "0.13 0.87 0.40 0.60", edge: "00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c" },
         { src: "img/pj/07-oratorio/03-marchio.png", caption: "Brand mark" },
-        { src: "img/pj/07-oratorio/04-instagram home.jpg", caption: "Instagram profile" },
-        { src: "img/pj/07-oratorio/05-lancio instagram.jpg", caption: "Launch brand reel" },
-        { src: "img/pj/07-oratorio/06-home page sito.jpg", caption: "Website homepage" },
-        { src: "img/pj/07-oratorio/07-galleria sito.jpg", caption: "Website gallery section" },
-        { src: "img/pj/07-oratorio/08-tshirt.jpg", caption: "T-shirt" },
-        { src: "img/pj/07-oratorio/09-tshirt.jpg", caption: "T-shirt — alternate version" },
-        { src: "img/pj/07-oratorio/10-muro.jpg", caption: "Logo painted on the oratory bar's wall" }
+        { src: "img/pj/07-oratorio/04-instagram home.jpg", caption: "Instagram profile", subject: "0.38 0.62 0.10 0.92", edge: "ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb" },
+        { src: "img/pj/07-oratorio/05-lancio instagram.jpg", caption: "Launch brand reel", subject: "0.38 0.62 0.10 0.92", edge: "ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb" },
+        { src: "img/pj/07-oratorio/06-home page sito.jpg", caption: "Website homepage", subject: "0.17 0.82 0.15 0.87", edge: "ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb" },
+        { src: "img/pj/07-oratorio/07-galleria sito.jpg", caption: "Website gallery section", subject: "0.17 0.82 0.15 0.87", edge: "ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb" },
+        { src: "img/pj/07-oratorio/08-tshirt.jpg", caption: "T-shirt", focus: "50% 89%" },
+        { src: "img/pj/07-oratorio/09-tshirt.jpg", caption: "T-shirt — alternate version", focus: "63% 50%" },
+        { src: "img/pj/07-oratorio/10-muro.jpg", caption: "Logo painted on the oratory bar's wall", focus: "0% 50%" }
       ]
     },
     {
@@ -368,17 +403,22 @@
       blurb: "Closing the gap with Gen Z",
       description: "A repositioning project aimed at bringing Confartigianato closer to Gen Z. Starting from market and competitor analysis, the brand proposition was restructured and the content strategy rebuilt to speak to a younger audience.",
       cover: "img/pj/08-confartigianato/00-cop-confartigianato.jpg",
+      mosaic: [
+        "a a b b c c",
+        "d d e e f f",
+        "g g h i j j"
+      ],
       images: [
-        { src: "img/pj/08-confartigianato/01-analisi competitors.jpg", caption: "Competitor analysis" },
+        { src: "img/pj/08-confartigianato/01-analisi competitors.jpg", caption: "Competitor analysis", subject: "0.08 0.92 0.12 0.97", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
         { src: "img/pj/08-confartigianato/02-differenziale competitivo.jpg", caption: "Competitive differentiation" },
-        { src: "img/pj/08-confartigianato/03-posizionamento.jpg", caption: "Positioning map" },
-        { src: "img/pj/08-confartigianato/04-funnel.jpg", caption: "Marketing funnel" },
+        { src: "img/pj/08-confartigianato/03-posizionamento.jpg", caption: "Positioning map", subject: "0.10 0.92 0.15 0.95", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/08-confartigianato/04-funnel.jpg", caption: "Marketing funnel", subject: "0.08 0.97 0.12 0.88", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
         { src: "img/pj/08-confartigianato/05-valori.jpg", caption: "Brand values" },
         { src: "img/pj/08-confartigianato/06-moodboard.jpg", caption: "Moodboard" },
-        { src: "img/pj/08-confartigianato/07-media mix.jpg", caption: "Media mix" },
-        { src: "img/pj/08-confartigianato/08-concept .jpg", caption: "New service launch campaign application" },
+        { src: "img/pj/08-confartigianato/07-media mix.jpg", caption: "Media mix", subject: "0.12 0.88 0.08 0.90", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/08-confartigianato/08-concept .jpg", caption: "New service launch campaign application", focus: "45% 50%" },
         { src: "img/pj/08-confartigianato/09-instagram.jpg", caption: "Campaign application on Instagram" },
-        { src: "img/pj/08-confartigianato/10-piano editoriale.jpg", caption: "Editorial content plan" }
+        { src: "img/pj/08-confartigianato/10-piano editoriale.jpg", caption: "Editorial content plan", subject: "0.00 1.00 0.00 1.00", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" }
       ]
     }
   ];
@@ -954,7 +994,8 @@
     grid.querySelectorAll(".index-tile").forEach(tile=>{
       tile.addEventListener("click", ()=>{
         /* su mobile e tablet la scheda è "a colonna" (titolo, Info, foto
-           una sotto l'altra), su desktop quella con View Project */
+           una sotto l'altra), su desktop quella impaginata come l'About
+           (vedi CSS .project-row ≥1280px), con View Project */
         enterProjectRow(tile.dataset.project);
       });
       /* da tastiera: Invio o spazio aprono il progetto come un click */
@@ -982,6 +1023,35 @@
       return `
       <div class="project-row" data-project="${p.id}">
         <div class="project-row-text">
+          <!-- solo desktop (≥1280px): colonna costruita con le stesse
+               classi dell'About (about-left, about-body, about-bio,
+               about-skills, about-contacts, btn-row), così spaziature,
+               grandezze e stili coincidono. Le righe Info sono in Light
+               (.project-info-line) invece del bold dei contatti. Sotto i
+               1280px è nascosta e vale la scheda a colonna (.project-row-main
+               qui sotto, vedi mobile.css) -->
+          <div class="about-left project-row-about">
+            <div class="title-row project-row-head">
+              <button class="back-btn-inline project-row-back" aria-label="Back to projects"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg></button>
+              <h1 class="about-name-big clickable-title project-row-back">${p.name}</h1>
+            </div>
+            <div class="about-body">
+              <span class="eyebrow about-tagline">${p.blurb}</span>
+              <p class="about-bio">${p.description}</p>
+              <div class="about-skills">
+                <span class="eyebrow" style="margin-bottom:12px;">Tags</span>
+                <ul>${p.tags.map(t => `<li>${t}</li>`).join("")}</ul>
+              </div>
+            </div>
+            <div class="about-spacer"></div>
+            <span class="eyebrow about-contacts-label" style="padding:0 var(--edge); margin-bottom:4px;">Info</span>
+            <div class="about-contacts">
+              <div class="contact-list">${moreFields.map(([label, value]) => `<span class="project-info-line">${label}: ${value}</span>`).join("")}</div>
+              <div class="btn-row btn-row-single">
+                <button class="tab tab-box project-row-view-btn" data-project="${p.id}"><span class="tab-label">View Project</span><span class="tab-arrow"><svg class="icon-svg" viewBox="0 -960 960 960" aria-hidden="true"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg></span></button>
+              </div>
+            </div>
+          </div>
           <div class="project-row-main">
             <span class="project-row-title">${p.name}</span>
             <p class="project-row-blurb">${p.blurb}</p>
@@ -1028,6 +1098,13 @@
 
     container.querySelectorAll(".project-row-view-btn").forEach(btn=>{
       btn.addEventListener("click", ()=> openProject(btn.dataset.project));
+    });
+
+    /* desktop: freccia e nome in testa alla scheda tornano all'indice a
+       griglia (la fascia Projects/filtri è nascosta mentre si guarda un
+       progetto, vedi CSS #view-projects.list-mode) */
+    container.querySelectorAll(".project-row-back").forEach(el=>{
+      el.addEventListener("click", ()=> exitToGrid());
     });
 
     container.querySelectorAll(".project-row-image").forEach(img=>{
@@ -1142,6 +1219,8 @@
     const gallery = document.getElementById("detail-gallery");
     gallery.classList.toggle("grid-view", galleryViewMode === "grid");
     gallery.classList.toggle("scroll-view", galleryViewMode === "scroll");
+    /* in Scroll view le foto tornano normali (16:9 a riquadro pieno) */
+    if(galleryViewMode !== "grid") gallery.querySelectorAll(".gallery-item").forEach(clearMosaicFit);
     gallery.scrollLeft = 0;
     gallery.scrollTop = 0;
     layoutGridView();
@@ -1209,9 +1288,117 @@
      assorbono le due foto esterne, ritagliate (object-fit:cover). Le
      righe più corte restano centrate. Foto e righe vicine si sovrappongono
      di 1px, cornice su cornice (vedi CSS .detail-gallery.grid-view) */
-  /* mosaico della Grid view (10 foto): aree in ordine di foto, disposte
-     su una griglia 6x3 definita in CSS (.detail-gallery.grid-view.mosaic) */
+  /* mosaico della Grid view (10 foto): aree in ordine di foto (a = prima
+     foto, b = seconda, ...), disposte su una griglia 6x3 (vedi CSS
+     .detail-gallery.grid-view.mosaic). Ogni progetto ha il suo layout
+     (project.mosaic, 3 stringhe da 6 lettere, messo inline in
+     openProject), calcolato sul contenuto delle foto: per ogni foto è
+     segnato il riquadro del soggetto, e tra tutte le suddivisioni
+     possibili della 6x3 si è scelta quella in cui ogni soggetto entra
+     intero nel suo modulo ed è il più grande possibile (le foto
+     principali di più). image.focus sposta il ritaglio sul soggetto.
+     L'ordine delle foto (Scroll view, lightbox) non cambia: cambia solo
+     dove cadono nella griglia */
   const MOSAIC_AREAS = ["a","b","c","d","e","f","g","h","i","j"];
+
+  /* Foto con sfondo uniforme (mockup su fondo da studio, slide, loghi su
+     colore pieno; image.subject + image.edge): invece di ritagliarle a
+     riempire il riquadro, si rimpiccioliscono quanto basta perché il
+     soggetto entri intero con un margine (FIT_MARGIN per lato), e lo
+     spazio che resta si riempie con il colore dei bordi della foto.
+     image.edge = 6 colori per lato (sinistra e destra dall'alto in basso,
+     sopra e sotto da sinistra a destra), così le fasce aggiunte riprendono
+     anche le sfumature leggere dei fondi da studio senza giunte visibili.
+     Se il soggetto entra già col ritaglio normale, la foto resta a
+     riquadro pieno (solo centrata sul soggetto). Le foto d'ambiente (bordi
+     irregolari) non hanno questi dati e restano ritagliate (--focus) */
+  const FIT_MARGIN = 0.05;
+  const IMG_RATIO = 16 / 9;
+  const mosaicFitObserver = new ResizeObserver(entries => {
+    const gallery = document.getElementById("detail-gallery");
+    if(!gallery.classList.contains("grid-view") || !gallery.classList.contains("mosaic")) return;
+    entries.forEach(e => fitMosaicItem(e.target));
+  });
+  function clearMosaicFit(it){
+    const media = it.querySelector("img, video");
+    if(media) media.removeAttribute("style");
+    it.querySelectorAll(".fit-fill").forEach(f => f.remove());
+    it.style.backgroundColor = "";
+  }
+  function fitMosaicItem(it){
+    const media = it.querySelector("img, video");
+    if(!media || !it.dataset.subject || !it.dataset.edge) return;
+    const W = it.clientWidth, H = it.clientHeight;
+    if(!W || !H) return;
+    const [x0, x1, y0, y1] = it.dataset.subject.split(" ").map(Number);
+    const edge = it.dataset.edge.split(" ").map(c => "#" + c);
+    const sides = { left: edge.slice(0, 6), right: edge.slice(6, 12), top: edge.slice(12, 18), bottom: edge.slice(18, 24) };
+
+    /* proporzioni reali del file (quasi tutte 16:9, ma non tutte): finché
+       non è caricato si usa 16:9 e si ricalcola appena arriva */
+    const nw = media.naturalWidth || media.videoWidth, nh = media.naturalHeight || media.videoHeight;
+    const ratio = nw && nh ? nw / nh : IMG_RATIO;
+    if(!(nw && nh) && !media.__fitWait){
+      media.__fitWait = true;
+      media.addEventListener(media.tagName === "VIDEO" ? "loadedmetadata" : "load", ()=>{
+        media.__fitWait = false;
+        if(document.getElementById("detail-gallery").classList.contains("grid-view")) fitMosaicItem(it);
+      }, { once:true });
+    }
+
+    /* dimensione a riquadro pieno (cover), poi rimpicciolita se il
+       soggetto col suo margine non ci sta */
+    let iw = Math.max(W, H * ratio), ih = iw / ratio;
+    const s = Math.min(1,
+      W * (1 - 2 * FIT_MARGIN) / ((x1 - x0) * iw),
+      H * (1 - 2 * FIT_MARGIN) / ((y1 - y0) * ih));
+    iw *= s; ih *= s;
+    /* soggetto al centro; se la foto è più grande del riquadro non deve
+       lasciare vuoti, se è più piccola resta tutta dentro */
+    const clamp = (v, a, b) => Math.min(Math.max(v, Math.min(a, b)), Math.max(a, b));
+    const left = clamp(W / 2 - (x0 + x1) / 2 * iw, 0, W - iw);
+    const top = clamp(H / 2 - (y0 + y1) / 2 * ih, 0, H - ih);
+    Object.assign(media.style, {
+      position: "absolute", left: left + "px", top: top + "px",
+      width: iw + "px", height: ih + "px", objectFit: "fill", maxWidth: "none"
+    });
+
+    /* fasce di sfondo dove la foto non arriva, sfumate come i suoi bordi;
+       gli angoli (se la foto è più piccola in entrambe le direzioni)
+       prendono il colore medio. Sui lati dove la foto non tocca il
+       riquadro, i suoi ultimi FEATHER px sfumano nella fascia (mask), e la
+       fascia passa sotto la foto per quella stessa misura: niente linea
+       netta dove il fondo della foto ha una vignettatura o un'ombra */
+    it.querySelectorAll(".fit-fill").forEach(f => f.remove());
+    const avg = sides.left[0];
+    it.style.backgroundColor = avg;
+    const F = Math.min(28, iw * 0.06, ih * 0.06);
+    const inset = { left: left > 0.5, right: left + iw < W - 0.5, top: top > 0.5, bottom: top + ih < H - 0.5 };
+    const fx = inset.left ? F : 0, fxr = inset.right ? F : 0, fy = inset.top ? F : 0, fyb = inset.bottom ? F : 0;
+    const masks = [];
+    if(fx || fxr) masks.push(`linear-gradient(to right, transparent 0, #000 ${fx}px, #000 calc(100% - ${fxr}px), transparent 100%)`);
+    if(fy || fyb) masks.push(`linear-gradient(to bottom, transparent 0, #000 ${fy}px, #000 calc(100% - ${fyb}px), transparent 100%)`);
+    const mask = masks.join(", ");
+    media.style.webkitMaskImage = media.style.maskImage = mask;
+    media.style.webkitMaskComposite = masks.length > 1 ? "source-in" : "";
+    media.style.maskComposite = masks.length > 1 ? "intersect" : "";
+    const fills = [
+      ["left",   0, top, left + fx, ih, "to bottom"],
+      ["right",  left + iw - fxr, top, W - left - iw + fxr, ih, "to bottom"],
+      ["top",    left, 0, iw, top + fy, "to right"],
+      ["bottom", left, top + ih - fyb, iw, H - top - ih + fyb, "to right"],
+    ];
+    fills.forEach(([side, fx, fy, fw, fh, dir]) => {
+      if(fw < 0.5 || fh < 0.5) return;
+      const f = document.createElement("div");
+      f.className = "fit-fill";
+      Object.assign(f.style, {
+        left: fx + "px", top: fy + "px", width: fw + "px", height: fh + "px",
+        background: `linear-gradient(${dir}, ${sides[side].join(", ")})`
+      });
+      it.insertBefore(f, media);
+    });
+  }
 
   function layoutGridView(){
     const gallery = document.getElementById("detail-gallery");
@@ -1220,11 +1407,24 @@
     const mosaic = gallery.dataset.mosaic === "true" && allItems.length === MOSAIC_AREAS.length;
     gallery.classList.toggle("mosaic", mosaic);
     if(mosaic){
+      /* niente linea sui bordi dello schermo: aree che toccano l'ultima
+         colonna o l'ultima riga, lette dal layout effettivo */
+      const rows = (getComputedStyle(gallery).gridTemplateAreas.match(/"[^"]*"/g) || [])
+        .map(r => r.slice(1, -1).trim().split(/\s+/));
+      const rightEdge = new Set(rows.map(r => r[r.length - 1]));
+      const bottomEdge = new Set(rows.length ? rows[rows.length - 1] : []);
       allItems.forEach((it, i) => {
+        const area = MOSAIC_AREAS[i];
         it.style.width = "";
-        it.style.gridArea = MOSAIC_AREAS[i];
-        it.dataset.area = MOSAIC_AREAS[i]; /* per le linee in CSS */
+        it.style.gridArea = area;
+        it.toggleAttribute("data-edge-right", rightEdge.has(area));
+        it.toggleAttribute("data-edge-bottom", bottomEdge.has(area));
       });
+      allItems.forEach(fitMosaicItem);
+      /* le misure dei riquadri possono cambiare dopo questo calcolo (font
+         che finiscono di caricare, finestra ridimensionata): ogni riquadro
+         si ricalcola da solo quando cambia dimensione */
+      allItems.forEach(it => mosaicFitObserver.observe(it));
       return;
     }
     const allRows = [...gallery.querySelectorAll(".gallery-row")];
@@ -1513,9 +1713,14 @@
         const media = isVideo(image.src)
           ? `<video src="${encodePath(image.src)}" loop muted playsinline preload="none" data-lazy-video></video>`
           : `<img src="${encodePath(image.src)}" alt="${project.name} — ${caption || ("image " + (i+1))}" loading="lazy" decoding="async">`;
+        /* punto di fuoco per i ritagli del mosaico (soggetto non centrato) */
+        const focus = image.focus ? ` style="--focus:${image.focus}"` : "";
+        /* foto con sfondo uniforme: riquadro del soggetto e colori dei bordi,
+           per rimpicciolirle ed estendere lo sfondo nel mosaico (fitMosaicItem) */
+        const fit = image.subject && image.edge ? ` data-subject="${image.subject}" data-edge="${image.edge}"` : "";
         return `
           <div class="gallery-item-wrap">
-            <div class="gallery-item" data-src="${image.src}" data-caption="${caption}" tabindex="0" role="button" aria-label="${caption || "Open image"}">
+            <div class="gallery-item" data-src="${image.src}" data-caption="${caption}" tabindex="0" role="button" aria-label="${caption || "Open image"}"${focus}${fit}>
               ${media}
             </div>
           </div>`;
@@ -1543,6 +1748,7 @@
     /* Grid view: tutti i progetti usano il mosaico 6x3 (se hanno 10 foto,
        altrimenti la griglia a 3 righe, vedi layoutGridView) */
     gallery.dataset.mosaic = "true";
+    gallery.style.gridTemplateAreas = project.mosaic ? project.mosaic.map(r => `"${r}"`).join(" ") : "";
     const itemsHtml = buildGalleryItemsHtml(project);
     /* in Grid view le immagini si dispongono su 3 righe (vedi threeRowCounts);
        in Scroll view i gruppi-riga diventano trasparenti (display:contents)
