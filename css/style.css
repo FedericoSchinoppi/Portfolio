@@ -545,8 +545,8 @@ img, video{
    ============================================================ */
 /* nascosta di default: #view-projects.grid-mode la mostra, .list-mode
    mostra invece .projects-list-wrap sotto (vedi JS: projectsMode).
-   Desktop: griglia fissa 4 colonne x 2 righe, con gli stessi margini
-   laterali della home (--edge) e alta esattamente quanto lo spazio tra
+   Desktop: griglia fissa 4 colonne x 2 righe, da bordo a bordo (senza
+   margini laterali) e alta esattamente quanto lo spazio tra
    filtri e footer. Con un filtro attivo i riquadri non cambiano
    dimensione: le caselle mancanti restano vuote.
    Tablet (vedi tablet.css): 2 colonne, righe a seguire, scroll verticale. */
@@ -564,7 +564,8 @@ img, video{
 
 .projects-index-grid{
   --index-cols:4;
-  --index-side:var(--edge);
+  /* da bordo a bordo dello schermo, senza margini laterali */
+  --index-side:0px;
 }
 /* ogni riga è metà dell'altezza disponibile (cqh), sempre — anche con un
    filtro che lascia una sola riga, che resta della stessa altezza.
@@ -581,8 +582,8 @@ img, video{
   align-content:start;
 }
 
-/* bordi sui singoli riquadri (destra + sotto, sinistra solo per la prima
-   colonna): le caselle vuote di un filtro restano senza linee, sullo
+/* bordi sui singoli riquadri (destra + sotto, niente destra sull'ultima
+   colonna che tocca il bordo dello schermo): le caselle vuote di un filtro restano senza linee, sullo
    sfondo della pagina. Il bordo superiore è quello dei filtri */
 .index-tile{
   position:relative; overflow:hidden;
@@ -594,7 +595,8 @@ img, video{
   cursor:var(--cursor-brand);
   transition:background-color var(--t-hover) var(--ease);
 }
-.index-tile:nth-child(4n+1){border-left:1px solid var(--accent);}
+/* niente linea sul bordo destro dello schermo (ultima colonna) */
+.index-tile:nth-child(4n){border-right:none;}
 
 /* copertina: tutto lo spazio della riga sopra la fascia testo, che è
    alta --tab-h come i tasti della home. L'immagine riempie il riquadro
@@ -972,6 +974,40 @@ img, video{
 .detail-gallery.grid-view .gallery-row.last-row .gallery-item::after{border-bottom:none;}
 .detail-gallery.grid-view .gallery-item-wrap + .gallery-item-wrap .gallery-item{margin-left:-1px;}
 .detail-gallery.grid-view .gallery-row + .gallery-row{margin-top:-1px;}
+/* Grid a mosaico (progetti con 10 foto, classe .mosaic messa in
+   layoutGridView): 6 colonne x 3 righe da bordo a bordo, 18 moduli
+   di base. Ogni foto occupa 1, 2 o 4 moduli (1x1, 2x1, 1x2,
+   2x2); le due metà (3x3 moduli, 5 foto ciascuna) hanno lo stesso peso
+   ma forme diverse. Le foto si ritagliano (object-fit:cover) per riempire
+   il proprio riquadro. Le linee blu sono un ::after SOPRA la foto (lato
+   destro + lato inferiore), non un gap: con colonne e righe di larghezza
+   decimale le foto, arrotondate al pixel, coprivano il gap da 1px e
+   alcune linee sparivano. Niente linea sui bordi dello schermo (colonna
+   destra: g, j; riga in basso: c, d, e, h, j); sopra c'è già la linea
+   dei filtri */
+.detail-gallery.grid-view.mosaic{
+  display:grid;
+  grid-template-columns:repeat(6, minmax(0,1fr));
+  grid-template-rows:repeat(3, minmax(0,1fr));
+  grid-template-areas:
+    "a a b f f g"
+    "a a c h i g"
+    "d e c h j j";
+  gap:0;
+  padding:0;
+}
+.detail-gallery.grid-view.mosaic .gallery-row{display:contents;}
+.detail-gallery.grid-view.mosaic .gallery-item{
+  width:auto; height:auto; min-width:0; min-height:0;
+  margin:0;
+  background:var(--surface);
+}
+.detail-gallery.grid-view.mosaic .gallery-item::after{
+  border:0 solid var(--accent);
+  border-right-width:1px; border-bottom-width:1px;
+}
+.detail-gallery.grid-view.mosaic .gallery-item:is([data-area="g"],[data-area="j"])::after{border-right-width:0;}
+.detail-gallery.grid-view.mosaic .gallery-item:is([data-area="c"],[data-area="d"],[data-area="e"],[data-area="h"],[data-area="j"])::after{border-bottom-width:0;}
 .gallery-item[data-src]{cursor:var(--cursor-image);}
 
 .gallery-item{

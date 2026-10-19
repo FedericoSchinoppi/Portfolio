@@ -66,8 +66,7 @@
      scorrimento la linea in fondo all'ultima riga finisce esattamente sotto
      quella del footer, la griglia si appoggia al footer senza spazio */
   #view-projects.grid-mode{bottom:calc(var(--footer-size) - 1px);}
-  .index-tile:nth-child(4n+1){border-left:none;}
-  .index-tile:nth-child(2n+1){border-left:1px solid var(--accent);}
+  .index-tile:nth-child(2n){border-right:none;}
 
   /* ---------- 2bis. ABOUT: download solo "CV" / "Portfolio" ---------- */
   .dl-prefix{display:none;}

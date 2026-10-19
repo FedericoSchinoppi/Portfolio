@@ -428,7 +428,6 @@
     .index-grid-inner{--index-row-h:calc(var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h));}
   }
   /* niente linee sui bordi dello schermo: solo quella tra le due colonne */
-  .index-tile:nth-child(4n+1){border-left:none;}
   .index-tile:nth-child(2n){border-right:none;}
   /* riquadri stretti: testo più piccolo e padding ridotto; i nomi lunghi
      vanno a capo invece di uscire dal riquadro */
