@@ -912,6 +912,18 @@ img, video{
 /* linea blu verticale tra la foto e la colonna testo */
 .project-row-image:has(img){border:none; border-left:1px solid var(--accent); padding:0; background:none;}
 .project-row-image img{width:100%; height:100%; object-fit:cover; display:block;}
+/* copertina della scheda: le immagini sono 6:5 (--cover-ratio) e il
+   riquadro è più stretto, quindi si tagliano i lati. --cover-x (centro
+   del soggetto nel file, vedi innerCoverX) sposta il ritaglio perché il
+   soggetto resti al centro del riquadro; lo spostamento è limitato alla
+   parte che viene comunque tagliata (--cover-room), così ai bordi non
+   compaiono mai vuoti */
+.project-row-image{container-type:size;}
+.project-row-image img{
+  --cover-ratio:1.2;
+  --cover-room:max(0px, (var(--cover-ratio) * 100cqh - 100cqw) / 2);
+  object-position:calc(50% + clamp(-1 * var(--cover-room), (0.5 - var(--cover-x, 0.5)) * var(--cover-ratio) * 100cqh, var(--cover-room))) 50%;
+}
 /* galleria inline dentro la scheda: solo mobile (vedi mobile.css), al
    posto della cover + View Project — su desktop resta il flusso attuale
    (View Project → pagina di dettaglio separata) */

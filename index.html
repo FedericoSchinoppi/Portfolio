@@ -20,9 +20,7 @@
 <!-- il logo orizzontale non è leggibile in una scheda del browser: serve
      un quadrato con il marchio dentro. SVG per i browser moderni, PNG/ICO
      per quelli che non supportano le favicon SVG (Safari) e per iOS -->
-<link rel="icon" href="img/favicon.ico" sizes="48x48">
-<link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="img/svg/favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
 <!-- font e logo dell'intro sono le prime due cose che l'utente vede:
      preload li mette in cima alla coda di rete invece di farli scoprire
@@ -34,20 +32,20 @@
      cache ai browser per 10 minuti (e Safari su iPad spesso di più):
      cambiando questo numero a ogni pubblicazione il browser è costretto a
      scaricare i CSS nuovi invece di usare quelli vecchi -->
-<link rel="stylesheet" href="css/style.css?v=20261019-27">
+<link rel="stylesheet" href="css/style.css?v=20261020-1">
 <!-- versione TABLET/IPAD: 801px–1279px, tra il layout mobile (≤800px) e
      quello laptop/desktop (≥1280px). Copre la maggior parte degli iPad in
      entrambi gli orientamenti (portrait e landscape), tranne l'iPad Pro
      12.9" in landscape (1366px) che ricade nel layout desktop — soglia
      comunque facile da spostare in un secondo momento se serve -->
-<link rel="stylesheet" href="css/tablet.css?v=20261019-27" media="(min-width:801px) and (max-width:1279px)">
+<link rel="stylesheet" href="css/tablet.css?v=20261020-1" media="(min-width:801px) and (max-width:1279px)">
 <!-- caricato fino a 1279px (mobile + tablet, vedi blocco iniziale di
      mobile.css): oltre quella soglia il browser lo
      scarica comunque (in background, per averlo pronto se la finestra si
      restringe) ma NON lo considera bloccante per il primo render su
      desktop/tablet larghi, dove tutte le regole al suo interno sono
      comunque inapplicabili -->
-<link rel="stylesheet" href="css/mobile.css?v=20261019-27" media="(max-width:1279px)">
+<link rel="stylesheet" href="css/mobile.css?v=20261020-1" media="(max-width:1279px)">
 </head>
 <body>
 
@@ -208,7 +206,7 @@
       images: [
         { src: "img/pj/01-kff/01 - affissioni tribù.jpg", caption: "Pre-festival street posters" },
         { src: "img/pj/01-kff/02 - gate.jpg", caption: "Venue entrance gate", focus: "35% 50%" },
-        { src: "img/pj/01-kff/03 - app.jpg", caption: "Mobile app interface", subject: "0.07 0.93 0.03 0.98", edge: "f0f0f0 eeeeee ededed efefef f9f9f9 f9f9f9 f0f0f0 eeeeee ededed efefef f9f9f9 ebebeb f1f1f1 f2f2f2 f2f2f2 f2f2f2 f2f2f2 f1f1f1 f9f9f9 dddddd dbdbdb d6d6d6 dedede e9e9e9" },
+        { src: "img/pj/01-kff/03 - app.jpg", gridSrc: "img/pj/01-kff/app-griglia.jpg", caption: "Mobile app interface", subject: "0.07 0.93 0.03 0.98", edge: "f0f0f0 eeeeee ededed efefef f9f9f9 f9f9f9 f0f0f0 eeeeee ededed efefef f9f9f9 ebebeb f1f1f1 f2f2f2 f2f2f2 f2f2f2 f2f2f2 f1f1f1 f9f9f9 dddddd dbdbdb d6d6d6 dedede e9e9e9" },
         { src: "img/pj/01-kff/04-app.mp4", caption: "Mobile app — video walkthrough", subject: "0.38 0.61 0.10 0.92", edge: "191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222 191222" },
         { src: "img/pj/01-kff/05 - map.jpg", caption: "Real-time map on LED wall", focus: "0% 50%" },
         { src: "img/pj/01-kff/06 - totem inattivo.jpg", caption: "Interactive totem", focus: "8% 50%" },
@@ -229,6 +227,7 @@
       blurb: "Cleopatra reimagined in jewelry",
       description: "A tribute to Cleopatra's hidden facets and mythological presence, translated into a luxury jewelry brand. The identity was built from a deep study of her character, then extended into a full brand experience.",
       cover: "img/pj/02-cleo/00-cop-cleo.jpg",
+      innerCover: "img/pj/02-cleo/cop-interna.jpg", innerCoverX: 0.507,
       mosaic: [
         "a b b c d d",
         "e f f c g g",
@@ -294,8 +293,8 @@
       ],
       images: [
         { src: "img/pj/04-sinfonie/01-sito.jpg", caption: "Browsing the project's dedicated website", focus: "69% 50%" },
-        { src: "img/pj/04-sinfonie/02-sito.jpg", caption: "Website — intro section", subject: "0.16 0.80 0.14 0.92", edge: "ececec ececec ededed ededed ededed eeeeee eaeaea ebebeb e9e9e9 e6e6e6 e4e4e4 eaeaea ebebeb eaeaea eaeaea e9e9e9 e9e9e9 eaeaea eeeeee eeeeee eeeeee eeeeee eeeeee eeeeee" },
-        { src: "img/pj/04-sinfonie/03-sito.jpg", caption: "Website — artworks section", subject: "0.16 0.84 0.14 0.92", edge: "ececec ededed ededed ededed eeeeee eeeeee eaeaea ebebeb e9e9e9 e6e6e6 e4e4e4 eaeaea ebebeb eaeaea eaeaea e9e9e9 e9e9e9 eaeaea eeeeee eeeeee eeeeee eeeeee eeeeee eeeeee" },
+        { src: "img/pj/04-sinfonie/02-sito.jpg", gridSrc: "img/pj/04-sinfonie/sito-griglia2.jpg", caption: "Website — intro section", subject: "0.16 0.80 0.14 0.92", edge: "ececec ececec ededed ededed ededed eeeeee eaeaea ebebeb e9e9e9 e6e6e6 e4e4e4 eaeaea ebebeb eaeaea eaeaea e9e9e9 e9e9e9 eaeaea eeeeee eeeeee eeeeee eeeeee eeeeee eeeeee" },
+        { src: "img/pj/04-sinfonie/03-sito.jpg", gridSrc: "img/pj/04-sinfonie/sito-griglia1.jpg", caption: "Website — artworks section", subject: "0.16 0.84 0.14 0.92", edge: "ececec ededed ededed ededed eeeeee eeeeee eaeaea ebebeb e9e9e9 e6e6e6 e4e4e4 eaeaea ebebeb eaeaea eaeaea e9e9e9 e9e9e9 eaeaea eeeeee eeeeee eeeeee eeeeee eeeeee eeeeee" },
         { src: "img/pj/04-sinfonie/04-pannello.jpg", caption: "Panel explaining the project and the tactile experience", focus: "63% 50%" },
         { src: "img/pj/04-sinfonie/05-audioguida.jpg", caption: "Scanning the QR code for the mobile audio guide", focus: "88% 50%" },
         { src: "img/pj/04-sinfonie/06-audioguida mobile.jpg", caption: "Mobile audio guide", subject: "0.38 0.62 0.08 0.94", edge: "ebebec ebebec ebebec ebebeb ebebec ececec ebebeb ebebeb ebebeb ebebeb ebebeb ececec ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb efeff0 efefef efefef efefef efefef efeff0" },
@@ -315,7 +314,7 @@
       team: ["Personal Work"],
       blurb: "Six teams, one voice",
       description: "Social media management and communication for a historic football club in the Brescia football scene, overseeing six different teams under a single society at the same time.",
-      cover: "img/pj/05-sale/00-cop-sale.jpg",
+      cover: "img/pj/05-sale/00-cop-sale.jpg", gridCover: "img/pj/05-sale/cop-griglia.jpg",
       mosaic: [
         "a c b d e e",
         "f f b h e e",
@@ -345,6 +344,7 @@
       blurb: "One drink, new connections",
       description: "A new non-alcoholic drink built to spark the evening among friends at a bar. Market analysis guided the brand's positioning, followed by the visual identity and promotional strategy.",
       cover: "img/pj/06-blesh/00-cop-blesh.jpg",
+      innerCover: "img/pj/06-blesh/cop-interna.jpg", innerCoverX: 0.482,
       mosaic: [
         "a a b e d d",
         "c f g h j j",
@@ -355,9 +355,9 @@
         { src: "img/pj/06-blesh/02-logo.png", caption: "Logo", subject: "0.34 0.65 0.42 0.58", edge: "ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e" },
         { src: "img/pj/06-blesh/03-lattina.jpg", caption: "Can design", subject: "0.40 0.59 0.14 0.84", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
         { src: "img/pj/06-blesh/04-piano editoriale.jpg", caption: "Editorial content plan", subject: "0.02 0.98 0.05 0.95", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
-        { src: "img/pj/06-blesh/05-instagram.jpg", caption: "Instagram post capturing the brand's mood", subject: "0.30 0.70 0.12 0.90", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
-        { src: "img/pj/06-blesh/06-instagram.jpg", caption: "Instagram post capturing the brand's style", subject: "0.30 0.70 0.12 0.90", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
-        { src: "img/pj/06-blesh/07-instagram.jpg", caption: "Instagram post featuring the three can designs", subject: "0.30 0.70 0.12 0.90", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/05-instagram.jpg", caption: "Instagram post capturing the brand's mood", subject: "0.14 0.85 0.13 0.90", fitMargin: 0.12, edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/06-instagram.jpg", caption: "Instagram post capturing the brand's style", subject: "0.14 0.85 0.14 0.91", fitMargin: 0.12, edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/07-instagram.jpg", caption: "Instagram post featuring the three can designs", subject: "0.15 0.83 0.13 0.90", fitMargin: 0.12, edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
         { src: "img/pj/06-blesh/08-affissioni.jpg", caption: "Product launch poster", focus: "38% 50%" },
         { src: "img/pj/06-blesh/09-affissioni.jpg", caption: "Product launch poster — alternate version", focus: "50% 61%" },
         { src: "img/pj/06-blesh/10-spot.jpg", caption: "Illustration for the ad spot" }
@@ -373,11 +373,11 @@
       team: ["Michele Greotti"],
       blurb: "New identity, same community",
       description: "A personal project, developed with a friend, giving new visual form to the Gussago oratory. The identity was rebuilt to reflect the community's spirit, alongside redesigned and consistent communication channels.",
-      cover: "img/pj/07-oratorio/00-cop-oraz.png",
+      cover: "img/pj/07-oratorio/00-cop oraz.jpg",
       mosaic: [
-        "a a b b c c",
-        "d e f f i i",
-        "g h h j i i"
+        "h h h j j j",
+        "h h h c c i",
+        "a d f b e g"
       ],
       images: [
         { src: "img/pj/07-oratorio/01-logo e marchio.png", caption: "Logo and brand mark", subject: "0.13 0.87 0.40 0.60", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
@@ -387,9 +387,9 @@
         { src: "img/pj/07-oratorio/05-lancio instagram.jpg", caption: "Launch brand reel", subject: "0.38 0.62 0.10 0.92", edge: "ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb" },
         { src: "img/pj/07-oratorio/06-home page sito.jpg", caption: "Website homepage", subject: "0.17 0.82 0.15 0.87", edge: "ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb" },
         { src: "img/pj/07-oratorio/07-galleria sito.jpg", caption: "Website gallery section", subject: "0.17 0.82 0.15 0.87", edge: "ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb" },
-        { src: "img/pj/07-oratorio/08-tshirt.jpg", caption: "T-shirt", focus: "50% 89%" },
+        { src: "img/pj/07-oratorio/08-tshirt.jpg", caption: "T-shirt" },
         { src: "img/pj/07-oratorio/09-tshirt.jpg", caption: "T-shirt — alternate version", focus: "63% 50%" },
-        { src: "img/pj/07-oratorio/10-muro.jpg", caption: "Logo painted on the oratory bar's wall", focus: "0% 50%" }
+        { src: "img/pj/07-oratorio/10-muro.jpg", caption: "Logo painted on the oratory bar's wall", focus: "50% 39%" }
       ]
     },
     {
@@ -403,6 +403,7 @@
       blurb: "Closing the gap with Gen Z",
       description: "A repositioning project aimed at bringing Confartigianato closer to Gen Z. Starting from market and competitor analysis, the brand proposition was restructured and the content strategy rebuilt to speak to a younger audience.",
       cover: "img/pj/08-confartigianato/00-cop-confartigianato.jpg",
+      innerCover: "img/pj/08-confartigianato/cop-interna.jpg", innerCoverX: 0.491,
       mosaic: [
         "a a b b c c",
         "d d e e f f",
@@ -972,6 +973,8 @@
      di PROJECTS; al passaggio del cursore il riquadro si colora di
      azzurro chiaro (vedi CSS .index-tile:hover). Un click apre la scheda
      già esistente su quel progetto specifico */
+  /* gridCover: copertina pensata per il riquadro largo della griglia
+     (circa 2:1), se la copertina normale non ci sta bene */
   function renderProjectsIndexGrid(list){
     const grid = document.getElementById("projects-index-grid");
     /* colonne fisse (4 su desktop, 2 su tablet — vedi CSS --index-cols):
@@ -979,7 +982,7 @@
        nello stesso ordine, le caselle mancanti restano semplicemente vuote */
     grid.innerHTML = `<div class="index-grid-inner">${list.map(p => `
       <div class="index-tile" data-project="${p.id}" tabindex="0" role="link" aria-label="${p.name}">
-        <div class="index-tile-cover">${p.cover ? `<img src="${encodePath(p.cover)}" alt="" loading="lazy">` : ""}</div>
+        <div class="index-tile-cover">${p.cover ? `<img src="${encodePath(p.gridCover || p.cover)}" alt="" loading="lazy">` : ""}</div>
         <div class="index-tile-info">
           <div class="index-tile-text">
             <span class="index-tile-head">
@@ -1092,7 +1095,13 @@
     list.forEach(p=>{
       if(p.cover){
         const img = container.querySelector(`[data-project="${p.id}"] .project-row-image`);
-        img.innerHTML = `<img src="${encodePath(p.cover)}" alt="${p.name}" loading="lazy" decoding="async">`;
+        /* copertina della scheda progetto: innerCover se c'è (immagine
+           pensata per questo riquadro, 6:5), altrimenti la stessa della
+           griglia Projects */
+        /* innerCoverX: centro orizzontale del soggetto nel file (0–1),
+           per centrarlo nel riquadro anche quando ai lati si taglia */
+        const coverX = p.innerCover && p.innerCoverX ? ` style="--cover-x:${p.innerCoverX}"` : "";
+        img.innerHTML = `<img src="${encodePath(p.innerCover || p.cover)}" alt="${p.name}" loading="lazy" decoding="async"${coverX}>`;
       }
     });
 
@@ -1221,6 +1230,12 @@
     gallery.classList.toggle("scroll-view", galleryViewMode === "scroll");
     /* in Scroll view le foto tornano normali (16:9 a riquadro pieno) */
     if(galleryViewMode !== "grid") gallery.querySelectorAll(".gallery-item").forEach(clearMosaicFit);
+    /* foto con una versione apposta per la Grid (image.gridSrc) */
+    gallery.querySelectorAll(".gallery-item[data-grid-src]").forEach(it => {
+      const img = it.querySelector("img");
+      const want = galleryViewMode === "grid" ? it.dataset.gridSrc : it.dataset.baseSrc;
+      if(img && img.getAttribute("src") !== want) img.setAttribute("src", want);
+    });
     gallery.scrollLeft = 0;
     gallery.scrollTop = 0;
     layoutGridView();
@@ -1328,9 +1343,14 @@
   function fitMosaicItem(it){
     const media = it.querySelector("img, video");
     if(!media || !it.dataset.subject || !it.dataset.edge) return;
+    /* versione apposta per la Grid: già nel formato giusto, riquadro pieno */
+    if(it.dataset.gridSrc){ clearMosaicFit(it); return; }
     const W = it.clientWidth, H = it.clientHeight;
     if(!W || !H) return;
     const [x0, x1, y0, y1] = it.dataset.subject.split(" ").map(Number);
+    /* margine bianco intorno al soggetto: FIT_MARGIN, o image.fitMargin
+       per le foto che chiedono più aria */
+    const margin = Number(it.dataset.fitMargin) || FIT_MARGIN;
     const edge = it.dataset.edge.split(" ").map(c => "#" + c);
     const sides = { left: edge.slice(0, 6), right: edge.slice(6, 12), top: edge.slice(12, 18), bottom: edge.slice(18, 24) };
 
@@ -1350,8 +1370,8 @@
        soggetto col suo margine non ci sta */
     let iw = Math.max(W, H * ratio), ih = iw / ratio;
     const s = Math.min(1,
-      W * (1 - 2 * FIT_MARGIN) / ((x1 - x0) * iw),
-      H * (1 - 2 * FIT_MARGIN) / ((y1 - y0) * ih));
+      W * (1 - 2 * margin) / ((x1 - x0) * iw),
+      H * (1 - 2 * margin) / ((y1 - y0) * ih));
     iw *= s; ih *= s;
     /* soggetto al centro; se la foto è più grande del riquadro non deve
        lasciare vuoti, se è più piccola resta tutta dentro */
@@ -1717,10 +1737,16 @@
         const focus = image.focus ? ` style="--focus:${image.focus}"` : "";
         /* foto con sfondo uniforme: riquadro del soggetto e colori dei bordi,
            per rimpicciolirle ed estendere lo sfondo nel mosaico (fitMosaicItem) */
-        const fit = image.subject && image.edge ? ` data-subject="${image.subject}" data-edge="${image.edge}"` : "";
+        /* gridSrc: immagine fatta apposta per il modulo della Grid view
+           (stessa foto, già nel formato del riquadro): in Grid prende il
+           posto di src, a riquadro pieno (vedi applyGalleryViewMode) */
+        const gridSrc = image.gridSrc ? ` data-grid-src="${encodePath(image.gridSrc)}" data-base-src="${encodePath(image.src)}"` : "";
+        const fit = image.subject && image.edge
+          ? ` data-subject="${image.subject}" data-edge="${image.edge}"${image.fitMargin ? ` data-fit-margin="${image.fitMargin}"` : ""}`
+          : "";
         return `
           <div class="gallery-item-wrap">
-            <div class="gallery-item" data-src="${image.src}" data-caption="${caption}" tabindex="0" role="button" aria-label="${caption || "Open image"}"${focus}${fit}>
+            <div class="gallery-item" data-src="${image.src}" data-caption="${caption}" tabindex="0" role="button" aria-label="${caption || "Open image"}"${focus}${fit}${gridSrc}>
               ${media}
             </div>
           </div>`;
