@@ -25,6 +25,15 @@
 <!-- font e logo dell'intro sono le prime due cose che l'utente vede:
      preload li mette in cima alla coda di rete invece di farli scoprire
      solo dopo che il browser ha finito di leggere tutto il CSS -->
+<!-- sito aperto dall'icona sulla schermata Home dell'iPhone (web app, senza
+     le barre di Safari): classe "standalone" su <html>, usata nei CSS per
+     staccare il footer dal bordo del telefono. Qui nell'head, prima dei
+     CSS, così il footer è già alla posizione giusta al primo disegno -->
+<script>
+  if(navigator.standalone || matchMedia("(display-mode:standalone)").matches){
+    document.documentElement.classList.add("standalone");
+  }
+</script>
 <link rel="preload" href="font/NeueHaasDisplay-Roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="font/NeueHaasDisplay-Thin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="img/svg/fs-white.svg" as="image">
@@ -32,20 +41,20 @@
      cache ai browser per 10 minuti (e Safari su iPad spesso di più):
      cambiando questo numero a ogni pubblicazione il browser è costretto a
      scaricare i CSS nuovi invece di usare quelli vecchi -->
-<link rel="stylesheet" href="css/style.css?v=20261020-1">
+<link rel="stylesheet" href="css/style.css?v=20261022-1">
 <!-- versione TABLET/IPAD: 801px–1279px, tra il layout mobile (≤800px) e
      quello laptop/desktop (≥1280px). Copre la maggior parte degli iPad in
      entrambi gli orientamenti (portrait e landscape), tranne l'iPad Pro
      12.9" in landscape (1366px) che ricade nel layout desktop — soglia
      comunque facile da spostare in un secondo momento se serve -->
-<link rel="stylesheet" href="css/tablet.css?v=20261020-1" media="(min-width:801px) and (max-width:1279px)">
+<link rel="stylesheet" href="css/tablet.css?v=20261022-1" media="(min-width:801px) and (max-width:1279px)">
 <!-- caricato fino a 1279px (mobile + tablet, vedi blocco iniziale di
      mobile.css): oltre quella soglia il browser lo
      scarica comunque (in background, per averlo pronto se la finestra si
      restringe) ma NON lo considera bloccante per il primo render su
      desktop/tablet larghi, dove tutte le regole al suo interno sono
      comunque inapplicabili -->
-<link rel="stylesheet" href="css/mobile.css?v=20261020-1" media="(max-width:1279px)">
+<link rel="stylesheet" href="css/mobile.css?v=20261022-1" media="(max-width:1279px)">
 </head>
 <body>
 
@@ -380,7 +389,7 @@
         "a d f b e g"
       ],
       images: [
-        { src: "img/pj/07-oratorio/01-logo e marchio.webp", caption: "Logo and brand mark", subject: "0.13 0.87 0.40 0.60", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/07-oratorio/01-logo e marchio.mp4", caption: "Logo and brand mark", subject: "0.08 0.92 0.34 0.60", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
         { src: "img/pj/07-oratorio/02-logo e marchio.webp", caption: "Logo and brand mark — alternate version", subject: "0.13 0.87 0.40 0.60", edge: "00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c 00c01c" },
         { src: "img/pj/07-oratorio/03-marchio.webp", caption: "Brand mark" },
         { src: "img/pj/07-oratorio/04-instagram home.webp", caption: "Instagram profile", subject: "0.38 0.62 0.10 0.92", edge: "ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb ebebeb" },
