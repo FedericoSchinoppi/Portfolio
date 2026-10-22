@@ -216,10 +216,11 @@ img, video{
 }
 /* web app dalla schermata Home (classe messa nell'head di index.html):
    senza la barra di Safari il footer toccherebbe il bordo del telefono.
-   Fascia più alta di 14px, tutti di spazio sotto le scritte: le view
-   usano --footer-size, quindi si accorciano insieme al footer */
-html.standalone{--footer-size:58px;}
-html.standalone .site-footer{padding-bottom:14px;}
+   Stessa altezza dell'header e scritte centrate come il logo, così le due
+   fasce si specchiano: le view usano --footer-size, quindi si adattano
+   insieme al footer */
+html.standalone{--footer-size:var(--header-size);}
+html.standalone .site-footer{align-items:center; padding-bottom:0;}
 .site-footer span{
   font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase;
   color:var(--text-secondary);

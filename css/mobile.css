@@ -385,8 +385,6 @@
 
   /* scritte leggermente più in basso nella fascia del footer */
   .site-footer{align-items:flex-end; padding-bottom:8px;}
-  /* web app dalla Home: stessi 8px + i 14px di stacco dal bordo (vedi style.css) */
-  html.standalone .site-footer{padding-bottom:22px;}
 
   /* padding simmetrico: il titolo resta centrato tra la linea blu dell'header
      sopra e quella del title-row sotto */
@@ -553,7 +551,6 @@
     --footer-size:36px;
     --arrow-size:1.3rem;
   }
-  html.standalone{--footer-size:50px;}
 
   .site-header img{height:12px;}
   .site-header .logo-placeholder{font-size:0.58rem; padding:4px 10px;}
