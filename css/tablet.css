@@ -7,18 +7,14 @@
    in entrambi gli orientamenti; unica eccezione nota è l'iPad Pro 12.9"
    in landscape (1366px), che ricade nel layout desktop.
 
-   A differenza del mobile, qui NON si passa alla galleria inline dentro
-   la scheda progetto: si apre direttamente la pagina di dettaglio (vedi
-   JS, index.html — il click su un riquadro della griglia chiama
-   openProject invece di enterProjectRow quando isTabletViewport() è
-   vero), che mantiene il menu Scroll/Grid.
+   La scheda di ogni progetto è quella a colonna del mobile (mobile.css),
+   con la galleria inline: la pagina di dettaglio Scroll/Grid resta solo su
+   desktop.
 
    Indice:
    1. About: skills a elenco verticale (una sotto l'altra)
    2. Projects — indice a griglia: 2 colonne, scroll verticale con barra,
-      testo in alto nella fascia; download in About solo "CV"/"Portfolio".
-      La scheda di ogni progetto è quella a colonna del mobile (mobile.css):
-      la pagina di dettaglio Scroll/Grid su tablet non si apre più
+      testo in alto nella fascia; download in About solo "CV"/"Portfolio"
    ============================================================ */
 
 @media (min-width:801px) and (max-width:1279px){
@@ -39,8 +35,8 @@
   }
 
   /* ---------- 2. PROJECTS — indice a griglia ---------- */
-  /* 2 colonne a tutta larghezza (meno i margini), righe a seguire con
-     scroll verticale: 4 righe con copertine 16:9 non starebbero in altezza */
+  /* righe a seguire con scroll verticale: 3 righe di copertine 16:9 non
+     starebbero in altezza */
   /* overscroll none: lo scorrimento si ferma secco in cima e in fondo,
      senza rimbalzo. Barra di scorrimento visibile, blu tenue (stile in
      mobile.css, blocco mobile + tablet) */
@@ -50,7 +46,6 @@
   /* testo un po' più vicino alla linea in alto invece che centrato in
      verticale nella fascia (come su mobile) */
   .index-tile-info{padding-top:20px; align-items:flex-start;}
-  .projects-index-grid{--index-cols:2;}
   /* qui la riga si calcola dalla larghezza (copertina 16:9 + fascia testo),
      non dall'altezza: le righe sono più di 2 e si scorre */
   /* altezza riga arrotondata al pixel: con i decimali l'ultima riga finiva
@@ -66,7 +61,6 @@
      scorrimento la linea in fondo all'ultima riga finisce esattamente sotto
      quella del footer, la griglia si appoggia al footer senza spazio */
   #view-projects.grid-mode{bottom:calc(var(--footer-size) - 1px);}
-  .index-tile:nth-child(2n){border-right:none;}
 
   /* ---------- 2bis. ABOUT: download solo "CV" / "Portfolio" ---------- */
   .dl-prefix{display:none;}

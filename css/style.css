@@ -41,6 +41,9 @@
      View Project, Download CV/Portfolio, fascia testo delle caselle
      nella griglia progetti (vedi .tab / .tab-box) */
   --tab-h:100px;
+  /* fascia in alto di Projects e Dettaglio (sopra gli 800px): stessa altezza
+     col solo menu e col nome del progetto, così cambiando pagina non salta */
+  --band-h:92px;
   --edge:40px;
   --arrow-size:1.6rem;
 
@@ -92,7 +95,7 @@ button, a{cursor:var(--cursor-brand);}
    l'azione. La maggior parte dei browser lo fa già di default sui
    <button>, ma non è garantito ovunque: esplicito qui per sicurezza */
 button,
-.index-tile, .project-dot, .detail-dot, .lightbox-dot,
+.index-tile, .detail-dot, .lightbox-dot,
 .gallery-item[data-src], .project-row-image{
   -webkit-user-select:none; user-select:none;
 }
@@ -357,7 +360,10 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
    metà della fascia */
 @media (hover:hover){
   .tab:hover{background-color:var(--accent-tint);}
-  /* stesso hover anche sulle caselle della griglia progetti */
+}
+/* stesso hover anche sulle caselle della griglia progetti; su desktop si
+   aggiunge la foto, vedi .index-tile-hover */
+@media (hover:hover){
   .projects-index-grid.hover-ready .index-tile:hover{background-color:var(--accent-tint);}
 }
 
@@ -387,7 +393,7 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   --hover-weight:700;
   transition:color 0s;
 }
-.filter-label{display:block; --label-spacing:0.08em;}
+.filter-label{display:block; --label-spacing:0.08em; --hover-weight:500;}
 .contact-link{--label-spacing:0.05em;}
 .more-info-label{--label-spacing:0.06em; --hover-weight:500;}
 .filter-label::after, .contact-link::after, .more-info-label::after{
@@ -525,12 +531,21 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
    PROJECTS — lista
    ============================================================ */
 #view-projects.active{display:flex; flex-direction:column;}
-#view-projects .title-row, #view-detail .title-row{padding-top:18px; padding-bottom:8px;}
-.filters{display:flex; flex-wrap:wrap; justify-content:center; gap:28px; padding:0 var(--edge) 20px; border-bottom:1px solid var(--accent);}
+#view-projects .title-row, #view-detail .title-row{padding-top:14px; padding-bottom:6px;}
+#view-projects .title-row h1, #view-detail .title-row h1{font-size:clamp(1.25rem,1.9vw,1.55rem);}
+/* "Projects" ↔ nome del progetto (vedi updateProjectsTitle in index.html):
+   dissolvenza ferma sul posto, il testo vecchio sfuma via e il nuovo compare */
+#view-projects .title-row h1{
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  transition:opacity .3s var(--ease);
+}
+#view-projects .title-row h1.swapping{opacity:0;}
+#view-projects .title-row h1.entering{opacity:0; transition:none;}
+.filters{display:flex; flex-wrap:wrap; justify-content:center; gap:28px; padding:0 var(--edge) 16px; border-bottom:1px solid var(--accent);}
 .filter-btn{
   position:relative; display:block;
   padding:10px 2px 0;
-  font-size:0.75rem; font-weight:450; letter-spacing:0.08em; text-transform:uppercase;
+  font-size:0.82rem; font-weight:400; letter-spacing:0.08em; text-transform:uppercase;
   color:var(--text-secondary);
 }
 .filter-btn::before{
@@ -541,8 +556,12 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   opacity:0;
   transition:opacity var(--t-hover) var(--ease);
 }
-/* hover di .filter-label: vedi "hover delle scritte" */
-.filter-btn.active{color:var(--text); font-weight:600;}
+/* a riposo Roman; hover e voce selezionata in Medium, con la stessa copia
+   sovrapposta di "hover delle scritte": la scritta si ispessisce sul posto
+   e selezionando una voce le altre non si spostano */
+.filter-btn.active{color:var(--text);}
+.filter-btn.active .filter-label{color:transparent;}
+.filter-btn.active .filter-label::after{opacity:1;}
 /* i filtri vengono ricostruiti a ogni cambio (vedi renderFilters): la
    barretta del filtro attivo entra in dissolvenza invece di comparire di colpo */
 .filter-btn.active::before{opacity:1; animation:soft-in var(--t-fade) var(--ease);}
@@ -552,11 +571,12 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
    ============================================================ */
 /* nascosta di default: #view-projects.grid-mode la mostra, .list-mode
    mostra invece .projects-list-wrap sotto (vedi JS: projectsMode).
-   Desktop: griglia fissa 4 colonne x 2 righe, da bordo a bordo (senza
-   margini laterali) e alta esattamente quanto lo spazio tra
-   filtri e footer. Con un filtro attivo i riquadri non cambiano
-   dimensione: le caselle mancanti restano vuote.
-   Tablet (vedi tablet.css): 2 colonne, righe a seguire, scroll verticale. */
+   Sempre 2 colonne, da bordo a bordo (senza margini laterali).
+   Desktop: le righe insieme sono alte esattamente quanto lo spazio tra
+   filtri e footer. Con un filtro attivo i riquadri non cambiano dimensione:
+   le caselle mancanti restano vuote.
+   Mobile e tablet (vedi mobile.css, tablet.css): riquadri con copertina,
+   scroll verticale. */
 .projects-index-grid{display:none;}
 #view-projects.grid-mode .projects-index-grid{
   display:block;
@@ -570,17 +590,16 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 #view-projects.grid-mode .projects-list-wrap{display:none;}
 
 .projects-index-grid{
-  --index-cols:4;
+  --index-cols:2;
   /* da bordo a bordo dello schermo, senza margini laterali */
   --index-side:0px;
 }
-/* ogni riga è metà dell'altezza disponibile (cqh), sempre — anche con un
-   filtro che lascia una sola riga, che resta della stessa altezza.
-   +0.5px per riga: il bordo inferiore della seconda riga finisce sotto al
-   bordo del footer invece di raddoppiarlo */
+/* l'altezza disponibile (cqh) si divide in parti uguali tra le righe
+   (--index-rows, messo via JS), anche con un filtro che ne lascia meno. +1px in totale: il bordo inferiore dell'ultima riga finisce
+   sotto al bordo del footer invece di raddoppiarlo */
 .index-grid-inner{
   --index-grid-w:calc(100cqw - 2 * var(--index-side));
-  --index-row-h:calc(50cqh + 0.5px);
+  --index-row-h:calc((100cqh + 1px) / var(--index-rows, 6));
   width:var(--index-grid-w);
   margin:0 auto;
   display:grid;
@@ -589,9 +608,9 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   align-content:start;
 }
 
-/* bordi sui singoli riquadri (destra + sotto, niente destra sull'ultima
-   colonna che tocca il bordo dello schermo): le caselle vuote di un filtro restano senza linee, sullo
-   sfondo della pagina. Il bordo superiore è quello dei filtri */
+/* bordi sui singoli riquadri (destra + sotto): le caselle vuote di un
+   filtro restano senza linee, sullo sfondo della pagina. Il bordo superiore
+   è quello dei filtri */
 .index-tile{
   position:relative; overflow:hidden;
   min-width:0;
@@ -603,13 +622,10 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   transition:background-color var(--t-hover) var(--ease);
 }
 /* niente linea sul bordo destro dello schermo (ultima colonna) */
-.index-tile:nth-child(4n){border-right:none;}
+.index-tile:nth-child(2n){border-right:none;}
 
-/* copertina: tutto lo spazio della riga sopra la fascia testo, che è
-   alta --tab-h come i tasti della home. L'immagine riempie il riquadro
-   (object-fit:cover): la proporzione segue lo schermo, vicina al 16:9 su
-   un laptop. Altezza uguale in tutti i riquadri di una riga, quindi le
-   linee sotto le copertine restano allineate */
+/* mobile e tablet: copertina su tutto lo spazio della riga sopra la fascia
+   testo, che è alta --tab-h come i tasti della home. Su desktop è nascosta */
 .index-tile-cover{
   flex:1 1 auto; min-height:0;
   background:var(--surface);
@@ -617,7 +633,7 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 }
 .index-tile-cover img{width:100%; height:100%; object-fit:cover; display:block;}
 
-/* fascia testo: stessa altezza, font, freccia e hover dei tab della home
+/* fascia testo: stesso font, freccia e hover dei tab della home
    (vedi .tab) — titolo con la freccia subito accanto, tag sotto, centrati
    in verticale */
 .index-tile-info{
@@ -645,83 +661,52 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   color:var(--text-secondary);
 }
 
-/* wrapper attorno a lista + pallini: i pallini si centrano su questo (la
-   sola fascia progetto), non sull'intera view (che include anche
-   titolo/filtri sopra) */
+/* desktop: niente copertina, testo a sinistra con il titolo centrato in
+   verticale nel riquadro e il tag appoggiato sopra (position:absolute, così
+   non sposta il titolo). La foto (prima di hoverImages) occupa la parte
+   destra, alta quanto il riquadro tra una linea blu e l'altra, invisibile
+   finché il cursore non ci passa sopra. .hover-ready e il gate in JS
+   (armGridHoverGate) evitano che si accenda da sola sotto un cursore già
+   fermo. Su schermi touch grandi (iPad Pro in orizzontale) l'hover non
+   esiste: resta sempre visibile */
+.index-tile-hover{display:none;}
+@media (min-width:1280px){
+  .index-tile-cover{display:none;}
+  .index-tile-info{flex:1 1 auto; min-width:0; padding:0 var(--edge);}
+  .index-tile-text{position:relative;}
+  .index-tile-tag{position:absolute; left:0; bottom:100%; margin-bottom:12px; white-space:nowrap;}
+  .index-tile-head{gap:24px;}
+  .index-tile-hover{
+    display:block;
+    position:absolute; top:0; bottom:0; right:0;
+    width:50%;
+    border-left:1px solid var(--accent);
+    opacity:0;
+    transition:opacity var(--t-hover) var(--ease);
+  }
+  .index-tile-hover img{width:100%; height:100%; object-fit:cover; display:block;}
+  .index-tile:focus-visible .index-tile-hover{opacity:1;}
+}
+@media (min-width:1280px) and (hover:hover){
+  .projects-index-grid.hover-ready .index-tile:hover .index-tile-hover{opacity:1;}
+}
+}
+@media (min-width:1280px) and (hover:none){
+  .index-tile-hover{opacity:1;}
+}
 .projects-list-wrap{position:relative; flex:1; min-height:0; display:flex; flex-direction:column;}
 /* passaggio griglia → scheda: la scheda entra in dissolvenza invece di
    sostituire la griglia di colpo. Niente fill-mode: finita l'animazione
    l'opacità torna quella normale dell'elemento */
 #view-projects.list-mode .projects-list-wrap{animation:soft-in var(--t-fade) var(--ease);}
-.projects-list{flex:1; overflow-y:auto; overscroll-behavior-y:contain; scroll-snap-type:y mandatory; scroll-behavior:smooth; scrollbar-width:none;}
-.projects-list::-webkit-scrollbar{display:none;}
 
-/* pallini di paginazione verticali, al posto della scrollbar sul lato destro
-   (mobile: orizzontali in basso, vedi mobile.css) */
-.project-dots{
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  gap:8px;
-  position:absolute; right:10px; top:50%;
-  transform:translateY(-50%);
-}
-.project-dot{
-  position:relative;
-  /* stesse identiche dimensioni/distanze di .detail-dot (i pallini in
-     fondo allo scroll immagini di ogni progetto), solo ruotate in
-     verticale: nessun padding extra per l'area cliccabile, altrimenti lo
-     spazio tra un pallino e l'altro non combacerebbe più */
-  width:3px; height:16px; border-radius:2px;
-  /* niente "opacity" qui: opacity su un elemento si applica anche ai suoi
-     discendenti/pseudo-elementi (compositing, non ereditarietà normale),
-     quindi smorzerebbe anche il tooltip qui sotto (.project-dot::after) —
-     la trasparenza si ottiene invece con un colore di sfondo semi-
-     trasparente proprio (rgba), che lascia intravedere la copertina del
-     progetto sotto (varia da riquadro a riquadro) senza toccare il
-     tooltip */
-  background-color:rgba(228,233,244,0.55);
-  cursor:var(--cursor-brand);
-  transition:background-color .3s cubic-bezier(.4,0,.2,1), height .3s cubic-bezier(.4,0,.2,1);
-}
-.project-dot.active{
-  /* background-color (non la shorthand "background"): la shorthand
-     resetterebbe anche background-clip al suo default border-box, facendo
-     riempire l'intero riquadro col padding invece del solo pallino.
-     Alpha alta ma non piena: resta chiaramente il pallino blu attivo,
-     ma lascia intravedere leggermente anche lui la copertina sotto */
-  background-color:rgba(25,27,223,0.85);
-  height:24px;
-}
-/* hover azzurrino, non blu pieno: il blu pieno indica già "selezionato"
-   (vedi .active sopra), un hover dello stesso colore sarebbe ambiguo */
-@media (hover:hover){
-  .project-dot:not(.active):hover{background-color:var(--accent-light);}
-}
-/* titolo del progetto al passaggio del cursore su un pallino, al posto del
-   vecchio menu a tendina sui filtri: appare a sinistra (i pallini sono
-   ancorati al bordo destro) */
-.project-dot::after{
-  content:attr(data-title);
-  position:absolute; right:100%; top:50%;
-  transform:translateY(-50%) translateX(4px);
-  margin-right:14px;
-  white-space:nowrap;
-  font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase;
-  color:var(--accent);
-  /* bianco all'80%: lascia intravedere la copertina sotto. Sullo sfondo e
-     non con "opacity", che attenuerebbe anche la scritta */
-  background:rgba(255,255,255,0.8);
-  padding:7px 14px;
-  box-shadow:0 10px 24px rgba(10,10,10,0.14);
-  opacity:0; pointer-events:none;
-  transition:opacity var(--t-hover) var(--ease), transform var(--t-hover) var(--ease);
-}
-@media (hover:hover){
-  .project-dot:hover::after{opacity:1; transform:translateY(-50%) translateX(0);}
-}
+/* niente scorrimento tra un progetto e l'altro: si vede solo la scheda
+   corrente (classe .current, messa via JS in enterProjectRow), per cambiare
+   progetto si torna all'indice */
+.projects-list{flex:1; min-height:0; overflow:hidden;}
 
 /* wrapper attorno alla galleria di dettaglio: i pallini si centrano su
-   questo invece che sull'intera view (vedi .projects-list-wrap, stessa idea) */
+   questo invece che sull'intera view */
 .detail-gallery-wrap{position:relative; flex:1; min-height:0; display:flex; flex-direction:column;}
 .detail-gallery{scrollbar-width:none;}
 .detail-gallery::-webkit-scrollbar{display:none;}
@@ -737,8 +722,8 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 #detail-gallery.grid-view ~ .detail-gallery-dots{display:none;}
 .detail-dot{
   width:16px; height:3px; border-radius:2px;
-  /* rgba diretto invece di background+opacity sull'elemento: stessa
-     tecnica di .project-dot, lascia intravedere la foto sotto e resta
+  /* rgba diretto invece di background+opacity sull'elemento: lascia
+     intravedere la foto sotto e resta
      comunque leggero, senza il rischio che un domani un pseudo-elemento
      figlio (tooltip, badge, ecc.) erediti la stessa attenuazione */
   background-color:rgba(228,233,244,0.55);
@@ -754,23 +739,18 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 }
 
 .project-row{
-  display:flex; align-items:stretch; gap:32px;
+  display:none; align-items:stretch; gap:32px;
   width:100%; height:100%;
-  scroll-snap-align:start;
-  scroll-snap-stop:always;
 }
+.project-row.current{display:flex;}
 
 .project-row-text{
   flex:1; min-width:0; align-self:stretch;
   display:flex; flex-direction:column; justify-content:space-between;
   padding:56px 0 56px var(--edge);
-  /* di norma il contenuto sta nell'altezza della riga (bloccata da scroll-snap
-     sul 100% di .projects-list); overflow-y:auto è un fallback per non
-     tagliare/sovrapporre righe quando lo spazio verticale è insolitamente
-     poco (es. finestra del laptop molto bassa). Niente overscroll-behavior:
-     nel caso normale (contenuto già capiente) l'elemento è sempre "al
-     limite", e overscroll-behavior:contain impedirebbe alla rotellina del
-     mouse di raggiungere lo scroll-snap di .projects-list sotto */
+  /* di norma il contenuto sta nell'altezza della riga; overflow-y:auto è un
+     fallback per non tagliarlo quando lo spazio verticale è insolitamente
+     poco (es. finestra del laptop molto bassa) */
   overflow-y:auto; scrollbar-width:none;
 }
 .project-row-text::-webkit-scrollbar{display:none;}
@@ -838,43 +818,14 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 /* frase riassuntiva breve: solo mobile (vedi mobile.css), qui la
    descrizione completa e i tag sono già visibili nella scheda */
 .project-row-blurb{display:none;}
-/* View Project: fascia dal bordo sinistro dello schermo fino alla foto,
-   appoggiata al footer — i margini negativi annullano il padding sinistro
-   e inferiore di .project-row-text. Lo spazio tra testo e foto, che prima
-   era il gap di .project-row, sopra gli 800px diventa padding-right della
-   colonna testo, così la fascia può attraversarlo e toccare la foto
-   (.project-row-text ha overflow-y:auto: un margine negativo verso destra
-   verrebbe tagliato). Sotto i 1280px (tablet e mobile) la scheda è "a
-   colonna" e il bottone è nascosto (mobile.css) */
-.project-row-view-btn{
-  margin:0 0 -56px calc(-1 * var(--edge));
-  width:calc(100% + var(--edge));
-}
-@media (min-width:1280px){
-  /* linea di divisione tra una scheda progetto e l'altra mentre si scorre.
-     La scheda è alta 1px in più della lista: quando è agganciata (scroll
-     snap) la sua linea finisce appena sotto il bordo visibile, nascosta,
-     invece di raddoppiare quella del footer */
-  .project-row{gap:0; height:calc(100% + 1px); border-bottom:1px solid var(--accent);}
-  /* l'ultima scheda non ha una scheda dopo: lo scorrimento si ferma alla
-     fine del contenuto, e la sua linea resterebbe visibile sopra quella
-     del footer (linea doppia). Niente linea e altezza esatta */
-  .project-row:last-child{height:100%; border-bottom:none;}
-  .project-row-text{padding-right:32px;}
-  .project-row-view-btn{
-    margin-right:-32px;
-    width:calc(100% + var(--edge) + 32px);
-  }
-}
 
 /* Scheda progetto desktop (≥1280px) impaginata come l'About: la colonna
    testo è .project-row-about, costruita con le stesse classi dell'About
    (about-left, about-body, about-bio, about-skills, about-contacts,
    btn-row), quindi spaziature, grandezze e stili sono gli stessi per
-   costruzione. Mentre si guarda un progetto non c'è la fascia
-   Projects/filtri sopra; lo scorrimento verticale tra le schede e i
-   pallini a destra restano. Sotto i 1280px è nascosta e vale la scheda a
-   colonna di mobile.css (.project-row-main, con More Info).
+   costruzione. Il nome del progetto e la freccia indietro stanno nella
+   fascia in alto, senza filtri. Sotto i 1280px è nascosta e vale la scheda
+   a colonna di mobile.css (.project-row-main, con More Info).
    ".project-row .project-row-about" per battere ".about-left{display:contents}"
    di mobile.css, che viene caricato dopo */
 .project-row .project-row-about{display:none;}
@@ -884,29 +835,50 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   color:var(--text);
   overflow-wrap:break-word;
 }
-/* un solo bottone (View Project) a tutta larghezza, al posto dei due download */
-.btn-row-single{grid-template-columns:1fr;}
+/* indice e dettaglio: la fascia è il solo menu (filtri o Scroll/Grid), niente
+   titolo. La riga titolo non occupa spazio e resta solo per la freccia,
+   riportata al centro della fascia. Sotto gli 800px i menu sono nascosti e
+   il titolo resta */
+@media (min-width:801px){
+  #view-projects.grid-mode > .title-row, #view-detail > .title-row{height:0; padding-top:0; padding-bottom:0;}
+  #view-projects.grid-mode .title-row h1, #view-detail .title-row h1{display:none;}
+  #view-projects.grid-mode > .filters, #view-detail > .filters{height:var(--band-h); align-items:center; padding-bottom:0;}
+  #view-projects.grid-mode .back-btn-inline, #view-detail .back-btn-inline{transform:translateY(calc(var(--band-h) / 2));}
+
+  /* About: stessa fascia della scheda progetto, con freccia e nome, sopra
+     colonna testo e foto. La riga titolo sta dentro .about-left (sotto gli
+     800px resta nella colonna): qui è posizionata rispetto alla view */
+  #view-about{padding-top:var(--band-h);}
+  #view-about .title-row{
+    position:absolute; top:0; left:0; right:0;
+    height:var(--band-h);
+    padding-top:0; padding-bottom:0;
+    justify-content:center;
+    border-bottom:1px solid var(--accent);
+  }
+  #view-about .back-btn-inline{position:absolute; left:var(--edge);}
+  #view-about .title-row h1{font-size:clamp(1.25rem,1.9vw,1.55rem);}
+  #view-about .about-body{padding-top:var(--edge);}
+}
 @media (min-width:1280px){
-  #view-projects.list-mode > .title-row,
+  /* scheda aperta: niente menu, la fascia tiene freccia e nome del progetto */
   #view-projects.list-mode > .filters{display:none;}
+  #view-projects.list-mode > .title-row{
+    height:var(--band-h);
+    padding-top:0; padding-bottom:0;
+    border-bottom:1px solid var(--accent);
+  }
+
+  .project-row{gap:0;}
   .project-row-text{padding:0;}
   .project-row .project-row-about{display:flex;}
-  .project-row-main, .project-row-text > .project-row-view-btn{display:none;}
-  /* #view-projects per battere "#view-projects .title-row" (padding
-     ridotto della fascia Projects): stessa riga titolo dell'About */
-  #view-projects .project-row-head{padding:var(--edge);}
-  /* freccia indietro sempre nello stesso punto, quello dell'About: nelle
-     righe titolo centrate (Projects, dettaglio progetto) il padding sopra
-     è 18px invece di --edge, quindi la freccia scende della differenza
-     (il titolo resta dov'è) */
-  #view-projects .title-row-centered .back-btn-inline,
-  #view-detail .title-row-centered .back-btn-inline{transform:translateY(calc(var(--edge) - 18px));}
-  .project-row-head h1{cursor:var(--cursor-brand);}
-  /* annulla i margini della fascia View Project della scheda a colonna:
-     qui sta dentro .btn-row come i download dell'About */
-  .btn-row .project-row-view-btn{margin:0; width:auto;}
+  .project-row-main{display:none;}
+  /* niente riga titolo in testa alla colonna: il testo parte dal margine */
+  .project-row-about .about-body{padding-top:var(--edge);}
 }
 
+/* un solo bottone (View Project) a tutta larghezza, al posto dei due download */
+.btn-row-single{grid-template-columns:1fr;}
 .project-row-image{
   width:50%; flex-shrink:0; align-self:stretch;
   border:1px dashed var(--accent);
@@ -1129,7 +1101,7 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 }
 /* barrette di paginazione dentro il lightbox, per indicare a che foto/video
    si è arrivati (frecce da tastiera su desktop, swipe su mobile): stessi
-   colori/dimensioni di .project-dots nella lista progetti (mobile),
+   colori/dimensioni di .detail-dot,
    ancorate in fondo allo schermo qui perché il lightbox è un overlay a
    schermo intero senza un punto "in fondo al flusso" naturale */
 .lightbox-dots{
@@ -1144,7 +1116,7 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   cursor:var(--cursor-brand);
   transition:background var(--t-fade) var(--ease), width var(--t-fade) var(--ease);
 }
-/* stessa coerenza degli altri pallini (project-dot/detail-dot): hover
+/* stessa coerenza degli altri pallini (detail-dot): hover
    azzurrino sui non selezionati, mai sul blu pieno già "attivo" */
 @media (hover:hover){
   .lightbox-dot:not(.active):hover{background:var(--accent-light);}
@@ -1153,7 +1125,6 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   background:var(--accent);
   width:24px;
 }
-
 
 /* ============================================================
    SOLO LAPTOP / TABLET

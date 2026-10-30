@@ -14,7 +14,7 @@
    4. Filtri nascosti (lista progetti + toggle Scroll/Grid)
    4ter. Indice: griglia a 2 colonne come tablet/laptop (copertina 16:9 +
       fascia testo alta --tab-h)
-   5. Lista progetti: scroll orizzontale tra un progetto e l'altro, frase
+   5. Lista progetti: si vede solo la scheda aperta, frase
       riassuntiva sotto il titolo, descrizione e tag dentro More Info
       (bottone Info più grande e azzurro anche a riposo). Niente cover né
       "View Project": le foto del progetto (galleria inline) iniziano già
@@ -59,16 +59,6 @@
   }
   #view-projects.list-mode, #view-detail{bottom:0;}
 
-  /* "Projects" ↔ nome del progetto mentre si scorrono le foto (vedi
-     updateMobileProjectsTitle in index.html): dissolvenza ferma sul posto,
-     il testo vecchio sfuma via e il nuovo compare, senza movimento */
-  #view-projects .title-row h1{
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    transition:opacity .3s var(--ease);
-  }
-  #view-projects .title-row h1.swapping{opacity:0;}
-  #view-projects .title-row h1.entering{opacity:0; transition:none;}
-
   /* barra di scorrimento blu (griglia e scheda progetto). Dove il sistema
      usa barre sovrapposte non personalizzabili (iOS Safari, gran parte di
      Android) resta quella di sistema */
@@ -83,33 +73,20 @@
   .projects-index-grid::-webkit-scrollbar-thumb, .project-row::-webkit-scrollbar-thumb{background:var(--scroll-thumb); border-radius:2px;}
 
   /* ---------- 5. LISTA PROGETTI ---------- */
-  /* niente scorrimento orizzontale tra un progetto e l'altro: si vede solo
-     la scheda corrente (classe .current, messa via JS in enterProjectRow),
-     tutte le altre restano fuori dal flusso. Per cambiare progetto si torna
-     all'elenco (freccia indietro) e se ne sceglie un altro — niente più
-     swipe laterale né pallini di paginazione orizzontali */
-  .projects-list{
-    display:flex; flex-direction:row;
-    overflow:hidden;
-  }
-  .project-row{display:none;}
-  .project-row.current{display:flex;}
-  .project-dots{display:none;}
+  .projects-list{display:flex; flex-direction:row;}
 
   .project-row{
     flex:0 0 100%; width:100%; height:100%;
     flex-direction:column; flex-wrap:nowrap;
     /* la scheda ora contiene anche tutte le foto del progetto (vedi
        .project-row-gallery), quindi è quasi sempre più alta dello schermo:
-       scorre in verticale al suo interno, mentre .projects-list scorre in
-       orizzontale tra un progetto e l'altro (scroll annidati indipendenti) */
+       scorre in verticale al suo interno */
     overflow-y:auto; overflow-x:hidden;
     /* "none" invece di "contain": "contain" impedisce solo che il rimbalzo
        elastico si propaghi alla pagina sotto, ma l'elemento può ancora
        rimbalzare per conto suo oltre l'inizio/la fine del contenuto (sopra
        il titolo, sotto l'ultima immagine) — "none" disattiva anche quello */
     overscroll-behavior-y:none;
-    scroll-snap-align:start; scroll-snap-stop:always;
     /* qui la barra di scorrimento resta visibile (a differenza del resto
        del sito, dove è sempre nascosta a favore dei pallini): la scheda è
        lunga (testo + 10 foto) e la barra aiuta a capire a che punto si è */
@@ -128,7 +105,7 @@
   }
 
   /* la card diventa un contenitore flessibile "piatto": titolo, Info,
-     cover e View Project diventano fratelli diretti, così possiamo
+     cover e tasti diventano fratelli diretti, così possiamo
      riordinarli liberamente con "order" */
   .project-row-text{display:contents;}
   .project-row-main{display:contents;}
@@ -170,7 +147,6 @@
      intero nella scheda stessa, foto comprese (vedi .project-row-gallery
      sotto) — non serve più un secondo passaggio per vederle */
   .project-row-image{display:none;}
-  .project-row-view-btn{display:none;}
 
   /* galleria inline: le foto del progetto (stesse di #view-detail, ma già
      qui) iniziano subito sotto Info. Semplice colonna, senza scroll-snap
@@ -388,7 +364,7 @@
 
   /* padding simmetrico: il titolo resta centrato tra la linea blu dell'header
      sopra e quella del title-row sotto */
-  #view-projects .title-row, #view-detail .title-row{padding-top:17px; padding-bottom:17px; border-bottom:1px solid var(--accent);}
+  #view-projects .title-row, #view-detail .title-row{padding-top:13px; padding-bottom:13px; border-bottom:1px solid var(--accent);}
 
   /* titolo "Projects" più piccolo; il titolo del progetto in Detail usa la stessa misura.
      margin-top: il testo maiuscolo non usa mai lo spazio riservato ai
@@ -397,7 +373,7 @@
      della fascia; piccolo aggiustamento in em per restare proporzionale */
   #view-projects .title-row h1,
   #view-detail .title-row h1{
-    font-size:clamp(1.2rem, 5.5vw, 1.6rem);
+    font-size:clamp(1.15rem, 4.9vw, 1.4rem);
     margin-top:0.05em;
   }
 
@@ -419,7 +395,6 @@
     overflow-y:auto; overscroll-behavior-y:none;
     -webkit-overflow-scrolling:touch;
   }
-  .projects-index-grid{--index-cols:2; --index-side:0px;}
   .index-grid-inner{--index-row-h:round(down, var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h), 1px);}
   /* browser senza round() (es. Chrome per Android prima di metà 2024): la
      regola sopra verrebbe scartata e le righe perderebbero l'altezza —
@@ -427,17 +402,14 @@
   @supports not (width:round(down, 1px, 1px)){
     .index-grid-inner{--index-row-h:calc(var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h));}
   }
-  /* niente linee sui bordi dello schermo: solo quella tra le due colonne */
-  .index-tile:nth-child(2n){border-right:none;}
   /* riquadri stretti: testo più piccolo e padding ridotto; i nomi lunghi
      vanno a capo invece di uscire dal riquadro */
   /* testo un po' più vicino alla linea in alto invece che centrato in
      verticale nella fascia */
   .index-tile-info{padding:14px 14px 0; align-items:flex-start;}
   .index-tile-head{gap:8px;}
-  .index-tile-title{font-size:0.78rem; line-height:1.15;}
+  .index-tile-title{line-height:1.15;}
   .index-tile-tag{font-size:0.62rem;}
-  .index-tile-arrow{font-size:0.6rem;}
 
 
   /* .lightbox-dot: stile condiviso, vedi style.css. L'immagine aperta e la
@@ -558,12 +530,12 @@
 
   :root{--tab-h:72px;}
   .tab{gap:8px;}
-  .tab-label{font-size:0.8rem;}
+  .tab-label, .index-tile-title{font-size:0.8rem;}
   /* download in About: a metà larghezza di un telefono "Download
      Portfolio" non ci sta — resta solo "CV" / "Portfolio", la freccia in
      giù dice già che si scarica (stessa scelta di More Info → Info) */
   .dl-prefix{display:none;}
-  .tab-arrow{font-size:0.62rem;}
+  .tab-arrow, .index-tile-arrow{font-size:0.62rem;}
 
   .title-row{gap:12px;}
   .title-row h1{font-size:clamp(1.35rem,6vw,1.9rem);}
