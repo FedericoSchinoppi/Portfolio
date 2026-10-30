@@ -275,7 +275,7 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
    così "Projects" parte dove inizia il nome e "About" finisce dove finisce.
    È lo stesso --edge delle altre schermate (title-row, About, schede
    progetto): tutto il sito poggia sulla stessa linea di margine.
-   --home-name-size: il nome occupa esattamente la larghezza tra i due
+   --home-name-size: il nome occupa circa il 90% della larghezza tra i due
    margini — 13 è la sua larghezza in em (Neue Haas Thin, maiuscolo,
    letter-spacing 0.03em), da ricalcolare se cambia il testo o il peso.
    Il tetto in vh evita che su finestre larghe ma molto basse il nome
@@ -283,7 +283,7 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 #view-home{
   --home-inset:var(--edge);
   --home-tabs-size:var(--tab-h);
-  --home-name-size:min(calc((100vw - 2 * var(--home-inset)) / 13), 20vh);
+  --home-name-size:min(calc((100vw - 2 * var(--home-inset)) / 13 * 0.9), 18vh);
 }
 #view-home.active{
   display:grid;
