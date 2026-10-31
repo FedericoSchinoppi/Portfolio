@@ -7,24 +7,24 @@
    Indice:
    1. Header più compatto
    1bis. Home: nome e tab "Projects"/"About" blu, fascia tab più bassa
-   2. About: due colonne, foto verticale a destra, titolo/bio/contatti a
-      sinistra (niente skills), download staccati in fondo
+   2. About: fascia in alto col nome, sotto due colonne (foto verticale a
+      destra, bio e contatti a sinistra, niente skills), contatti in basso
+      appena sopra i download
    3. Footer: visibile in Home/About e nell'elenco Projects, contenuto
       leggermente più in basso, sempre con la scritta "Nome | Portfolio | anno"
    4. Filtri nascosti (lista progetti + toggle Scroll/Grid)
-   4ter. Indice: griglia a 2 colonne come tablet/laptop (copertina 16:9 +
-      fascia testo alta --tab-h)
-   5. Lista progetti: si vede solo la scheda aperta, frase
-      riassuntiva sotto il titolo, descrizione e tag dentro More Info
+   4ter. Indice: elenco a una colonna che riempie lo spazio tra la fascia
+      Projects e il footer (tag, titolo e freccia, senza copertina)
+   5. Lista progetti: si vede solo la scheda aperta, titolo nella fascia in
+      alto, frase riassuntiva sotto, descrizione e tag dentro More Info
       (bottone Info più grande e azzurro anche a riposo). Niente cover né
       "View Project": le foto del progetto (galleria inline) iniziano già
       subito sotto Info, il progetto è visibile per intero nella stessa
       scheda — nessuna pagina di dettaglio separata
    6. Dettaglio progetto (raggiungibile solo da desktop): solo scroll
       verticale, immagini 16:9
-   7. Titoli centrati (About + progetto singolo, e tra le due linee blu
-      di header/title-row in Projects e Detail), senza sovrapposizioni
-      con la freccia indietro
+   7. Titoli centrati (tra le due linee blu di header/title-row in About,
+      Projects e Detail), senza sovrapposizioni con la freccia indietro
    8. Hover/tap: tutti i pulsanti diventano blu
    9. Animazioni più fluide (dissolvenza pura tra le pagine, Info con
       altezza misurata via JS, frecce indietro)
@@ -271,7 +271,7 @@
   /* ---------- 1ter. INTRO ---------- */
   .intro-enter-label{bottom:48px;}
 
-  /* ---------- 2. ABOUT: due colonne, foto verticale a destra ---------- */
+  /* ---------- 2. ABOUT: fascia col nome, sotto due colonne con foto verticale a destra ---------- */
   /* le skills sono state tolte: al loro posto, nella colonna sinistra,
      tornano i contatti ad elenco (il footer non li mostra più, vedi
      sezione 3) */
@@ -283,14 +283,15 @@
        libero da "photo" che attraversa tutte le righe — min-content esce da
        quella distribuzione, così la riga si attacca esattamente al margine
        dichiarato invece di allargarsi in modo imprevedibile */
-    /* contacts 1fr: spinge la fascia dei download in fondo, appoggiata al
-       footer come Projects/About in home; la fascia è a tutta larghezza
-       (sotto anche la foto) e alta --tab-h */
-    grid-template-rows:auto auto min-content 1fr var(--tab-h);
+    /* body 1fr: tutto lo spazio libero resta sotto la bio, così i contatti
+       scendono fino a poggiare sulla fascia dei download, appoggiata al
+       footer come Projects/About in home. Fascia del nome e download sono a
+       tutta larghezza (sopra e sotto la foto) */
+    grid-template-rows:auto 1fr min-content auto var(--tab-h);
     min-height:100%;
     column-gap:16px;
     grid-template-areas:
-      "title     photo"
+      "title     title"
       "body      photo"
       "clabel    photo"
       "contacts  photo"
@@ -335,17 +336,9 @@
   }
   .about-spacer{display:none;}
 
-  .about-body{padding:0 var(--edge);}
+  .about-body{padding:var(--edge) var(--edge) 0;}
   .about-tagline{display:none;}
   .about-bio{margin-bottom:0; font-size:0.85rem; line-height:1.5;} /* lo spazio verso Contacts è tutto su .about-contacts-label, per poterlo confrontare 1:1 con quello verso i download */
-
-  /* nome: la colonna sinistra è più stretta ora che la foto occupa la
-     destra, quindi il nome può andare su due righe se serve, invece di
-     restringersi fino a diventare illeggibile o sovrapporsi alla foto */
-  .about-name-big{
-    font-size:clamp(1.15rem, 6.5vw, 1.9rem);
-    line-height:1.15;
-  }
 
   /* skills rimosse dalla versione mobile */
   .about-skills{display:none;}
@@ -364,13 +357,14 @@
 
   /* padding simmetrico: il titolo resta centrato tra la linea blu dell'header
      sopra e quella del title-row sotto */
-  #view-projects .title-row, #view-detail .title-row{padding-top:13px; padding-bottom:13px; border-bottom:1px solid var(--accent);}
+  #view-about .title-row, #view-projects .title-row, #view-detail .title-row{padding-top:13px; padding-bottom:13px; border-bottom:1px solid var(--accent);}
 
-  /* titolo "Projects" più piccolo; il titolo del progetto in Detail usa la stessa misura.
+  /* titolo "Projects" più piccolo; il nome in About e il titolo del progetto in Detail usano la stessa misura.
      margin-top: il testo maiuscolo non usa mai lo spazio riservato ai
      discendenti sotto la baseline, quindi anche con padding perfettamente
      simmetrico l'inchiostro risulta un filo più in alto del centro reale
      della fascia; piccolo aggiustamento in em per restare proporzionale */
+  #view-about .title-row h1,
   #view-projects .title-row h1,
   #view-detail .title-row h1{
     font-size:clamp(1.15rem, 4.9vw, 1.4rem);
@@ -385,32 +379,36 @@
      sotto quella del footer invece di affiancarla e sembrare doppia */
   #view-projects.grid-mode{bottom:calc(var(--footer-size) - 1px);}
 
-  /* ---------- 4ter. INDICE: griglia a 2 colonne come tablet/laptop ----------
-     Copertina 16:9 + fascia testo alta --tab-h (come Projects/About in home
-     e i download in About), 2 colonne da bordo a bordo dello schermo,
-     scorrimento verticale con barra blu. Tap su un riquadro: apre la
-     scheda del progetto (vedi renderProjectsIndexGrid) */
+  /* ---------- 4ter. INDICE: elenco a una colonna ----------
+     Niente copertine: una riga per progetto, con il tag sopra il titolo e la
+     freccia sul margine destro. Le righe si dividono in parti uguali lo
+     spazio tra la fascia Projects e il footer (1fr + min-height); se lo
+     schermo è troppo basso (telefono in orizzontale) restano alte almeno
+     64px e l'elenco scorre. Tap su una riga: apre la scheda del progetto
+     (vedi renderProjectsIndexGrid) */
   #view-projects.grid-mode .projects-index-grid{
-    display:block;
     overflow-y:auto; overscroll-behavior-y:none;
     -webkit-overflow-scrolling:touch;
   }
-  .index-grid-inner{--index-row-h:round(down, var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h), 1px);}
-  /* browser senza round() (es. Chrome per Android prima di metà 2024): la
-     regola sopra verrebbe scartata e le righe perderebbero l'altezza —
-     qui la stessa formula senza arrotondamento */
-  @supports not (width:round(down, 1px, 1px)){
-    .index-grid-inner{--index-row-h:calc(var(--index-grid-w) / 2 * 9 / 16 + var(--tab-h));}
-  }
-  /* riquadri stretti: testo più piccolo e padding ridotto; i nomi lunghi
-     vanno a capo invece di uscire dal riquadro */
-  /* testo un po' più vicino alla linea in alto invece che centrato in
-     verticale nella fascia */
-  .index-tile-info{padding:14px 14px 0; align-items:flex-start;}
-  .index-tile-head{gap:8px;}
-  .index-tile-title{line-height:1.15;}
-  .index-tile-tag{font-size:0.62rem;}
+  .projects-index-grid{--index-cols:1;}
+  .index-grid-inner{min-height:100cqh; grid-auto-rows:minmax(64px, 1fr);}
+  .index-tile{border-right:none;}
+  .index-tile-cover{display:none;}
+  .index-tile-info{flex:1 1 auto; min-height:0; padding:0 var(--edge);}
+  /* il tag viene dopo il titolo nel markup: column-reverse lo porta sopra */
+  .index-tile-text{flex:1; flex-direction:column-reverse; gap:4px;}
+  .index-tile-head{align-items:center; justify-content:space-between; gap:12px;}
+  .index-tile-title{font-size:clamp(1rem, 4.6vw, 1.25rem);}
+  .index-tile-tag{font-size:0.72rem;}
+  /* margin-right negativo: la punta della freccia (che nell'icona ha un
+     quarto di vuoto a destra) arriva esattamente sul margine */
+  .index-tile-arrow{font-size:1.05rem; margin-right:-0.25em;}
 
+  /* ---------- 5bis. SCHEDA: il titolo sta nella fascia in alto ----------
+     (vedi updateProjectsTitle) qui sotto restano frase e Info. Senza il
+     titolo non serve più la compensazione di -4px di .project-row-gallery */
+  .project-row-title{display:none;}
+  .project-row-gallery{margin-top:calc(var(--row-top) - var(--row-gap));}
 
   /* .lightbox-dot: stile condiviso, vedi style.css. L'immagine aperta e la
      distanza dei pallini dal fondo invece restano quelle di prima anche qui:
@@ -482,18 +480,6 @@
   .detail-gallery-dots{display:none;}
 
   /* ---------- 7. TITOLI CENTRATI, senza sovrapposizioni con la freccia ---------- */
-  /* About ha ora un layout a due colonne: il titolo resta allineato a
-     sinistra come il resto del contenuto, non centrato (altrimenti il
-     nome finisce per sovrapporsi alla foto). */
-  #view-about .title-row{position:relative;}
-  /* top:var(--edge) invece di lasciarlo centrato sull'intero blocco: il
-     nome può andare su più righe (fino a 3 sui telefoni più stretti), e
-     centrare la freccia sull'intero blocco la fa finire a metà del testo
-     invece che allineata alla prima riga */
-  #view-about .back-btn-inline{position:absolute; left:var(--edge); top:var(--edge);}
-  #view-about .title-row h1{
-    padding-left:40px; /* spazio di sicurezza per il pulsante indietro */
-  }
   .title-row-centered h1{
     text-align:center;
     padding:0 40px; /* spazio di sicurezza attorno al pulsante indietro */
@@ -530,25 +516,28 @@
 
   :root{--tab-h:72px;}
   .tab{gap:8px;}
-  .tab-label, .index-tile-title{font-size:0.8rem;}
+  .tab-label{font-size:0.8rem;}
   /* download in About: a metà larghezza di un telefono "Download
      Portfolio" non ci sta — resta solo "CV" / "Portfolio", la freccia in
      giù dice già che si scarica (stessa scelta di More Info → Info) */
   .dl-prefix{display:none;}
-  .tab-arrow, .index-tile-arrow{font-size:0.62rem;}
+  .tab-arrow{font-size:0.62rem;}
 
   .title-row{gap:12px;}
   .title-row h1{font-size:clamp(1.35rem,6vw,1.9rem);}
-  .title-row-centered h1,
-  #view-about .title-row h1{padding:0 32px;}
+  .title-row-centered h1{padding:0 32px;}
 
-  .about-name-big{font-size:clamp(1rem,6.5vw,1.6rem);}
   .about-bio{font-size:0.9rem;}
 
   .project-row{--row-top:36px; --row-gap:8px;}
-  .project-row-title{font-size:clamp(1.35rem,6.5vw,2rem);}
 
   .detail-title-big{font-size:clamp(1.7rem,8vw,2.9rem);}
 
   .intro-logo-placeholder{font-size:0.75rem;}
+}
+
+/* telefoni più stretti: il nome in About resta su una riga, così la fascia
+   ha la stessa altezza di quella di Projects */
+@media (max-width:359px){
+  #view-about .title-row h1{font-size:1rem;}
 }
