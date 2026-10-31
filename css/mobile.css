@@ -397,7 +397,7 @@
   /* a destra si lascia posto alla freccia, che sta fuori dal flusso */
   .index-tile-info{flex:1 1 auto; min-height:0; padding:0 calc(var(--edge) + 28px) 0 var(--edge);}
   /* il tag viene dopo il titolo nel markup: column-reverse lo porta sopra */
-  .index-tile-text{flex:1; flex-direction:column-reverse; gap:4px;}
+  .index-tile-text{flex:1; flex-direction:column-reverse; gap:6px;}
   .index-tile-title{font-size:clamp(0.92rem, 4.1vw, 1.1rem);}
   .index-tile-tag{font-size:0.72rem;}
   /* freccia centrata in verticale nella riga, non sul titolo.
@@ -406,14 +406,14 @@
   .index-tile-arrow{
     position:absolute; top:50%; right:var(--edge);
     transform:translateY(-50%);
-    font-size:1.05rem; margin-right:-0.25em;
+    font-size:calc(var(--arrow-size) * 0.7); margin-right:-0.25em; /* stessa misura di .back-btn-inline */
   }
 
   /* ---------- 5bis. SCHEDA: il titolo sta nella fascia in alto ----------
      (vedi updateProjectsTitle) qui sotto restano frase e Info. Senza il
      titolo non serve più la compensazione di -4px di .project-row-gallery */
   .project-row-title{display:none;}
-  .project-row-blurb{font-size:0.95rem; font-weight:500;}
+  .project-row-blurb{font-size:1rem;}
   .project-row-gallery{margin-top:calc(var(--row-top) - var(--row-gap));}
 
   /* .lightbox-dot: stile condiviso, vedi style.css. L'immagine aperta e la
