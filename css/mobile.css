@@ -357,7 +357,7 @@
 
   /* padding simmetrico: il titolo resta centrato tra la linea blu dell'header
      sopra e quella del title-row sotto */
-  #view-about .title-row, #view-projects .title-row, #view-detail .title-row{padding-top:13px; padding-bottom:13px; border-bottom:1px solid var(--accent);}
+  #view-about .title-row, #view-projects .title-row, #view-detail .title-row{padding-top:18px; padding-bottom:18px; border-bottom:1px solid var(--accent);}
 
   /* titolo "Projects" più piccolo; il nome in About e il titolo del progetto in Detail usano la stessa misura.
      margin-top: il testo maiuscolo non usa mai lo spazio riservato ai
@@ -394,20 +394,26 @@
   .index-grid-inner{min-height:100cqh; grid-auto-rows:minmax(64px, 1fr);}
   .index-tile{border-right:none;}
   .index-tile-cover{display:none;}
-  .index-tile-info{flex:1 1 auto; min-height:0; padding:0 var(--edge);}
+  /* a destra si lascia posto alla freccia, che sta fuori dal flusso */
+  .index-tile-info{flex:1 1 auto; min-height:0; padding:0 calc(var(--edge) + 28px) 0 var(--edge);}
   /* il tag viene dopo il titolo nel markup: column-reverse lo porta sopra */
   .index-tile-text{flex:1; flex-direction:column-reverse; gap:4px;}
-  .index-tile-head{align-items:center; justify-content:space-between; gap:12px;}
-  .index-tile-title{font-size:clamp(1rem, 4.6vw, 1.25rem);}
+  .index-tile-title{font-size:clamp(0.92rem, 4.1vw, 1.1rem);}
   .index-tile-tag{font-size:0.72rem;}
-  /* margin-right negativo: la punta della freccia (che nell'icona ha un
-     quarto di vuoto a destra) arriva esattamente sul margine */
-  .index-tile-arrow{font-size:1.05rem; margin-right:-0.25em;}
+  /* freccia centrata in verticale nella riga, non sul titolo.
+     margin-right negativo: la punta (che nell'icona ha un quarto di vuoto a
+     destra) arriva esattamente sul margine */
+  .index-tile-arrow{
+    position:absolute; top:50%; right:var(--edge);
+    transform:translateY(-50%);
+    font-size:1.05rem; margin-right:-0.25em;
+  }
 
   /* ---------- 5bis. SCHEDA: il titolo sta nella fascia in alto ----------
      (vedi updateProjectsTitle) qui sotto restano frase e Info. Senza il
      titolo non serve più la compensazione di -4px di .project-row-gallery */
   .project-row-title{display:none;}
+  .project-row-blurb{font-size:0.95rem; font-weight:500;}
   .project-row-gallery{margin-top:calc(var(--row-top) - var(--row-gap));}
 
   /* .lightbox-dot: stile condiviso, vedi style.css. L'immagine aperta e la
