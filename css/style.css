@@ -96,7 +96,7 @@ button, a{cursor:var(--cursor-brand);}
    <button>, ma non è garantito ovunque: esplicito qui per sicurezza */
 button,
 .index-tile, .detail-dot, .lightbox-dot,
-.gallery-item[data-src], .project-row-image{
+.gallery-item[data-src], .projects-cover{
   -webkit-user-select:none; user-select:none;
 }
 
@@ -106,7 +106,7 @@ button,
    il blocco più efficace, più affidabile del solo preventDefault via JS
    (comunque presente come ulteriore livello, vedi index.html). Funziona
    perché ogni foto cliccabile ha il listener sul contenitore attorno
-   (gallery-item, project-row-image, ecc.), mai sull'<img> stesso, quindi
+   (gallery-item, projects-cover, ecc.), mai sull'<img> stesso, quindi
    il click passa comunque al genitore. Fa eccezione solo il logo header,
    che è lui stesso l'elemento cliccabile (vedi sotto) */
 img, video{
@@ -238,11 +238,10 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 /* ============================================================
    VIEW SWITCHING
    ============================================================ */
-/* cambio pagina: la pagina che esce (.leaving) sfuma via in fretta, senza
-   muoversi, e resta sotto; quella che entra parte un attimo dopo e sale di
-   pochi pixel mentre compare. Niente scale(): a metà animazione rendeva
-   sfocate le linee da 1px e il testo. Spostamento in px interi per lo
-   stesso motivo */
+/* cambio pagina: dissolvenza pura, la pagina che esce (.leaving) sfuma via in
+   fretta e resta sotto quella che entra. Niente spostamenti né scale():
+   a metà animazione sfocavano le linee da 1px e il testo. Da e verso la
+   home il cambio è invece l'apertura delle due metà (#view-home.doors) */
 .view{
   display:none;
   position:fixed;
@@ -250,17 +249,18 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   overflow:hidden;
   z-index:1;
   opacity:0;
-  transform:translateY(10px);
-  transition:opacity .4s var(--ease) .1s, transform .5s cubic-bezier(.2,.7,.2,1) .1s;
+  transition:opacity var(--t-fade) var(--ease);
   pointer-events:none;
 }
 .view.active{display:block;}
-.view.active.visible{opacity:1; transform:none; pointer-events:auto;}
+.view.active.visible{opacity:1; pointer-events:auto;}
 .view.leaving{
   z-index:0;
-  transform:none;
   transition:opacity .2s var(--ease);
 }
+/* pagina scoperta (o coperta) dall'apertura della home: resta ferma, tutto
+   il movimento è delle due metà (vedi #view-home.doors) */
+.view.under{opacity:1; transition:none;}
 
 @media (prefers-reduced-motion:reduce){
   .view{transition:none;}
@@ -269,55 +269,56 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 /* ============================================================
    HOME
    ============================================================ */
-/* nome a tutta larghezza in alto, sotto una fascia divisa a metà:
-   Projects a sinistra, About a destra.
-   --home-inset: margine laterale della home, condiviso da nome e fascia,
-   così "Projects" parte dove inizia il nome e "About" finisce dove finisce.
-   È lo stesso --edge delle altre schermate (title-row, About, schede
-   progetto): tutto il sito poggia sulla stessa linea di margine.
-   --home-name-size: il nome occupa circa il 90% della larghezza tra i due
-   margini — 13 è la sua larghezza in em (Neue Haas Thin, maiuscolo,
-   letter-spacing 0.03em), da ricalcolare se cambia il testo o il peso.
-   Il tetto in vh evita che su finestre larghe ma molto basse il nome
-   sfori in altezza */
-#view-home{
-  --home-inset:var(--edge);
-  --home-tabs-size:var(--tab-h);
-  --home-name-size:min(calc((100vw - 2 * var(--home-inset)) / 13 * 0.9), 18vh);
-}
+/* fascia in alto col nome, come quella delle altre pagine; sotto, la pagina
+   divisa a metà: Projects a sinistra, About a destra. Ogni metà è un tab
+   alto tutto lo spazio fino al footer, con scritta e freccia centrate in
+   verticale e appoggiate al margine --edge.
+   --home-text-size: stessa misura dei titoli nelle fasce, per nome e tab */
+#view-home{--home-text-size:clamp(1.25rem,1.9vw,1.55rem);}
 #view-home.active{
   display:grid;
   grid-template-columns:1fr 1fr;
-  grid-template-rows:1fr var(--home-tabs-size);
+  /* -1px: la linea sopra i tab coincide con quella della fascia delle altre
+     pagine (che sta dentro --band-h), così all'apertura non scatta */
+  grid-template-rows:calc(var(--band-h) - 1px) minmax(0,1fr);
 }
 
 .home-main{
   grid-column:1 / -1;
-  min-height:0;
+  min-height:0; min-width:0;
   display:flex; align-items:center; justify-content:center;
-  text-align:center;
-  padding:0 var(--home-inset);
+  padding:0 var(--edge);
 }
 .home-name-line{
   display:block;
   white-space:nowrap;
-  font-weight:300;
-  font-size:var(--home-name-size);
-  line-height:1;
-  /* margin-right negativo: toglie la spaziatura dopo l'ultima lettera, che
-     altrimenti sposterebbe il nome di un soffio a sinistra del centro */
-  letter-spacing:0.03em; margin-right:-0.03em;
+  font-weight:400;
+  font-size:var(--home-text-size);
+  letter-spacing:-0.01em;
   text-transform:uppercase;
   color:var(--text);
 }
-/* proporzionale al nome, con un minimo leggibile sugli schermi stretti */
-.home-role{
-  margin-top:0.25em;
-  font-size:max(0.75rem, calc(var(--home-name-size) * 0.19));
-  font-weight:400;
-  letter-spacing:0.02em;
-  line-height:1.2;
+/* fondo pieno: durante l'apertura le due metà coprono la pagina sotto */
+.home-main, #view-home .tab{background-color:var(--bg);}
+
+/* apertura: entrando in Projects/About le due metà scorrono verso i lati e
+   scoprono la pagina, ferma sotto; tornando in home si richiudono (vedi
+   runHomeDoors in index.html, che ha la stessa durata). Solo transform e
+   opacity, che il browser anima senza ricalcolare il layout. La linea sul
+   bordo della metà sinistra è il pari del bordo di quella destra: da
+   aperte, ognuna porta con sé la sua */
+#view-home.doors{z-index:2; opacity:1; transition:none; pointer-events:none;}
+#view-home.doors .tab{
+  --doors-ease:cubic-bezier(.76,0,.24,1);
+  transition:transform .7s var(--doors-ease), background-color var(--t-hover) var(--ease);
+  will-change:transform;
+  box-shadow:1px 0 0 var(--accent);
 }
+#view-home.doors .tab-about{box-shadow:none;}
+#view-home.doors .home-main{transition:opacity .35s var(--ease);}
+#view-home.open .tab{transform:translateX(calc(-100% - 1px));}
+#view-home.open .tab-about{transform:translateX(100%);}
+#view-home.open .home-main{opacity:0;}
 
 .tab{
   min-width:0; min-height:0;
@@ -360,6 +361,8 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
    metà della fascia */
 @media (hover:hover){
   .tab:hover{background-color:var(--accent-tint);}
+  /* stessa tinta, ma coprente come il fondo delle due metà della home */
+  #view-home .tab:hover{background-color:color-mix(in srgb, var(--accent) 6%, var(--bg));}
 }
 /* stesso hover anche sulle caselle della griglia progetti; su desktop si
    aggiunge la foto, vedi .index-tile-hover */
@@ -661,38 +664,50 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   color:var(--text-secondary);
 }
 
-/* desktop: niente copertina, testo a sinistra con il titolo centrato in
-   verticale nel riquadro e il tag appoggiato sopra (position:absolute, così
-   non sposta il titolo). La foto (prima di hoverImages) occupa la parte
-   destra, alta quanto il riquadro tra una linea blu e l'altra, invisibile
-   finché il cursore non ci passa sopra. .hover-ready e il gate in JS
-   (armGridHoverGate) evitano che si accenda da sola sotto un cursore già
-   fermo. Su schermi touch grandi (iPad Pro in orizzontale) l'hover non
-   esiste: resta sempre visibile */
-.index-tile-hover{display:none;}
+/* desktop: una fascia per progetto nella metà sinistra, tag e titolo in
+   due colonne, copertina nella metà destra (.projects-cover). Le fasce,
+   alte tutte uguali, riempiono lo spazio tra filtri e footer */
+.projects-cover{display:none;}
 @media (min-width:1280px){
+  .projects-index-grid{--index-cols:1;}
+  .index-grid-inner{width:50cqw; margin:0;}
+  .index-tile{border-right:none;}
+  /* fascia del progetto mostrato a destra: resta accesa anche prima del
+     primo hover e quando il cursore esce dall'elenco */
+  .index-tile.is-cover{background-color:var(--accent-tint);}
   .index-tile-cover{display:none;}
   .index-tile-info{flex:1 1 auto; min-width:0; padding:0 var(--edge);}
-  .index-tile-text{position:relative;}
-  .index-tile-tag{position:absolute; left:0; bottom:100%; margin-bottom:12px; white-space:nowrap;}
-  .index-tile-head{gap:24px;}
-  .index-tile-hover{
+  .index-tile-text{
+    display:grid; grid-template-columns:31% minmax(0,1fr); align-items:center;
+    gap:0; width:100%;
+  }
+  .index-tile-tag{grid-column:1; grid-row:1; white-space:nowrap;}
+  .index-tile-head{grid-column:2; grid-row:1; gap:24px;}
+
+  /* copertina comune a indice e scheda (vedi showProjectCover in index.html):
+     stessa posizione in entrambe, sotto la fascia. Le foto si impilano per
+     la dissolvenza da una all'altra */
+  .projects-cover{
     display:block;
-    position:absolute; top:0; bottom:0; right:0;
+    position:absolute; top:var(--band-h); bottom:0; right:0;
     width:50%;
     border-left:1px solid var(--accent);
-    opacity:0;
-    transition:opacity var(--t-hover) var(--ease);
+    overflow:hidden;
+    cursor:var(--cursor-brand);
+    container-type:size;
   }
-  .index-tile-hover img{width:100%; height:100%; object-fit:cover; display:block;}
-  .index-tile:focus-visible .index-tile-hover{opacity:1;}
-}
-@media (min-width:1280px) and (hover:hover){
-  .projects-index-grid.hover-ready .index-tile:hover .index-tile-hover{opacity:1;}
-}
-}
-@media (min-width:1280px) and (hover:none){
-  .index-tile-hover{opacity:1;}
+  /* le immagini sono 6:5 (--cover-ratio) e il riquadro è più stretto, quindi
+     si tagliano i lati. --cover-x (centro del soggetto nel file, vedi
+     innerCoverX) sposta il ritaglio perché il soggetto resti al centro del
+     riquadro; lo spostamento è limitato alla parte che viene comunque
+     tagliata (--cover-room), così ai bordi non compaiono mai vuoti */
+  .projects-cover img{
+    position:absolute; inset:0;
+    width:100%; height:100%; object-fit:cover; display:block;
+    --cover-ratio:1.2;
+    --cover-room:max(0px, (var(--cover-ratio) * 100cqh - 100cqw) / 2);
+    object-position:calc(50% + clamp(-1 * var(--cover-room), (0.5 - var(--cover-x, 0.5)) * var(--cover-ratio) * 100cqh, var(--cover-room))) 50%;
+  }
 }
 .projects-list-wrap{position:relative; flex:1; min-height:0; display:flex; flex-direction:column;}
 /* passaggio griglia → scheda: la scheda entra in dissolvenza invece di
@@ -861,6 +876,8 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   #view-about .about-body{padding-top:var(--edge);}
 }
 @media (min-width:1280px){
+  /* filtri ↔ nome del progetto: anche la fascia cambia in dissolvenza */
+  #view-projects.grid-mode > .filters{animation:soft-in var(--t-fade) var(--ease);}
   /* scheda aperta: niente menu, la fascia tiene freccia e nome del progetto */
   #view-projects.list-mode > .filters{display:none;}
   #view-projects.list-mode > .title-row{
@@ -870,7 +887,8 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   }
 
   .project-row{gap:0;}
-  .project-row-text{padding:0;}
+  /* la metà destra è di .projects-cover */
+  .project-row-text{flex:0 0 50%; padding:0;}
   .project-row .project-row-about{display:flex;}
   .project-row-main{display:none;}
   /* niente riga titolo in testa alla colonna: il testo parte dal margine */
@@ -879,30 +897,6 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 
 /* un solo bottone (View Project) a tutta larghezza, al posto dei due download */
 .btn-row-single{grid-template-columns:1fr;}
-.project-row-image{
-  width:50%; flex-shrink:0; align-self:stretch;
-  border:1px dashed var(--accent);
-  background:var(--surface);
-  display:flex; align-items:center; justify-content:center;
-  color:var(--text-secondary);
-  font-size:0.8rem; text-align:center; padding:16px;
-  cursor:var(--cursor-brand);
-}
-/* linea blu verticale tra la foto e la colonna testo */
-.project-row-image:has(img){border:none; border-left:1px solid var(--accent); padding:0; background:none;}
-.project-row-image img{width:100%; height:100%; object-fit:cover; display:block;}
-/* copertina della scheda: le immagini sono 6:5 (--cover-ratio) e il
-   riquadro è più stretto, quindi si tagliano i lati. --cover-x (centro
-   del soggetto nel file, vedi innerCoverX) sposta il ritaglio perché il
-   soggetto resti al centro del riquadro; lo spostamento è limitato alla
-   parte che viene comunque tagliata (--cover-room), così ai bordi non
-   compaiono mai vuoti */
-.project-row-image{container-type:size;}
-.project-row-image img{
-  --cover-ratio:1.2;
-  --cover-room:max(0px, (var(--cover-ratio) * 100cqh - 100cqw) / 2);
-  object-position:calc(50% + clamp(-1 * var(--cover-room), (0.5 - var(--cover-x, 0.5)) * var(--cover-ratio) * 100cqh, var(--cover-room))) 50%;
-}
 /* galleria inline dentro la scheda: solo mobile (vedi mobile.css), al
    posto della cover + View Project — su desktop resta il flusso attuale
    (View Project → pagina di dettaglio separata) */

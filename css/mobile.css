@@ -6,7 +6,7 @@
 
    Indice:
    1. Header più compatto
-   1bis. Home: nome e tab "Projects"/"About" blu, fascia tab più bassa
+   1bis. Home: nome e tab "Projects"/"About" blu, fascia del nome come nelle altre pagine
    2. About: fascia in alto col nome, sotto due colonne (foto verticale a
       destra, bio e contatti a sinistra, niente skills), contatti in basso
       appena sopra i download
@@ -143,11 +143,6 @@
   .more-info-label{--hover-weight:700;}
   .more-info-label::after{content:attr(data-label-short);}
 
-  /* niente cover né "View Project" qui: il progetto è già visibile per
-     intero nella scheda stessa, foto comprese (vedi .project-row-gallery
-     sotto) — non serve più un secondo passaggio per vederle */
-  .project-row-image{display:none;}
-
   /* galleria inline: le foto del progetto (stesse di #view-detail, ma già
      qui) iniziano subito sotto Info. Semplice colonna, senza scroll-snap
      proprio: scorre insieme al resto della scheda (.project-row ha già
@@ -261,12 +256,14 @@
   .site-header img{height:13px;}
   .site-header .logo-placeholder{font-size:0.62rem; padding:5px 12px;}
 
-  /* ---------- 1bis. HOME: nome e tab blu, fascia Projects/About più bassa ----------
-     (la dimensione del nome segue già la larghezza dello schermo, vedi
-     --home-name-size in style.css) */
+  /* ---------- 1bis. HOME: nome e tab blu, fascia del nome come quella delle
+     altre pagine (stesso padding e stessa misura del titolo) ---------- */
   .home-name-line{color:var(--accent);}
-  .home-role{color:var(--accent-light);}
   .tab{color:var(--accent);}
+  #view-home{--home-text-size:clamp(1.15rem, 4.9vw, 1.4rem);}
+  #view-home.active{grid-template-rows:auto minmax(0,1fr);}
+  .home-main{padding-top:18px; padding-bottom:18px;}
+  .home-name-line{margin-top:0.05em;}
 
   /* ---------- 1ter. INTRO ---------- */
   .intro-enter-label{bottom:48px;}
@@ -494,15 +491,6 @@
 
   /* ---------- 9. ANIMAZIONI: stessa curva e stesse durate del resto del sito
      (--ease, --t-hover, --t-fade in style.css) ---------- */
-  /* cambio pagina: dissolvenza pura (solo opacità, niente traslazione/scala)
-     invece dello slide-up ereditato da style.css — più fluida e senza lag percepito */
-  .view{
-    transform:none;
-    transition:opacity var(--t-fade) var(--ease);
-  }
-  .view.active.visible{
-    transform:none;
-  }
 }
 
 /* ============================================================

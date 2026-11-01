@@ -41,20 +41,20 @@
      cache ai browser per 10 minuti (e Safari su iPad spesso di più):
      cambiando questo numero a ogni pubblicazione il browser è costretto a
      scaricare i CSS nuovi invece di usare quelli vecchi -->
-<link rel="stylesheet" href="css/style.css?v=20261031-3">
+<link rel="stylesheet" href="css/style.css?v=20261101-3">
 <!-- versione TABLET/IPAD: 801px–1279px, tra il layout mobile (≤800px) e
      quello laptop/desktop (≥1280px). Copre la maggior parte degli iPad in
      entrambi gli orientamenti (portrait e landscape), tranne l'iPad Pro
      12.9" in landscape (1366px) che ricade nel layout desktop — soglia
      comunque facile da spostare in un secondo momento se serve -->
-<link rel="stylesheet" href="css/tablet.css?v=20261031-3" media="(min-width:801px) and (max-width:1279px)">
+<link rel="stylesheet" href="css/tablet.css?v=20261101-3" media="(min-width:801px) and (max-width:1279px)">
 <!-- caricato fino a 1279px (mobile + tablet, vedi blocco iniziale di
      mobile.css): oltre quella soglia il browser lo
      scarica comunque (in background, per averlo pronto se la finestra si
      restringe) ma NON lo considera bloccante per il primo render su
      desktop/tablet larghi, dove tutte le regole al suo interno sono
      comunque inapplicabili -->
-<link rel="stylesheet" href="css/mobile.css?v=20261031-3" media="(max-width:1279px)">
+<link rel="stylesheet" href="css/mobile.css?v=20261101-3" media="(max-width:1279px)">
 </head>
 <body>
 
@@ -98,10 +98,7 @@
        ============================================================ -->
   <section id="view-home" class="view active" data-view="home">
     <div class="home-main">
-      <div class="home-name">
-        <span class="home-name-line">Federico Schinoppi Rossi</span>
-        <span class="eyebrow home-role">Communication Designer</span>
-      </div>
+      <span class="home-name-line">Federico Schinoppi Rossi</span>
     </div>
 
     <button class="tab" data-nav="projects" aria-label="Go to Projects page">
@@ -155,6 +152,7 @@
     <div class="projects-list-wrap">
       <div class="projects-list" id="projects-list"></div>
     </div>
+    <div class="projects-cover" id="projects-cover"></div>
   </section>
 
   <!-- ============================================================
@@ -206,7 +204,6 @@
       blurb: "A collective and connected ritual",
       description: "A group project reimagining the 2028 edition of Kappa Futur Festival through a complex interactive system. The goal was to enrich the attendee experience and connect participants with one another, turning the festival into a collective, connected journey.",
       cover: "img/pj/01-kff/00-cop-kff.webp",
-      hoverImages: ["img/pj/01-kff/01 - affissioni tribù.webp", "img/pj/01-kff/app-griglia.webp", "img/pj/01-kff/06 - totem inattivo.webp"],
       mosaic: [
         "a b b c c e",
         "d b b f g g",
@@ -236,7 +233,6 @@
       blurb: "Cleopatra reimagined in jewelry",
       description: "A tribute to Cleopatra's hidden facets and mythological presence, translated into a luxury jewelry brand. The identity was built from a deep study of her character, then extended into a full brand experience.",
       cover: "img/pj/02-cleo/00-cop-cleo.webp",
-      hoverImages: ["img/pj/02-cleo/00-cop-cleo.webp", "img/pj/02-cleo/02-versione colori.webp", "img/pj/02-cleo/08-contatti magazine.webp"],
       innerCover: "img/pj/02-cleo/cop-interna.webp", innerCoverX: 0.507,
       mosaic: [
         "a b b c d d",
@@ -267,7 +263,6 @@
       blurb: "Authentic heritage, refined presence",
       description: "A visual refresh for La Manèga, a winery at the heart of Franciacorta. The brand identity was redesigned to meet the owners' needs, giving the company's image a more authentic, refined presence.",
       cover: "img/pj/03-manega/00-cop-manega.webp",
-      hoverImages: ["img/pj/03-manega/01-logo e marchio.webp", "img/pj/03-manega/08-bottiglie di vino.webp", "img/pj/03-manega/10-pack regalo.webp"],
       mosaic: [
         "a a b b c d",
         "a a e e c h",
@@ -287,6 +282,36 @@
       ]
     },
     {
+      id: "blesh",
+      name: "Blesh",
+      categories: ["Brand Identity", "Content Strategy"],
+      tags: ["Brand Design", "Market Analysis", "Content Strategy"],
+      year: "2023",
+      client: "Politecnico of Milan",
+      team: ["Valentina Bestetti", "Chiara Campironi", "Allegra Costato", "Anna Chiara Marsili", "Vittorio Paulato", "Beatrice Nati", "Pietro Zanotto"],
+      blurb: "One drink, new connections",
+      description: "A new non-alcoholic drink built to spark the evening among friends at a bar. Market analysis guided the brand's positioning, followed by the visual identity and promotional strategy.",
+      cover: "img/pj/06-blesh/00-cop-blesh.webp",
+      innerCover: "img/pj/06-blesh/cop-interna.webp", innerCoverX: 0.482,
+      mosaic: [
+        "a a b e d d",
+        "c f g h j j",
+        "c i i h j j"
+      ],
+      images: [
+        { src: "img/pj/06-blesh/01-moodboard.webp", caption: "Moodboard", subject: "0.02 0.98 0.03 0.97", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/02-logo.webp", caption: "Logo", subject: "0.34 0.65 0.42 0.58", edge: "ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e" },
+        { src: "img/pj/06-blesh/03-lattina.webp", caption: "Can design", subject: "0.40 0.59 0.14 0.84", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/04-piano editoriale.webp", caption: "Editorial content plan", subject: "0.02 0.98 0.05 0.95", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/05-instagram.webp", caption: "Instagram post capturing the brand's mood", subject: "0.14 0.85 0.13 0.90", fitMargin: 0.12, edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/06-instagram.webp", caption: "Instagram post capturing the brand's style", subject: "0.14 0.85 0.14 0.91", fitMargin: 0.12, edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/07-instagram.webp", caption: "Instagram post featuring the three can designs", subject: "0.15 0.83 0.13 0.90", fitMargin: 0.12, edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
+        { src: "img/pj/06-blesh/08-affissioni.webp", caption: "Product launch poster", focus: "38% 50%" },
+        { src: "img/pj/06-blesh/09-affissioni.webp", caption: "Product launch poster — alternate version", focus: "50% 61%" },
+        { src: "img/pj/06-blesh/10-spot.webp", caption: "Illustration for the ad spot" }
+      ]
+    },
+    {
       id: "sinfonie-materiali",
       name: "Sinfonie Materiali",
       categories: ["Content Strategy"],
@@ -297,7 +322,6 @@
       blurb: "Art made accessible",
       description: "A collaboration with the Museo Tattile Statale Omero to make Roberto Papini's artworks accessible to blind, low-vision, and deaf audiences. The project translated the artist's work into tactile experiences, a tactile book, and video content, supported by a descriptive website with audio guides.",
       cover: "img/pj/04-sinfonie/00-cop-sinfonie.webp",
-      hoverImages: ["img/pj/04-sinfonie/00-cop-sinfonie.webp", "img/pj/04-sinfonie/02-sito.webp", "img/pj/04-sinfonie/10-esperienza tattile.webp"],
       mosaic: [
         "a a b b c c",
         "a a d e f g",
@@ -327,7 +351,6 @@
       blurb: "Six teams, one voice",
       description: "Social media management and communication for a historic football club in the Brescia football scene, overseeing six different teams under a single society at the same time.",
       cover: "img/pj/05-sale/00-cop-sale.webp", gridCover: "img/pj/05-sale/cop-griglia.webp",
-      hoverImages: ["img/pj/05-sale/01-lancio stagione.webp", "img/pj/05-sale/04-team.webp", "img/pj/05-sale/10-maglia celebrativa.webp"],
       mosaic: [
         "a c b d e e",
         "f f b h e e",
@@ -344,37 +367,6 @@
         { src: "img/pj/05-sale/08-stand gastronomico.webp", caption: "Story promoting the food stand", subject: "0.29 0.70 0.12 0.90", edge: "ededed ededee ededee ededee ececed ededee ececec ececed ececec ececec ececec ececec ececec ececec ececec ececec ececec ececec efefef efefef efefef efefef efefef efefef" },
         { src: "img/pj/05-sale/09-torneo top junior.webp", caption: "Stories for the Top Junior tournament", subject: "0.28 0.71 0.12 0.90", edge: "ececec ececec ececec ececec ececec ececec ececec ececec ececec ececec ececec ededed ececec ebebeb ebebeb ebebeb ebebeb ececec ececec efefef efefef efefef efefef f0f0f0" },
         { src: "img/pj/05-sale/10-maglia celebrativa.webp", caption: "Commemorative jersey reveal post", subject: "0.18 0.76 0.08 0.92", edge: "dddddd dfdfdf e0e0e0 e1e1e1 e2e2e2 e3e3e3 e5e5e5 e5e5e5 e5e5e5 e4e5e4 e4e4e4 e4e4e4 dcdcdc dedede e0e0e0 e2e2e2 e3e3e3 e4e4e4 e3e3e3 e3e3e3 e4e4e4 e3e4e3 e4e4e4 e3e3e3" }
-      ]
-    },
-    {
-      id: "blesh",
-      name: "Blesh",
-      categories: ["Brand Identity", "Content Strategy"],
-      tags: ["Market Analysis", "Brand Design", "Content Strategy"],
-      year: "2023",
-      client: "Politecnico of Milan",
-      team: ["Valentina Bestetti", "Chiara Campironi", "Allegra Costato", "Anna Chiara Marsili", "Vittorio Paulato", "Beatrice Nati", "Pietro Zanotto"],
-      blurb: "One drink, new connections",
-      description: "A new non-alcoholic drink built to spark the evening among friends at a bar. Market analysis guided the brand's positioning, followed by the visual identity and promotional strategy.",
-      cover: "img/pj/06-blesh/00-cop-blesh.webp",
-      hoverImages: ["img/pj/06-blesh/00-cop-blesh.webp", "img/pj/06-blesh/02-logo.webp", "img/pj/06-blesh/10-spot.webp"],
-      innerCover: "img/pj/06-blesh/cop-interna.webp", innerCoverX: 0.482,
-      mosaic: [
-        "a a b e d d",
-        "c f g h j j",
-        "c i i h j j"
-      ],
-      images: [
-        { src: "img/pj/06-blesh/01-moodboard.webp", caption: "Moodboard", subject: "0.02 0.98 0.03 0.97", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
-        { src: "img/pj/06-blesh/02-logo.webp", caption: "Logo", subject: "0.34 0.65 0.42 0.58", edge: "ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e ff006e" },
-        { src: "img/pj/06-blesh/03-lattina.webp", caption: "Can design", subject: "0.40 0.59 0.14 0.84", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
-        { src: "img/pj/06-blesh/04-piano editoriale.webp", caption: "Editorial content plan", subject: "0.02 0.98 0.05 0.95", edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
-        { src: "img/pj/06-blesh/05-instagram.webp", caption: "Instagram post capturing the brand's mood", subject: "0.14 0.85 0.13 0.90", fitMargin: 0.12, edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
-        { src: "img/pj/06-blesh/06-instagram.webp", caption: "Instagram post capturing the brand's style", subject: "0.14 0.85 0.14 0.91", fitMargin: 0.12, edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
-        { src: "img/pj/06-blesh/07-instagram.webp", caption: "Instagram post featuring the three can designs", subject: "0.15 0.83 0.13 0.90", fitMargin: 0.12, edge: "ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff ffffff" },
-        { src: "img/pj/06-blesh/08-affissioni.webp", caption: "Product launch poster", focus: "38% 50%" },
-        { src: "img/pj/06-blesh/09-affissioni.webp", caption: "Product launch poster — alternate version", focus: "50% 61%" },
-        { src: "img/pj/06-blesh/10-spot.webp", caption: "Illustration for the ad spot" }
       ]
     },
     {
@@ -465,6 +457,9 @@
      una sotto l'altra, solo scroll), vedi blocco ≤1279px in mobile.css */
   function isCardViewport(){
     return window.matchMedia("(max-width:1279px)").matches;
+  }
+  function prefersReducedMotion(){
+    return window.matchMedia("(prefers-reduced-motion:reduce)").matches;
   }
   /* usata per capire, dopo un resize/rotazione, se si è passati da un
      "bucket" all'altro (mobile/tablet/desktop) — vedi il resize handler
@@ -619,13 +614,13 @@
      aggiunge solo a quel punto (vedi CSS, .projects-index-grid.hover-ready)
      e resta valida per il resto della visita alla griglia. Il movimento si
      ascolta su tutto il documento: chi entra nella griglia da fuori (filtri,
-     freccia, footer) vede subito le foto già sulla prima riga che tocca. */
+     freccia, footer) vede subito la copertina della prima riga che tocca. */
   let gridHoverMove = null;
-  function armGridHoverGate(){
+  /* restingTile: il riquadro sotto il cursore, se già noto (vedi showView) */
+  function armGridHoverGate(restingTile){
     const grid = document.getElementById("projects-index-grid");
     grid.classList.remove("hover-ready");
     document.removeEventListener("mousemove", gridHoverMove);
-    let restingTile; // undefined = non ancora rilevato
     gridHoverMove = function onMove(e){
       const tile = e.target.closest(".index-tile") || null;
       if(restingTile === undefined){
@@ -635,17 +630,76 @@
       if(tile !== restingTile){
         grid.classList.add("hover-ready");
         document.removeEventListener("mousemove", onMove);
+        if(tile) showProjectCover(tile.dataset.project);
       }
     };
     document.addEventListener("mousemove", gridHoverMove);
   }
+
+  /* pannello copertina (solo desktop, vedi CSS .projects-cover): uno solo per
+     indice e scheda, fuori da entrambi, così aprendo un progetto l'immagine
+     resta ferma e cambia solo la parte a sinistra. Ogni nuova copertina entra
+     in dissolvenza sopra la precedente, tolta a dissolvenza finita. Web
+     Animations invece di un'animazione CSS: quella ripartirebbe da zero ogni
+     volta che la view torna visibile */
+  let coverProjectId = null;
+  function coverSrc(p){ return encodePath(p.innerCover || p.cover); }
+  function markCoverTile(){
+    document.querySelectorAll("#projects-index-grid .index-tile").forEach(tile=>{
+      tile.classList.toggle("is-cover", tile.dataset.project === coverProjectId);
+    });
+  }
+  /* instant: senza dissolvenza, per i cambi fatti mentre la pagina è coperta */
+  function showProjectCover(id, instant = false){
+    const project = PROJECTS.find(p => p.id === id);
+    if(isCardViewport() || !project?.cover || id === coverProjectId) return;
+    coverProjectId = id;
+    markCoverTile();
+    const img = new Image();
+    img.src = coverSrc(project);
+    img.alt = project.name;
+    /* innerCoverX: centro orizzontale del soggetto nel file (0–1), per
+       centrarlo nel riquadro anche quando ai lati si taglia */
+    if(project.innerCover && project.innerCoverX) img.style.setProperty("--cover-x", project.innerCoverX);
+    /* decode prima di mostrarla: col cursore veloce sulle fasce, una foto
+       non ancora pronta non deve superare quella scelta dopo */
+    img.decode().catch(()=>{}).then(()=>{
+      if(id !== coverProjectId) return;
+      document.getElementById("projects-cover").append(img);
+      img.animate({opacity:[0,1]}, {duration: instant || prefersReducedMotion() ? 0 : 450, easing:"ease"}).onfinish = ()=>{
+        while(img.previousElementSibling) img.previousElementSibling.remove();
+      };
+    });
+  }
+  /* copertina coerente con ciò che c'è a sinistra: quella della scheda aperta,
+     altrimenti l'ultima vista se è ancora in elenco, altrimenti la prima.
+     Le altre si precaricano, così all'hover la dissolvenza parte subito */
+  function syncProjectCover(){
+    if(isCardViewport()) return;
+    const ids = [...document.querySelectorAll("#projects-index-grid .index-tile")].map(t => t.dataset.project);
+    ids.forEach(id => { new Image().src = coverSrc(PROJECTS.find(p => p.id === id)); });
+    const row = document.querySelector("#projects-list .project-row.current");
+    if(projectsMode === "list" && row) showProjectCover(row.dataset.project);
+    else showProjectCover(ids.includes(coverProjectId) ? coverProjectId : ids[0]);
+    markCoverTile();
+  }
+  matchMedia("(min-width:1280px)").addEventListener("change", syncProjectCover);
+  /* come la vecchia foto della scheda: nell'indice apre il progetto mostrato,
+     nella scheda porta alla pagina di dettaglio */
+  document.getElementById("projects-cover").addEventListener("click", ()=>{
+    if(!coverProjectId) return;
+    if(projectsMode === "list") openProject(coverProjectId);
+    else enterProjectRow(coverProjectId);
+  });
 
   /* titolo della fascia in alto: "Projects" nell'indice, nome del progetto
      nella scheda. Tablet: nella scheda resta "Projects" finché il titolo
      interno non esce dallo schermo scorrendo le foto (su mobile il titolo
      interno non c'è, vedi mobile.css) */
   let projectsTitleTimer = null;
-  function updateProjectsTitle(){
+  /* instant: titolo appena comparso nella fascia al posto dei filtri, non
+     c'è un testo vecchio da far sfumare: il nuovo entra subito */
+  function updateProjectsTitle(instant = false){
     const h1 = document.querySelector("#view-projects .title-row h1");
     let text = "Projects";
     if(projectsMode === "list"){
@@ -659,9 +713,7 @@
     if(h1.dataset.text === text) return;
     h1.dataset.text = text;
     clearTimeout(projectsTitleTimer);
-    h1.classList.remove("entering");
-    h1.classList.add("swapping");
-    projectsTitleTimer = setTimeout(()=>{
+    const reveal = ()=>{
       h1.textContent = text;
       /* il nuovo testo parte sotto, invisibile (senza transizione), poi
          sale al suo posto in dissolvenza (vedi mobile.css) */
@@ -669,14 +721,20 @@
       h1.classList.add("entering");
       void h1.offsetWidth;
       h1.classList.remove("entering");
-    }, 220);
+    };
+    if(instant){ reveal(); return; }
+    h1.classList.remove("entering");
+    h1.classList.add("swapping");
+    projectsTitleTimer = setTimeout(reveal, 220);
   }
 
   function applyProjectsMode(){
     const view = document.getElementById("view-projects");
+    const h1 = view.querySelector(".title-row h1");
+    const titleWasHidden = getComputedStyle(h1).display === "none";
     view.classList.toggle("grid-mode", projectsMode === "grid");
     view.classList.toggle("list-mode", projectsMode === "list");
-    updateProjectsTitle();
+    updateProjectsTitle(titleWasHidden);
     if(projectsMode === "grid"){
       armGridHoverGate();
       /* si torna sempre all'elenco con lo scorrimento in cima, non dove
@@ -715,13 +773,14 @@
   }
 
   function enterProjectRow(id, pushState = true){
-    projectsMode = "list";
-    applyProjectsMode();
     const container = document.getElementById("projects-list");
     const row = container.querySelector(`.project-row[data-project="${id}"]`);
     /* non si scorre tra i progetti: si vede solo la scheda "corrente", le
        altre restano fuori dal flusso */
     container.querySelectorAll(".project-row").forEach(r=> r.classList.toggle("current", r === row));
+    projectsMode = "list";
+    applyProjectsMode();
+    showProjectCover(id);
     /* la galleria inline serve solo su mobile (su desktop .project-row-gallery
        è sempre display:none): costruirla anche su desktop sarebbe lavoro
        sprecato ad ogni apertura di scheda */
@@ -740,6 +799,52 @@
     projectsMode = "grid";
     applyProjectsMode();
     if(pushState) pushNavState("projects");
+  }
+
+  /* ultima posizione del mouse. Con le geometrie e non con elementFromPoint:
+     la view che sta entrando non è ancora raggiungibile dal puntatore */
+  let lastMouse = null;
+  document.addEventListener("mousemove", (e)=>{ lastMouse = e; }, {passive:true});
+  function tileUnderMouse(){
+    if(!lastMouse || !matchMedia("(hover:hover)").matches) return undefined;
+    return [...document.querySelectorAll("#projects-index-grid .index-tile")].find(tile=>{
+      const r = tile.getBoundingClientRect();
+      return lastMouse.clientX >= r.left && lastMouse.clientX < r.right
+        && lastMouse.clientY >= r.top && lastMouse.clientY < r.bottom;
+    });
+  }
+
+  /* apertura/chiusura delle due metà della home (vedi CSS #view-home.doors).
+     La pagina sta sotto, ferma e già al suo posto. Se si inverte a metà
+     corsa, le transizioni CSS ripartono dal punto raggiunto, senza salti.
+     Pulizia a tempo, come in showView: 700ms = durata della transizione */
+  let homeDoorsTimer = null;
+  function runHomeDoors(current, next){
+    const home = document.getElementById("view-home");
+    const opening = next !== home;
+    const page = opening ? next : current;
+    clearTimeout(homeDoorsTimer);
+    document.querySelectorAll(".view").forEach(v=>{
+      clearTimeout(v.__leaveTimer);
+      v.classList.remove("leaving");
+      if(v !== home && v !== page) v.classList.remove("active", "visible", "under");
+    });
+    /* chiusura: le metà ripartono da aperte (qui senza .doors, quindi di
+       scatto), a meno che non siano già a metà di un'apertura */
+    if(!opening && !home.classList.contains("doors")) home.classList.add("open");
+    home.classList.add("active");
+    page.classList.add("active", "under");
+    void home.offsetWidth;
+    home.classList.add("doors");
+    void home.offsetWidth;
+    home.classList.toggle("open", opening);
+    home.classList.toggle("visible", !opening);
+    page.classList.toggle("visible", opening);
+    homeDoorsTimer = setTimeout(()=>{
+      home.classList.remove("doors");
+      page.classList.remove("under");
+      (opening ? home : page).classList.remove("active", "open");
+    }, 700);
   }
 
   function showView(name, keepProjectsState = false){
@@ -771,6 +876,18 @@
         renderProjectsList();
         projectsListReady = true;
       }
+      /* si entra con accesa la fascia sotto il cursore, che dopo il clic sul
+         tab si ritrova fermo lì (senza mouse: la prima). Il gate va riarmato
+         anche senza ricostruzione, partendo da quella stessa fascia */
+      const hovered = tileUnderMouse();
+      armGridHoverGate(hovered);
+      const tile = hovered || document.querySelector("#projects-index-grid .index-tile");
+      if(tile) showProjectCover(tile.dataset.project, true);
+    }
+
+    if(current && (current.dataset.view === "home" || name === "home") && !prefersReducedMotion()){
+      runHomeDoors(current, next);
+      return;
     }
 
     next.classList.remove("leaving");
@@ -788,7 +905,7 @@
     document.querySelectorAll(".view.visible").forEach(v=>{
       if(v === next) return;
       v.classList.add("leaving");
-      v.classList.remove("visible");
+      v.classList.remove("visible", "under");
       clearTimeout(v.__leaveTimer);
       v.__leaveTimer = setTimeout(()=>{
         if(!v.classList.contains("visible")) v.classList.remove("active", "leaving");
@@ -971,9 +1088,10 @@
     });
   }
 
-  /* indice dei progetti, su 2 colonne. Desktop: primo tag sopra il titolo
-     con freccetta e, al passaggio del cursore, la prima foto di hoverImages
-     nella metà destra del riquadro. Tablet: copertina 16:9 con titolo + tag
+  /* indice dei progetti. Desktop: una fascia per progetto nella metà sinistra
+     (primo tag, titolo, freccetta), al passaggio del cursore la copertina
+     cambia nella metà destra (vedi showProjectCover). Tablet: 2 colonne,
+     copertina 16:9 con titolo + tag
      sotto (vedi CSS .index-tile). Mobile: elenco a una colonna, senza
      copertine (vedi mobile.css). Ordine dei progetti quello di
      PROJECTS, senza quelli con hidden:true. Un click apre la scheda */
@@ -983,7 +1101,7 @@
     const grid = document.getElementById("projects-index-grid");
     /* righe sempre alte come con tutti i progetti in elenco (vedi CSS
        --index-rows): con un filtro attivo le caselle mancanti restano vuote */
-    grid.style.setProperty("--index-rows", Math.ceil(PROJECTS.filter(p => !p.hidden).length / 2));
+    grid.style.setProperty("--index-rows", PROJECTS.filter(p => !p.hidden).length);
     grid.innerHTML = `<div class="index-grid-inner">${list.map(p => `
       <div class="index-tile" data-project="${p.id}" tabindex="0" role="link" aria-label="${p.name}">
         <div class="index-tile-cover">${p.cover ? `<img src="${encodePath(p.gridCover || p.cover)}" alt="" loading="lazy">` : ""}</div>
@@ -996,7 +1114,6 @@
             <span class="index-tile-tag">${p.tags[0] || ""}</span>
           </div>
         </div>
-        ${p.hoverImages ? `<div class="index-tile-hover"><img src="${encodePath(p.hoverImages[0])}" alt="" loading="lazy"></div>` : ""}
       </div>
     `).join("")}</div>`;
     grid.querySelectorAll(".index-tile").forEach(tile=>{
@@ -1006,11 +1123,16 @@
            (vedi CSS .project-row ≥1280px), con View Project */
         enterProjectRow(tile.dataset.project);
       });
+      tile.addEventListener("mouseenter", ()=>{
+        if(grid.classList.contains("hover-ready")) showProjectCover(tile.dataset.project);
+      });
+      tile.addEventListener("focus", ()=> showProjectCover(tile.dataset.project));
       /* da tastiera: Invio o spazio aprono il progetto come un click */
       tile.addEventListener("keydown", (e)=>{
         if(e.key === "Enter" || e.key === " "){ e.preventDefault(); tile.click(); }
       });
     });
+    syncProjectCover();
   }
 
   function renderProjectsList(){
@@ -1081,32 +1203,14 @@
             <div class="project-row-gallery" data-project="${p.id}"></div>
           </div>
         </div>
-        <div class="project-row-image" data-project="${p.id}">Image — replace with yours<br>(${p.name})</div>
       </div>
     `;
     }).join("");
 
     fitHoverLabels(container);
 
-    list.forEach(p=>{
-      if(p.cover){
-        const img = container.querySelector(`[data-project="${p.id}"] .project-row-image`);
-        /* copertina della scheda progetto: innerCover se c'è (immagine
-           pensata per questo riquadro, 6:5), altrimenti la stessa della
-           griglia Projects */
-        /* innerCoverX: centro orizzontale del soggetto nel file (0–1),
-           per centrarlo nel riquadro anche quando ai lati si taglia */
-        const coverX = p.innerCover && p.innerCoverX ? ` style="--cover-x:${p.innerCoverX}"` : "";
-        img.innerHTML = `<img src="${encodePath(p.innerCover || p.cover)}" alt="${p.name}" loading="lazy" decoding="async"${coverX}>`;
-      }
-    });
-
     container.querySelectorAll(".project-row-view-btn").forEach(btn=>{
       btn.addEventListener("click", ()=> openProject(btn.dataset.project));
-    });
-
-    container.querySelectorAll(".project-row-image").forEach(img=>{
-      img.addEventListener("click", ()=> openProject(img.dataset.project));
     });
 
     container.querySelectorAll(".project-row-more-toggle").forEach(btn=>{
