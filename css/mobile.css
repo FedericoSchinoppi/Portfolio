@@ -49,7 +49,7 @@
      al resto invece di comparire/sparire di colpo */
   .site-footer{
     opacity:0; visibility:hidden;
-    transition:opacity var(--t-fade) var(--ease), visibility 0s linear var(--t-fade);
+    transition:opacity var(--t-exit) var(--ease), visibility 0s linear var(--t-exit);
   }
   body:has(#view-home.active) .site-footer,
   body:has(#view-about.active) .site-footer,
@@ -193,11 +193,7 @@
   }
   /* risposta al tocco: pulsanti che si stringono appena sotto il dito e
      tornano, tutti con lo stesso ritmo */
-  .project-row-more-toggle, .back-btn-inline{
-    transition:transform var(--t-hover) var(--ease);
-  }
-  .project-row-more-toggle:active{transform:scale(0.96);}
-  .back-btn-inline:active{transform:scale(0.82);}
+  /* (durata e scala in style.css, "risposta al clic") */
 
   /* ---------- LIGHTBOX (touch): niente salti né sovrapposizioni ----------
      La foto sta sempre in un riquadro di dimensione fissa (object-fit:
@@ -437,9 +433,7 @@
     position:absolute; top:var(--edge); right:var(--edge);
     z-index:10;
     color:var(--accent);
-    transition:transform var(--t-hover) var(--ease);
   }
-  .lightbox-close:active{transform:scale(0.85);}
   .lightbox-close .icon-svg{width:1.1rem; height:1.1rem;}
 
 

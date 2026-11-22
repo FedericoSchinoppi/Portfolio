@@ -41,20 +41,20 @@
      cache ai browser per 10 minuti (e Safari su iPad spesso di più):
      cambiando questo numero a ogni pubblicazione il browser è costretto a
      scaricare i CSS nuovi invece di usare quelli vecchi -->
-<link rel="stylesheet" href="css/style.css?v=20261101-3">
+<link rel="stylesheet" href="css/style.css?v=20261122-5">
 <!-- versione TABLET/IPAD: 801px–1279px, tra il layout mobile (≤800px) e
      quello laptop/desktop (≥1280px). Copre la maggior parte degli iPad in
      entrambi gli orientamenti (portrait e landscape), tranne l'iPad Pro
      12.9" in landscape (1366px) che ricade nel layout desktop — soglia
      comunque facile da spostare in un secondo momento se serve -->
-<link rel="stylesheet" href="css/tablet.css?v=20261101-3" media="(min-width:801px) and (max-width:1279px)">
+<link rel="stylesheet" href="css/tablet.css?v=20261122-5" media="(min-width:801px) and (max-width:1279px)">
 <!-- caricato fino a 1279px (mobile + tablet, vedi blocco iniziale di
      mobile.css): oltre quella soglia il browser lo
      scarica comunque (in background, per averlo pronto se la finestra si
      restringe) ma NON lo considera bloccante per il primo render su
      desktop/tablet larghi, dove tutte le regole al suo interno sono
      comunque inapplicabili -->
-<link rel="stylesheet" href="css/mobile.css?v=20261101-3" media="(max-width:1279px)">
+<link rel="stylesheet" href="css/mobile.css?v=20261122-5" media="(max-width:1279px)">
 </head>
 <body>
 
@@ -532,7 +532,7 @@
      mentre è invisibile, poi risfuma a 1 */
   function dissolveScrollTo(el, left, fadeDuration = 200){
     const prevTransition = el.style.transition;
-    el.style.transition = `opacity ${fadeDuration}ms ease`;
+    el.style.transition = `opacity ${fadeDuration}ms cubic-bezier(.23,1,.32,1)`;
     el.style.opacity = "0";
     setTimeout(()=>{
       el.scrollLeft = left;
@@ -582,7 +582,7 @@
 
   introScreen.addEventListener("click", ()=>{
     introScreen.classList.add("fade-out");
-    setTimeout(()=>{ introScreen.style.display = "none"; }, 600);
+    setTimeout(()=>{ introScreen.style.display = "none"; }, 500);
   });
 
   /* ============================================================
@@ -666,7 +666,7 @@
     img.decode().catch(()=>{}).then(()=>{
       if(id !== coverProjectId) return;
       document.getElementById("projects-cover").append(img);
-      img.animate({opacity:[0,1]}, {duration: instant || prefersReducedMotion() ? 0 : 450, easing:"ease"}).onfinish = ()=>{
+      img.animate({opacity:[0,1]}, {duration: instant ? 0 : 300, easing:"cubic-bezier(.23,1,.32,1)"}).onfinish = ()=>{
         while(img.previousElementSibling) img.previousElementSibling.remove();
       };
     });
@@ -725,7 +725,7 @@
     if(instant){ reveal(); return; }
     h1.classList.remove("entering");
     h1.classList.add("swapping");
-    projectsTitleTimer = setTimeout(reveal, 220);
+    projectsTitleTimer = setTimeout(reveal, 180);
   }
 
   function applyProjectsMode(){
@@ -772,7 +772,33 @@
     observeLazyVideos(galleryEl);
   }
 
+  /* indice ↔ scheda: le due schermate si scambiano display e la fascia in
+     alto cambia altezza (tablet), quindi una dissolvenza CSS mostrerebbe un
+     fotogramma bianco e i filtri che saltano. La View Transition fotografa
+     la schermata vecchia e la dissolve nella nuova: niente vuoto, niente
+     salto. Durante il passaggio le dissolvenze proprie (.index-tile,
+     .projects-list-wrap) si spengono con html.vt, altrimenti si
+     sommerebbero. Dove non è supportata resta la dissolvenza CSS di sempre */
+  function swapProjectsMode(update, readyImg){
+    /* solo con Projects già a schermo: altrove (cronologia, pagina coperta)
+       il cambio è immediato, ci pensa la transizione tra le pagine */
+    if(!document.startViewTransition || document.hidden || !document.querySelector("#view-projects.visible")){ update(); return; }
+    document.documentElement.classList.add("vt");
+    const vt = document.startViewTransition(async ()=>{
+      update();
+      /* la foto della scheda entra già disegnata, non a metà caricamento
+         (al massimo 150ms di attesa, poi si parte comunque) */
+      const img = readyImg && readyImg();
+      if(img && img.decode) await Promise.race([img.decode().catch(()=>{}), new Promise(r=> setTimeout(r, 150))]);
+    });
+    vt.finished.finally(()=> document.documentElement.classList.remove("vt"));
+  }
+
   function enterProjectRow(id, pushState = true){
+    swapProjectsMode(()=> enterProjectRowNow(id, pushState),
+      ()=> document.querySelector(`#projects-list .project-row[data-project="${id}"] img`));
+  }
+  function enterProjectRowNow(id, pushState){
     const container = document.getElementById("projects-list");
     const row = container.querySelector(`.project-row[data-project="${id}"]`);
     /* non si scorre tra i progetti: si vede solo la scheda "corrente", le
@@ -796,9 +822,11 @@
   }
 
   function exitToGrid(pushState = true){
-    projectsMode = "grid";
-    applyProjectsMode();
-    if(pushState) pushNavState("projects");
+    swapProjectsMode(()=>{
+      projectsMode = "grid";
+      applyProjectsMode();
+      if(pushState) pushNavState("projects");
+    });
   }
 
   /* ultima posizione del mouse. Con le geometrie e non con elementFromPoint:
@@ -971,7 +999,7 @@
       renderProjectsList();
       applyProjectsMode();
       if(projectsMode === "list" && state.listProject){
-        enterProjectRow(state.listProject, false);
+        enterProjectRowNow(state.listProject, false);
       }
     } else if(name === "detail" && state.detailProject){
       openProject(state.detailProject, false);
@@ -1102,8 +1130,8 @@
     /* righe sempre alte come con tutti i progetti in elenco (vedi CSS
        --index-rows): con un filtro attivo le caselle mancanti restano vuote */
     grid.style.setProperty("--index-rows", PROJECTS.filter(p => !p.hidden).length);
-    grid.innerHTML = `<div class="index-grid-inner">${list.map(p => `
-      <div class="index-tile" data-project="${p.id}" tabindex="0" role="link" aria-label="${p.name}">
+    grid.innerHTML = `<div class="index-grid-inner">${list.map((p, i) => `
+      <div class="index-tile" data-project="${p.id}" style="--i:${i}" tabindex="0" role="link" aria-label="${p.name}">
         <div class="index-tile-cover">${p.cover ? `<img src="${encodePath(p.gridCover || p.cover)}" alt="" loading="lazy">` : ""}</div>
         <div class="index-tile-info">
           <div class="index-tile-text">

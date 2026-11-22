@@ -51,9 +51,15 @@
 
   /* un solo ritmo per tutto il sito: stessa curva ovunque, due durate —
      --t-hover per le risposte al cursore, --t-fade per ciò che entra/esce */
-  --ease:cubic-bezier(.4,0,.2,1);
+  /* ease-out deciso: parte subito e frena a lungo, così ogni risposta si
+     vede già nel primo frame. La vecchia curva (.4,0,.2,1) partiva piano
+     e faceva sembrare tutto un filo in ritardo */
+  --ease:cubic-bezier(.23,1,.32,1);
+  --t-press:.16s;
   --t-hover:.25s;
   --t-fade:.35s;
+  /* chi esce va via più in fretta di chi entra */
+  --t-exit:.22s;
   /* spessore del contorno con cui le icone (frecce, X) si ispessiscono
      all'hover, accanto alle scritte che salgono di un peso */
   --hover-stroke:0.035em;
@@ -138,7 +144,7 @@ img, video{
   position:fixed; inset:0; z-index:100;
   background:var(--accent);
   display:flex; align-items:center; justify-content:center;
-  transition:opacity 0.6s var(--ease);
+  transition:opacity .5s var(--ease);
   cursor:var(--cursor-brand-white);
   will-change:opacity;
   transform:translateZ(0);
@@ -159,7 +165,7 @@ img, video{
 }
 @keyframes intro-pulse{
   0%,100%{ transform:scale(1); opacity:1; }
-  50%{ transform:scale(1.08); opacity:0.82; }
+  50%{ transform:scale(1.035); opacity:0.88; }
 }
 
 .intro-logo-placeholder{
@@ -182,9 +188,6 @@ img, video{
   opacity:0.85;
 }
 
-@media (prefers-reduced-motion:reduce){
-  #intro-logo, .intro-logo-placeholder{ animation:none; }
-}
 
 /* ============================================================
    HEADER GLOBALE
@@ -256,15 +259,11 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 .view.active.visible{opacity:1; pointer-events:auto;}
 .view.leaving{
   z-index:0;
-  transition:opacity .2s var(--ease);
+  transition:opacity var(--t-exit) var(--ease);
 }
 /* pagina scoperta (o coperta) dall'apertura della home: resta ferma, tutto
    il movimento è delle due metà (vedi #view-home.doors) */
 .view.under{opacity:1; transition:none;}
-
-@media (prefers-reduced-motion:reduce){
-  .view{transition:none;}
-}
 
 /* ============================================================
    HOME
@@ -315,7 +314,9 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   box-shadow:1px 0 0 var(--accent);
 }
 #view-home.doors .tab-about{box-shadow:none;}
-#view-home.doors .home-main{transition:opacity .35s var(--ease);}
+#view-home.doors .home-main{transition:opacity var(--t-fade) var(--ease);}
+/* aprendo il nome esce, e chi esce va più in fretta */
+#view-home.doors.open .home-main{transition-duration:var(--t-exit);}
 #view-home.open .tab{transform:translateX(calc(-100% - 1px));}
 #view-home.open .tab-about{transform:translateX(100%);}
 #view-home.open .home-main{opacity:0;}
@@ -542,7 +543,7 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   transition:opacity .3s var(--ease);
 }
-#view-projects .title-row h1.swapping{opacity:0;}
+#view-projects .title-row h1.swapping{opacity:0; transition-duration:.18s;}
 #view-projects .title-row h1.entering{opacity:0; transition:none;}
 .filters{display:flex; flex-wrap:wrap; justify-content:center; gap:28px; padding:0 var(--edge) 16px; border-bottom:1px solid var(--accent);}
 .filter-btn{
@@ -646,7 +647,7 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 }
 /* contenuto dei riquadri in dissolvenza a ogni comparsa della griglia
    (ingresso in Projects, cambio filtro, ritorno da una scheda) */
-.index-tile{animation:soft-in var(--t-fade) var(--ease);}
+.index-tile{animation:soft-in var(--t-fade) var(--ease) backwards; animation-delay:calc(min(var(--i, 0), 6) * 30ms);}
 .index-tile-text{display:flex; flex-direction:column; gap:6px; min-width:0;}
 /* titolo + freccia: stessa distanza dei tab della home (gap di .tab) */
 /* align-items:baseline: la freccia (alta come le maiuscole) poggia sulla
@@ -715,6 +716,27 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
    l'opacità torna quella normale dell'elemento */
 #view-projects.list-mode .projects-list-wrap{animation:soft-in var(--t-fade) var(--ease);}
 
+/* indice ↔ scheda con View Transition (vedi swapProjectsMode): la
+   schermata vecchia resta piena sotto e la nuova le sfuma sopra: due
+   dissolvenze incrociate di durata diversa lascerebbero a metà un velo
+   grigio (la somma delle opacità scende sotto 1).
+   Freccia indietro e filtri hanno un nome proprio: tra indice e scheda
+   cambiano posto (tablet: compare il titolo nella fascia), così scivolano
+   nella nuova posizione invece di vedersi doppi */
+::view-transition-old(root){animation:none;}
+::view-transition-new(root){animation:soft-in var(--t-fade) var(--ease); mix-blend-mode:normal;}
+html.vt #view-projects .back-btn-inline{view-transition-name:pj-back;}
+/* un nome per ogni filtro e non per la fila: la fila cambia altezza, i
+   singoli pulsanti no, quindi scivolano senza deformarsi né sdoppiarsi */
+html.vt #filters .filter-item:nth-child(1){view-transition-name:pj-f1;}
+html.vt #filters .filter-item:nth-child(2){view-transition-name:pj-f2;}
+html.vt #filters .filter-item:nth-child(3){view-transition-name:pj-f3;}
+html.vt #filters .filter-item:nth-child(4){view-transition-name:pj-f4;}
+html.vt #filters .filter-item:nth-child(5){view-transition-name:pj-f5;}
+html.vt #filters .filter-item:nth-child(6){view-transition-name:pj-f6;}
+::view-transition-group(*){animation-duration:var(--t-fade); animation-timing-function:var(--ease);}
+html.vt .index-tile, html.vt #view-projects .projects-list-wrap{animation:none;}
+
 /* niente scorrimento tra un progetto e l'altro: si vede solo la scheda
    corrente (classe .current, messa via JS in enterProjectRow), per cambiare
    progetto si torna all'indice */
@@ -743,7 +765,7 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
      figlio (tooltip, badge, ecc.) erediti la stessa attenuazione */
   background-color:rgba(228,233,244,0.55);
   cursor:var(--cursor-brand);
-  transition:background-color .3s cubic-bezier(.4,0,.2,1), width .3s cubic-bezier(.4,0,.2,1);
+  transition:background-color var(--t-hover) var(--ease), width var(--t-fade) var(--ease);
 }
 @media (hover:hover){
   .detail-dot:hover{background-color:var(--accent-light);}
@@ -1074,7 +1096,7 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
      anche da tastiera e rotellina). In chiusura visibility aspetta la fine
      della dissolvenza prima di scattare */
   opacity:0; visibility:hidden; pointer-events:none;
-  transition:opacity var(--t-fade) var(--ease), visibility 0s linear var(--t-fade);
+  transition:opacity var(--t-exit) var(--ease), visibility 0s linear var(--t-exit);
 }
 .lightbox.active{
   opacity:1; visibility:visible; pointer-events:auto;
@@ -1083,6 +1105,11 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 /* passaggio da una foto all'altra: quella corrente sfuma, il JS cambia
    sorgente mentre è invisibile, la nuova risale (vedi openLightbox) */
 .lightbox img, .lightbox video, .lightbox-caption{transition:opacity var(--t-hover) var(--ease);}
+/* apertura: la foto arriva da appena più piccola, mai da zero, e si posa
+   mentre il fondo sfuma. Solo all'apertura: tra una foto e l'altra resta
+   la sola dissolvenza */
+.lightbox img, .lightbox video{transform:scale(.97); transition:opacity var(--t-hover) var(--ease), transform var(--t-exit) var(--ease);}
+.lightbox.active img, .lightbox.active video{transform:none; transition:opacity var(--t-hover) var(--ease), transform .45s var(--ease);}
 .lightbox.switching img, .lightbox.switching video, .lightbox.switching .lightbox-caption{opacity:0;}
 /* X di chiusura: stile laptop/tablet in fondo al file ("SOLO LAPTOP /
    TABLET"), quello mobile in mobile.css */
@@ -1149,10 +1176,29 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   .lightbox-close:hover .icon-svg{stroke-width:var(--hover-stroke);}
 }
 
+/* risposta al clic: i controlli piccoli si stringono appena sotto il
+   puntatore. Le fasce grandi (tab, View Project) no: un oggetto largo metà
+   schermo che si rimpicciolisce sembra cedere, non rispondere.
+   "scale" e non "transform": il back-btn ha già un transform che lo
+   centra nella fascia, e verrebbe sovrascritto facendolo saltare */
+.filter-btn, .back-btn-inline, .lightbox-close, .project-row-more-toggle{
+  transition:scale var(--t-press) var(--ease);
+}
+.filter-btn:active, .project-row-more-toggle:active{scale:.96;}
+.back-btn-inline:active, .lightbox-close:active{scale:.9;}
+
 /* ============================================================
    MOVIMENTO RIDOTTO — chi lo chiede nelle impostazioni di sistema vede
-   gli stessi cambi di stato, ma senza dissolvenze né animazioni
+   gli stessi cambi di stato: restano le dissolvenze (aiutano a capire cosa
+   è cambiato), spariscono pulsazioni, scale e rotazioni. L'apertura a due
+   metà della home diventa una dissolvenza (vedi showView)
    ============================================================ */
 @media (prefers-reduced-motion:reduce){
-  *, *::before, *::after{animation:none !important; transition:none !important;}
+  #intro-logo, .intro-logo-placeholder{animation:none;}
+  /* la griglia segue la sola dissolvenza della pagina, non una seconda sua */
+  .index-tile{animation:none;}
+  .lightbox img, .lightbox video{transform:none !important;}
+  .filter-btn:active, .project-row-more-toggle:active,
+  .back-btn-inline:active, .lightbox-close:active{scale:none;}
+  .project-row-more-toggle .icon-svg{transition:stroke-width var(--t-hover) var(--ease);}
 }
