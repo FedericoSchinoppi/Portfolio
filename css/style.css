@@ -60,6 +60,9 @@
   --t-fade:.35s;
   /* chi esce va via più in fretta di chi entra */
   --t-exit:.22s;
+  /* dissolvenza di tutti i cambi di pagina e di schermata: parte morbida
+     invece che a strappo, così il primo frame non è già a metà */
+  --ease-fade:cubic-bezier(.33,0,.2,1);
   /* spessore del contorno con cui le icone (frecce, X) si ispessiscono
      all'hover, accanto alle scritte che salgono di un peso */
   --hover-stroke:0.035em;
@@ -75,6 +78,13 @@
 *{box-sizing:border-box;}
 html,body{height:100%;margin:0;padding:0;}
 html{overscroll-behavior:none;} /* niente rimbalzo della pagina intera (Safari/iOS) oltre le view interne */
+/* niente riquadro grigio di sistema al tocco (iOS/Android): la risposta al
+   tocco la danno gli stati :active del sito, vedi "risposta al clic" */
+html{-webkit-tap-highlight-color:transparent;}
+/* anche su <html>: durante i cambi di pagina (View Transition) il puntatore
+   "tocca" l'elemento html, non la pagina. Senza questo, a ogni clic il
+   cursore diventava per un attimo quello di sistema e poi tornava blu */
+html{cursor:var(--cursor-brand);}
 body{
   font-family:var(--font-body);
   color:var(--text);
@@ -144,7 +154,8 @@ img, video{
   position:fixed; inset:0; z-index:100;
   background:var(--accent);
   display:flex; align-items:center; justify-content:center;
-  transition:opacity .5s var(--ease);
+  /* uscita morbida e simmetrica: il blu si scioglie senza strappo iniziale */
+  transition:opacity .6s cubic-bezier(.4,0,.2,1);
   cursor:var(--cursor-brand-white);
   will-change:opacity;
   transform:translateZ(0);
@@ -153,7 +164,14 @@ img, video{
 /* al click, pointer-events:none toglie subito questo layer dall'hit-test:
    il cursore passa così, automaticamente, al blu di sempre già impostato
    sul body sottostante — non serve animarlo, il cambio è comunque istantaneo */
-.intro-screen.fade-out{opacity:0; pointer-events:none;}
+/* al clic il cursore diventa subito quello blu: il livello resta sotto il
+   puntatore per tutta la dissolvenza e cambia lui stesso cursore, così il
+   browser lo aggiorna all'istante. Prima il livello diventava
+   "trasparente" ai clic e il cursore bianco restava fermo finché non si
+   muoveva il mouse: sembrava bloccato. Dopo la dissolvenza si toglie
+   (display:none, vedi JS) */
+.intro-screen.fade-out{opacity:0;}
+.intro-screen.fade-out, .intro-screen.fade-out *{cursor:var(--cursor-brand);}
 
 .intro-enter{
   display:flex; align-items:center; justify-content:center;
@@ -257,9 +275,19 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 }
 .view.active{display:block;}
 .view.active.visible{opacity:1; pointer-events:auto;}
+/* livello sempre pronto sul GPU: una pagina appena mostrata (ancora a
+   opacity 0) viene disegnata subito, prima che la dissolvenza parta */
+.view.active{will-change:opacity;}
+/* cambio pagina senza mai vedere il fondo: ogni pagina ha lo sfondo
+   pieno, la nuova compare SOPRA la vecchia, che resta ferma e piena sotto
+   finché la nuova non l'ha coperta del tutto (poi sparisce, invisibile).
+   Prima sfumavano entrambe: a metà si vedeva il bianco e due pagine
+   semitrasparenti una sull'altra. La home no: durante l'apertura a due
+   metà deve lasciar vedere la pagina sotto (vedi #view-home.doors) */
+.view:not(#view-home){background:var(--bg);}
 .view.leaving{
   z-index:0;
-  transition:opacity var(--t-exit) var(--ease);
+  transition:opacity 0s linear var(--t-fade);
 }
 /* pagina scoperta (o coperta) dall'apertura della home: resta ferma, tutto
    il movimento è delle due metà (vedi #view-home.doors) */
@@ -307,10 +335,13 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
    bordo della metà sinistra è il pari del bordo di quella destra: da
    aperte, ognuna porta con sé la sua */
 #view-home.doors{z-index:2; opacity:1; transition:none; pointer-events:none;}
+/* will-change sempre attivo sui due tab, non solo durante .doors: se il
+   livello nasce nello stesso frame in cui parte l'apertura, il browser deve
+   rasterizzare mezza pagina proprio lì e il primo passo scatta */
+#view-home .tab{will-change:transform;}
 #view-home.doors .tab{
   --doors-ease:cubic-bezier(.76,0,.24,1);
-  transition:transform .7s var(--doors-ease), background-color var(--t-hover) var(--ease);
-  will-change:transform;
+  transition:transform .6s var(--doors-ease), background-color var(--t-hover) var(--ease);
   box-shadow:1px 0 0 var(--accent);
 }
 #view-home.doors .tab-about{box-shadow:none;}
@@ -387,15 +418,23 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
    fitHoverLabels): le lettere restano una sopra l'altra, quindi la
    scritta non si allarga e non si sposta, si ispessisce sul posto.
    All'hover la copia pesante sale in dissolvenza SOPRA la scritta
-   normale, che resta piena per tutta la durata (niente calo di
-   intensità a metà) e sparisce solo a dissolvenza finita; al ritorno
-   ricompare subito sotto, e la copia pesante sfuma via.
+   normale, che intanto sfuma via (vedi sotto); al ritorno il contrario.
+   Spaziatura tra lettere e tra parole della copia (--hover-word) sono
+   scelte ai minimi quadrati su tutte le lettere, non solo sugli estremi.
    --label-spacing ripete il letter-spacing della scritta: serve alla
    copia per partire dalla stessa spaziatura prima di stringerla */
+/* scambio incrociato e corto: la scritta normale sfuma via mentre la copia
+   pesante entra, nei due sensi, in --t-press. Prima la normale restava
+   piena per tutta la dissolvenza (250ms) sotto la copia: dove le lettere
+   dei due pesi non coincidono (anche 0,7px in "CONTENT STRATEGY") si
+   vedeva una scritta doppia, sfocata. La normale sfuma lineare e la copia
+   in ease-out, così a metà corsa l'intensità resta quasi piena */
 .filter-label, .contact-link, .more-info-label{
   position:relative;
   --hover-weight:700;
-  transition:color 0s;
+  /* a riposo nessuna transizione: tornando allo stato normale lo scambio è
+     istantaneo (vedi sotto, "curve dello scambio") */
+  transition:none;
 }
 .filter-label{display:block; --label-spacing:0.08em; --hover-weight:500;}
 .contact-link{--label-spacing:0.05em;}
@@ -406,19 +445,57 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   white-space:nowrap;
   font-weight:var(--hover-weight);
   letter-spacing:calc(var(--label-spacing) + var(--hover-tighten, 0em));
+  word-spacing:var(--hover-word, 0em);
   color:var(--text);
   opacity:0; pointer-events:none;
-  transition:opacity var(--t-hover) var(--ease);
+  transition:none;
 }
 @media (hover:hover){
   .filter-btn:hover .filter-label, .contact-link:hover,
   .project-row-more-toggle:hover .more-info-label{
     color:transparent;
-    transition:color 0s linear var(--t-hover);
   }
   .filter-btn:hover .filter-label::after, .contact-link:hover::after,
   .project-row-more-toggle:hover .more-info-label::after{opacity:1;}
 }
+/* filtri: anche la scritta normale è una copia (::before), e la scritta
+   vera resta sempre trasparente (tiene solo la misura e il testo per gli
+   screen reader). Così l'hover è una dissolvenza incrociata di due livelli
+   già pronti sul GPU (will-change): nessun testo da ridisegnare a ogni
+   frame, come invece succedeva animando il colore — su Safari era quello
+   a far sembrare l'hover dei filtri in ritardo */
+.filter-label{color:transparent; transition:none;}
+.filter-label::before{
+  content:attr(data-label);
+  position:absolute; top:0; left:0;
+  white-space:nowrap;
+  color:var(--text-secondary);
+  pointer-events:none;
+  transition:none;
+}
+.filter-label::before, .filter-label::after{will-change:opacity;}
+.filter-btn.active .filter-label::before{opacity:0;}
+@media (hover:hover){
+  .filter-btn:hover .filter-label::before{opacity:0;}
+}
+/* curve dello scambio. Entrando (hover, voce attiva, Info aperto): la
+   normale sfuma via lineare e il grassetto compare in ease-out, così
+   l'intensità resta piena. Uscendo: scambio istantaneo, senza dissolvenza.
+   Le lettere dei due pesi non coincidono al pixel, e ogni frame in cui sono
+   visibili entrambe fa tremolare la scritta: era lo sfarfallio togliendo
+   il mouse (prima, peggio ancora, a metà uscita le due copie erano
+   entrambe al 25% e la scritta quasi spariva). Le transizioni usano le
+   regole dello stato d'arrivo: quelle qui valgono solo all'entrata */
+@media (hover:hover){
+  .filter-btn:hover .filter-label::before, .contact-link:hover,
+  .project-row-more-toggle:hover .more-info-label{transition:opacity var(--t-press) linear, color var(--t-press) linear;}
+  .filter-btn:hover .filter-label::after, .contact-link:hover::after,
+  .project-row-more-toggle:hover .more-info-label::after{transition:opacity var(--t-press) var(--ease);}
+}
+.filter-btn.active .filter-label::before,
+.project-row-more-toggle.open .more-info-label{transition:opacity var(--t-press) linear, color var(--t-press) linear;}
+.filter-btn.active .filter-label::after,
+.project-row-more-toggle.open .more-info-label::after{transition:opacity var(--t-press) var(--ease);}
 
 /* icone che si ispessiscono all'hover insieme alla loro scritta: un contorno dello stesso colore che cresce da 0,
    senza spostare né ridimensionare nulla. vector-effect tiene lo spessore
@@ -443,6 +520,10 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
   padding:var(--edge);
 }
 .back-btn-inline{
+  /* position:relative: l'area di tocco allargata (::before, vedi "risposta
+     al clic") si misura sul pulsante. Senza, dove la freccia non è già
+     absolute si allargava sulla view intera e ogni tocco tornava indietro */
+  position:relative;
   font-size:calc(var(--arrow-size) * 0.7);
   line-height:1;
   padding:6px 0;
@@ -647,7 +728,14 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 }
 /* contenuto dei riquadri in dissolvenza a ogni comparsa della griglia
    (ingresso in Projects, cambio filtro, ritorno da una scheda) */
-.index-tile{animation:soft-in var(--t-fade) var(--ease) backwards; animation-delay:calc(min(var(--i, 0), 6) * 30ms);}
+/* niente partenza da vuoto né cascata: dentro Projects si va avanti e
+   indietro di continuo, e un elenco che sparisce e si ricompone riga per
+   riga sembra in ritardo. Il contenuto c'è già dal primo frame, appena
+   attenuato, e si assesta in fretta */
+.index-tile{animation:settle-in var(--t-hover) var(--ease);}
+/* desktop: indice, scheda e cambio filtro passano da una View Transition
+   (vedi pageSwapProjects), niente dissolvenze proprie */
+@media (min-width:1280px){ .index-tile{animation:none;} }
 .index-tile-text{display:flex; flex-direction:column; gap:6px; min-width:0;}
 /* titolo + freccia: stessa distanza dei tab della home (gap di .tab) */
 /* align-items:baseline: la freccia (alta come le maiuscole) poggia sulla
@@ -714,7 +802,8 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
 /* passaggio griglia → scheda: la scheda entra in dissolvenza invece di
    sostituire la griglia di colpo. Niente fill-mode: finita l'animazione
    l'opacità torna quella normale dell'elemento */
-#view-projects.list-mode .projects-list-wrap{animation:soft-in var(--t-fade) var(--ease);}
+#view-projects.list-mode .projects-list-wrap{animation:settle-in var(--t-hover) var(--ease);}
+@media (min-width:1280px){ #view-projects.list-mode .projects-list-wrap{animation:none;} }
 
 /* indice ↔ scheda con View Transition (vedi swapProjectsMode): la
    schermata vecchia resta piena sotto e la nuova le sfuma sopra: due
@@ -724,7 +813,10 @@ html.standalone .site-footer{align-items:center; padding-bottom:0;}
    cambiano posto (tablet: compare il titolo nella fascia), così scivolano
    nella nuova posizione invece di vedersi doppi */
 ::view-transition-old(root){animation:none;}
-::view-transition-new(root){animation:soft-in var(--t-fade) var(--ease); mix-blend-mode:normal;}
+::view-transition-new(root){animation:soft-in var(--t-fade) var(--ease-fade); mix-blend-mode:normal;}
+/* cambi di pagina via View Transition (vedi showView): le dissolvenze CSS
+   delle pagine restano spente, è la transizione a fare tutto */
+html.vt-view .view{transition:none !important;}
 html.vt #view-projects .back-btn-inline{view-transition-name:pj-back;}
 /* un nome per ogni filtro e non per la fila: la fila cambia altezza, i
    singoli pulsanti no, quindi scivolano senza deformarsi né sdoppiarsi */
@@ -899,7 +991,6 @@ html.vt .index-tile, html.vt #view-projects .projects-list-wrap{animation:none;}
 }
 @media (min-width:1280px){
   /* filtri ↔ nome del progetto: anche la fascia cambia in dissolvenza */
-  #view-projects.grid-mode > .filters{animation:soft-in var(--t-fade) var(--ease);}
   /* scheda aperta: niente menu, la fascia tiene freccia e nome del progetto */
   #view-projects.list-mode > .filters{display:none;}
   #view-projects.list-mode > .title-row{
@@ -939,10 +1030,11 @@ html.vt .index-tile, html.vt #view-projects .projects-list-wrap{animation:none;}
 /* cambio Scroll ↔ Grid: la galleria rientra in dissolvenza. Due keyframe
    identici con nomi diversi, perché un'animazione riparte solo se cambia
    il suo nome — così ogni cambio di vista la fa ripartire */
-.detail-gallery.scroll-view{animation:soft-in var(--t-fade) var(--ease);}
-.detail-gallery.grid-view{animation:soft-in-alt var(--t-fade) var(--ease);}
+/* Scroll ↔ Grid: dissolvenza guidata dal JS (switchGalleryMode), che
+   aspetta le foto pronte prima di farle comparire */
 @keyframes soft-in{ from{opacity:0;} }
 @keyframes soft-in-alt{ from{opacity:0;} }
+@keyframes settle-in{ from{opacity:.35;} }
 
 .detail-gallery.scroll-view{display:flex; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; cursor:var(--cursor-image);}
 /* in Scroll view i gruppi-riga sono trasparenti: le foto restano una fila
@@ -1105,12 +1197,14 @@ html.vt .index-tile, html.vt #view-projects .projects-list-wrap{animation:none;}
 /* passaggio da una foto all'altra: quella corrente sfuma, il JS cambia
    sorgente mentre è invisibile, la nuova risale (vedi openLightbox) */
 .lightbox img, .lightbox video, .lightbox-caption{transition:opacity var(--t-hover) var(--ease);}
-/* apertura: la foto arriva da appena più piccola, mai da zero, e si posa
-   mentre il fondo sfuma. Solo all'apertura: tra una foto e l'altra resta
-   la sola dissolvenza */
-.lightbox img, .lightbox video{transform:scale(.97); transition:opacity var(--t-hover) var(--ease), transform var(--t-exit) var(--ease);}
-.lightbox.active img, .lightbox.active video{transform:none; transition:opacity var(--t-hover) var(--ease), transform .45s var(--ease);}
-.lightbox.switching img, .lightbox.switching video, .lightbox.switching .lightbox-caption{opacity:0;}
+/* chiusura: istantanea. Il lightbox ha il fondo pieno: qualunque
+   dissolvenza in uscita è un velo bianco sopra la galleria. Prima la foto
+   si rimpiccioliva anche, tremolando. Rimpicciolire
+   una foto molto dettagliata mentre sfuma la fa tremolare (ricampionamento
+   a ogni frame): era lo sfarfallio in chiusura. La scala di partenza per
+   la prossima apertura torna a dissolvenza finita (transform 0s ritardato) */
+.lightbox:not(.active){transition:none;}
+.lightbox.switching img, .lightbox.switching video, .lightbox.switching .lightbox-caption{opacity:0; transition-duration:var(--t-press);}
 /* X di chiusura: stile laptop/tablet in fondo al file ("SOLO LAPTOP /
    TABLET"), quello mobile in mobile.css */
 .lightbox-close{display:none;}
@@ -1186,6 +1280,57 @@ html.vt .index-tile, html.vt #view-projects .projects-list-wrap{animation:none;}
 }
 .filter-btn:active, .project-row-more-toggle:active{scale:.96;}
 .back-btn-inline:active, .lightbox-close:active{scale:.9;}
+/* freccia indietro: l'icona è piccola (~16px), sul telefono il dito la
+   mancava. Area di tocco allargata attorno, l'icona resta dov'è */
+.back-btn-inline::before{content:""; position:absolute; inset:-12px -14px;}
+
+/* touch: le fasce grandi (tab, download, View Project, righe dell'indice)
+   non hanno hover, quindi al tocco non rispondevano in nessun modo. Si
+   accende la stessa tinta dell'hover desktop: compare subito alla
+   pressione (piccolo ritardo, così iniziando a scorrere l'elenco le righe
+   non lampeggiano) e sfuma al rilascio con la transizione di sempre */
+@media (hover:none){
+  .tab:active, .index-tile:active{
+    background-color:var(--accent-tint);
+    transition:background-color 0s linear 40ms;
+  }
+  #view-home .tab:active{background-color:color-mix(in srgb, var(--accent) 6%, var(--bg));}
+}
+
+/* ============================================================
+   INGRESSI "DA PAGINA" — home dopo l'intro, indice ↔ scheda progetto
+   ============================================================ */
+/* solo dissolvenza: niente movimento */
+@keyframes page-in{ from{opacity:0;} }
+
+/* home, chiusa l'intro: nome e tab salgono appena mentre il blu si scioglie */
+#view-home.entering .home-name-line{animation:page-in .8s var(--ease) .18s both;}
+#view-home.entering .tab > *{animation:page-in .8s var(--ease) .3s both;}
+#view-home.entering .tab-about > *{animation-delay:.36s;}
+
+/* desktop, indice ↔ scheda (vedi pageSwapProjects): View Transition.
+   La schermata vecchia resta ferma e piena sotto (old(root), sopra), la
+   nuova la copre in dissolvenza: mai il bianco. La parte sinistra (pj-main,
+   indice o scheda) entra in dissolvenza col suo sfondo pieno, senza
+   movimenti; la copertina cambia foto con la sua dissolvenza */
+@media (min-width:1280px){
+  .projects-index-grid, .projects-list-wrap{background:var(--bg);}
+  html.vt-pj #view-projects > .projects-index-grid,
+  html.vt-pj #view-projects > .projects-list-wrap{view-transition-name:pj-main;}
+  /* la copertina ha un nome suo e sta sopra: lo sfondo pieno di pj-main
+     (largo quanto la pagina) altrimenti la coprirebbe di bianco */
+  html.vt-pj #projects-cover{view-transition-name:pj-cover;}
+}
+::view-transition-group(pj-cover){animation:none;}
+::view-transition-old(pj-cover){animation:none;}
+::view-transition-new(pj-cover){animation:none; mix-blend-mode:normal;}
+::view-transition-group(pj-main){animation:none;}
+::view-transition-old(pj-main){animation:none;}
+::view-transition-new(pj-main){animation:page-in-quick var(--t-fade) var(--ease-fade) both; mix-blend-mode:normal;}
+/* pieno già a metà corsa, poi finisce solo di salire: vecchio e nuovo
+   testo restano sovrapposti il meno possibile */
+@keyframes page-in-quick{ from{opacity:0;} }
+
 
 /* ============================================================
    MOVIMENTO RIDOTTO — chi lo chiede nelle impostazioni di sistema vede
@@ -1201,4 +1346,8 @@ html.vt .index-tile, html.vt #view-projects .projects-list-wrap{animation:none;}
   .filter-btn:active, .project-row-more-toggle:active,
   .back-btn-inline:active, .lightbox-close:active{scale:none;}
   .project-row-more-toggle .icon-svg{transition:stroke-width var(--t-hover) var(--ease);}
+  /* indice ↔ scheda: freccia e filtri cambiano posto senza scivolare */
+  ::view-transition-group(*){animation:none;}
+  #view-home.entering *{animation:none !important;}
+  ::view-transition-new(pj-main){animation:soft-in var(--t-fade) var(--ease);}
 }

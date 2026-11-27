@@ -181,15 +181,12 @@
      scritte"): il Bold è una copia sovrapposta che sale in dissolvenza,
      larga quanto la scritta normale — "Info" si ispessisce sul posto,
      senza scattare di peso né spostare la freccetta accanto */
-  .project-row-more-toggle.open .more-info-label{
-    color:transparent;
-    transition:color 0s linear var(--t-hover);
-  }
+  .project-row-more-toggle.open .more-info-label{color:transparent;}
   .project-row-more-toggle.open .more-info-label::after{opacity:1;}
 
   /* ---------- animazioni scheda ---------- */
   .project-row-more-collapse{
-    transition:grid-template-rows .4s var(--ease), opacity var(--t-fade) var(--ease), margin-top .4s var(--ease);
+    transition:grid-template-rows var(--t-fade) var(--ease), opacity var(--t-fade) var(--ease), margin-top var(--t-fade) var(--ease);
   }
   /* risposta al tocco: pulsanti che si stringono appena sotto il dito e
      tornano, tutti con lo stesso ritmo */
@@ -433,6 +430,9 @@
     position:absolute; top:var(--edge); right:var(--edge);
     z-index:10;
     color:var(--accent);
+    /* area di tocco da ~42px invece dei soli 18px dell'icona; il margine
+       negativo la lascia allineata al margine come prima */
+    padding:12px; margin:-12px;
   }
   .lightbox-close .icon-svg{width:1.1rem; height:1.1rem;}
 

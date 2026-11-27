@@ -7,3 +7,10 @@ download/qrcode.ai
 
 # impostazioni locali di Claude Code
 .claude/settings.local.json
+
+# skill e file di lavoro degli strumenti di design (impeccable ecc.):
+# servono solo in locale, il sito non li usa
+.agents/
+.claude/skills/
+.impeccable/
+skills-lock.json
